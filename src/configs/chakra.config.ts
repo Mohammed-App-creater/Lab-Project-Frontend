@@ -7,6 +7,7 @@ import {
 	defineTokens,
 } from "@chakra-ui/react";
 
+
 export const tokens = defineTokens({
 	fonts: {
 		heading: { value: "var(--font-lex) sans-serif" },
@@ -70,9 +71,8 @@ export const semanticTokens = defineSemanticTokens({
 		},
 	},
 	radii: {
-		l1: { value: "0.375rem" },
-		l2: { value: "0.5rem" },
-		l3: { value: "0.5rem" },
+		l1: { value: "0.625rem" },
+		l2: { value: "1.25rem" },
 	},
 });
 
