@@ -34,7 +34,7 @@ Built with the powerful trio of Next.js, Tailwind CSS, and Chakra UI, this porta
 ### 🔁 Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/student-portal.git
+git clone https://github.com/your-username/Lab-Project-Frontend.git
 cd student-portal
 ```
 
