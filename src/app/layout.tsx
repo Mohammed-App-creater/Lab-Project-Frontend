@@ -1,6 +1,13 @@
+
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import {Poppins, Lexend, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ChakraProvider } from "@chakra-ui/react";
+import themeSystem from "configs/chakra.config";
+import { ThemeProvider } from 'next-themes';
+
+
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -10,6 +17,17 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+export const lexend = Lexend({
+  subsets: ['latin'],
+  variable: '--font-lex',
+});
+
+export const poppins = Poppins({
+  subsets: ['latin'],
+  variable: '--font-pop',
+  weight: "100"
 });
 
 export const metadata: Metadata = {
@@ -23,11 +41,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${lexend.variable} ${poppins.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider attribute="class">
+          <ChakraProvider value={themeSystem}> {/* Make sure you're passing theme here */}
+            {children}
+          </ChakraProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
