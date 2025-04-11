@@ -1,9 +1,13 @@
+"use client"
 import { Button, Card } from '@chakra-ui/react'
+import { useTheme } from 'next-themes';
 import React from 'react'
 import {FiSun} from 'react-icons/fi';
 import { GoMoon } from "react-icons/go";
 
 export default function DarkLightmode() {
+  const { theme, setTheme } = useTheme();
+
   return (
     <Card.Root 
   display={"flex"} 
@@ -22,6 +26,7 @@ export default function DarkLightmode() {
     py={2}
     px={4}
     color="white"
+    onClick={() => {setTheme('light')}}
   >
     <FiSun />Light
   </Button>
@@ -29,9 +34,10 @@ export default function DarkLightmode() {
     bgColor={"#A2A1A8"} 
     borderRadius={"l2"}
     flex={1} 
-    py={2} // Vertical padding
-    px={4} // Horizontal padding
+    py={2} 
+    px={4}
     color={"#16151C"}
+    onClick={() => {setTheme('dark')}}
   >
     <GoMoon />Dark
   </Button>

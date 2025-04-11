@@ -45,6 +45,7 @@ function SidebarItem() {
                   borderRadius="none"
                   variant="ghost" 
                   fontFamily="body"
+                  color={"#16151C"}
                   _hover={{
                     bg: '#0030870D',
                     color: '#003087',

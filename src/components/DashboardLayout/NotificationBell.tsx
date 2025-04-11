@@ -12,7 +12,7 @@ function NotificationBell() {
           <Text fontSize="xl" fontWeight="bold" color="black" fontFamily={"lexend"}>Hello Henok👋🏻</Text>
           <Text fontSize="sm" color="gray.400">Good Morning</Text>
         </Box>
-        <Flex gap={4} >
+        <Flex gap={4} ml={20}>
           <Box flex={1}>
             <SearchInput />
           </Box>
@@ -26,16 +26,24 @@ function NotificationBell() {
             borderRadius="xl" 
             boxShadow="md"
           >
-            <FiBell size={22} color="black" />
+            <FiBell size={18} color="gray.300"/>
           </Box>
-        </Flex>
-
-        <Box width={"150px"}  borderRadius="xl" boxShadow="md" bg="white" display="flex" alignItems="center" justifyContent="center">
+          <Box width={"190px"} borderRadius="xl" boxShadow="md" bg="white" display="flex" alignItems="center" justifyContent="center">
         <Flex direction="column" alignItems="center">
             {/* <img src='public/userImage.svg'/> */}
           <Text fontSize="xl" fontWeight="bold">Henok Assefa</Text>
           <Text color="gray.600">UI/UX DESIGNER</Text>
-        </Flex></Box>
+        </Flex>
+        </Box>
+        </Flex>
+
+        {/* <Box width={"150px"}  borderRadius="xl" boxShadow="md" bg="white" display="flex" alignItems="center" justifyContent="center"> */}
+        {/* <Flex direction="column" alignItems="center"> */}
+            {/* <img src='public/userImage.svg'/> */}
+          {/* <Text fontSize="xl" fontWeight="bold">Henok Assefa</Text> */}
+          {/* <Text color="gray.600">UI/UX DESIGNER</Text> */}
+        {/* </Flex> */}
+        {/* </Box> */}
       </Flex>
   );
 }

@@ -6,8 +6,7 @@ import DarkLightmode from '../Togglemode/darkLightmode'
 
 function Sidebar() {
   return (
-    <div className='bg-white'>
-   <Card.Root w={"280px"} h={"600px"} p={5} bg={"gray.200"} margin={3} borderRadius={15} >
+   <Card.Root w={"280px"} h={"600px"} p={5} bg={"gray.200"} margin={3} borderRadius={15}>
         <Card.Header p={5}>
                 <div className="flex items-center mb-8">
                     <div className="flex ">
@@ -21,7 +20,6 @@ function Sidebar() {
         <SidebarItem />
         <DarkLightmode/>
   </Card.Root>
-            </div>
   )
 }
 

@@ -7,8 +7,8 @@ const ThemeToggle = () => {
 
   return (
     <div>
-    <Button onClick={() => setTheme('light')}>light</Button>
-    <Button onClick={() => setTheme('dark')}>dark</Button>
+    {/* <Button onClick={() => setTheme('light')}>light</Button>
+    <Button onClick={() => setTheme('dark')}>dark</Button> */}
     </div>
   );
 };

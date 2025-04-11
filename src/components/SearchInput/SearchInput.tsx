@@ -4,7 +4,7 @@ import { IoSearch } from "react-icons/io5"
 
 function SearchInput() {
   return (
-    <div className="relative w-[261px] mt-3">
+    <div className="relative w-[261px] mt-3 ">
       <Input 
         placeholder="Search"
         bg="white"
@@ -15,7 +15,7 @@ function SearchInput() {
       />
       <IoSearch 
         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#16151C]"
-        size={18}
+        size={20}
       />
     </div>
   )
