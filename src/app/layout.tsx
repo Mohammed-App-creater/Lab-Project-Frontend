@@ -2,9 +2,11 @@
 import type { Metadata } from "next";
 import {Poppins, Lexend, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ChakraProvider } from "@chakra-ui/react";
+import { Box, ChakraProvider, Flex } from "@chakra-ui/react";
 import themeSystem from "configs/chakra.config";
 import { ThemeProvider } from 'next-themes';
+import Sidebar from "components/Sidebar/Sidebar";
+import NotificationBell from "components/DashboardLayout/NotificationBell";
 
 
 
@@ -46,8 +48,22 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${lexend.variable} ${poppins.variable} antialiased`}
       >
         <ThemeProvider attribute="class">
-          <ChakraProvider value={themeSystem}> {/* Make sure you're passing theme here */}
-            {children}
+          <ChakraProvider value={themeSystem}> 
+          <Flex h="100vh">
+  {/* Sidebar */}
+  <Box w="250px">
+    <Sidebar />
+  </Box>
+
+
+  <Box flex="1" ml={"50px"}>
+    <NotificationBell />
+    <Box p={4}>
+      {children}
+    </Box>
+  </Box>
+</Flex>
+
           </ChakraProvider>
         </ThemeProvider>
       </body>
