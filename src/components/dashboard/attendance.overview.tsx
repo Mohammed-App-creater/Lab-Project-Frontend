@@ -19,7 +19,7 @@ export default function AttendanceOverview() {
   const [selectedTab, setSelectedTab] = useState("all")
 
   return (
-    <Card className="w-full max-w-3xl">
+    <Card className=" w-[650px]">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="space-y-0.5">
           <CardTitle className="text-base font-medium">Attendance Overview</CardTitle>

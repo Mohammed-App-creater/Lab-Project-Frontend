@@ -1,56 +1,83 @@
 "use client"
-import React from 'react'
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { CiSearch } from "react-icons/ci";
+import { Input } from "@/components/ui/input"
+import { CiSearch, CiLogout, CiUser } from "react-icons/ci";
 import { HiOutlineBell } from "react-icons/hi2";
 import { IoChevronDownOutline } from "react-icons/io5";
-import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import Link from 'next/link';
 
+interface HeaderProps {
+  user?: {
+    name: string
+    role: string
+    avatar?: string
+  }
+}
 
-function Header() {
+function Header({ user = { name: "Henok Assefa", role: "UI/UX DESIGNER" } }: HeaderProps) {
   return (
-    <div>
-       <main className="flex-1">
-        <header className="bg-white p-4 flex items-center gap-73 ">
-          <div>
-            <h1 className="text-xl font-semibold">Hello Henok👋🏻</h1>
-            <div className="flex items-center text-sm text-gray-400">
-              <h3>Good Morning</h3>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Input
-                type="search"
-                placeholder="Search"
-                className="w-64 pl-10 pr-4 py-2 rounded-lg border border-gray-200"
-              />
-              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <CiSearch className="w-5 h-5 text-black" />
-              </div>
-            </div>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <HiOutlineBell  className="w-5 h-5 text-gray-600 bg-gray-300" />
-            </Button>
-            <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 p-2 rounded-md border border-gray-200 hover:border-gray-300 transition-colors">
-              <Avatar className="w-8 h-8">
-                  <AvatarImage src="assets/profileImage.svg" alt="Henok Assefa" />
-                  <AvatarFallback>HA</AvatarFallback>
+    <header className="flex items-center justify-between py-4 px-6 w-[1030px]">
+      <div>
+        <h1 className="text-xl font-semibold">Hello Henok👋🏻</h1>
+        <p className="text-sm text-muted-foreground">Good Morning</p>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <div className="relative">
+          <CiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search"
+            className="w-64 pl-10 pr-4 py-2 rounded-sm bg-slate-"
+          />
+        </div>
+
+        <Button variant="outline" size="icon" className="relative">
+          <HiOutlineBell className="h-5 w-5" />
+          <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              className="flex items-center rounded-md border-gray-200 hover:border-gray-300 transition-colors"
+            >
+              <Avatar className="h-7 w-fit rounded-sm">
+                <AvatarImage src="profile.svg" alt="Henok Assefa" />
+                <AvatarFallback>HA</AvatarFallback>
               </Avatar>
-            <div className="flex flex-col text-xs text-left">
-                 <span className="font-bold">Henok Assefa</span>
-                 <span className="text-gray-500">UI/UX DESIGNER</span>
-            </div>
-                 <IoChevronDownOutline className="w-4 h-4 text-gray-400" />
-            </button>
-            </div>
-          </div>
-        </header>
-        </main>
-    </div>
+              <div className="flex flex-col text-xs text-left">
+                <span className="font-bold">{user.name}</span>
+                <span className="text-muted-foreground">{user.role}</span>
+              </div>
+              <IoChevronDownOutline className="w-4 h-4 text-muted-foreground" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <Link href="/member/profile">
+              <DropdownMenuItem>
+                <CiUser /> My Profile
+              </DropdownMenuItem>
+            </Link>
+            <Link href="/login">
+              <DropdownMenuItem className="text-red-500">
+                <CiLogout className="text-red-500" /> Logout
+              </DropdownMenuItem>
+            </Link>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </header>
   )
 }
 

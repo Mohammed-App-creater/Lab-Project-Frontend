@@ -30,8 +30,8 @@ export default function SessionCalendar() {
   ]
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white rounded-lg overflow-hidden shadow-sm border">
-      <div className="p-4 flex items-center justify-between bg-slate-50">
+    <div className="w-full max-w-md mx-auto  rounded-lg overflow-hidden shadow-sm border">
+      <div className="p-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Session</h2>
         <Database className="h-5 w-5 text-slate-500" />
       </div>
