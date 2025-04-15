@@ -1,9 +1,6 @@
-
-
 "use client"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-// import { Search, Bell, ChevronDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { CiSearch, CiLogout, CiUser } from "react-icons/ci";
 import { HiOutlineBell } from "react-icons/hi2";
@@ -28,7 +25,7 @@ interface HeaderProps {
 
 function Header({ user = { name: "Henok Assefa", role: "UI/UX DESIGNER" } }: HeaderProps) {
   return (
-    <header className="flex items-center justify-between py-4 px-6 w-[1030px] ">
+    <header className="flex items-center justify-between py-4 px-6 w-[1030px]">
       <div>
         <h1 className="text-xl font-semibold">Hello Henok👋🏻</h1>
         <p className="text-sm text-muted-foreground">Good Morning</p>
@@ -49,18 +46,16 @@ function Header({ user = { name: "Henok Assefa", role: "UI/UX DESIGNER" } }: Hea
           <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
         </Button>
 
-
-
-<DropdownMenu>
+        <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="flex items-center rounded-md  border-gray-200 hover:border-gray-300 transition-colors"
+              className="flex items-center rounded-md border-gray-200 hover:border-gray-300 transition-colors"
             >
-               <Avatar className="h-7 w-fit rounded-sm ">
-             <AvatarImage src="profile.svg" alt="Henok Assefa" />
-             <AvatarFallback>HA</AvatarFallback>
-           </Avatar>
+              <Avatar className="h-7 w-fit rounded-sm">
+                <AvatarImage src="profile.svg" alt="Henok Assefa" />
+                <AvatarFallback>HA</AvatarFallback>
+              </Avatar>
               <div className="flex flex-col text-xs text-left">
                 <span className="font-bold">{user.name}</span>
                 <span className="text-muted-foreground">{user.role}</span>
@@ -69,14 +64,16 @@ function Header({ user = { name: "Henok Assefa", role: "UI/UX DESIGNER" } }: Hea
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-                <Link href="/member/profile">
-                <DropdownMenuItem> <CiUser/> My Profile</DropdownMenuItem>
-                </Link>
-              <Link href="/login">
-              <DropdownMenuItem className="text-red-500 ">
-              <CiLogout className="text-red-500" /> Logout
+            <Link href="/member/profile">
+              <DropdownMenuItem>
+                <CiUser /> My Profile
               </DropdownMenuItem>
-              </Link>
+            </Link>
+            <Link href="/login">
+              <DropdownMenuItem className="text-red-500">
+                <CiLogout className="text-red-500" /> Logout
+              </DropdownMenuItem>
+            </Link>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
