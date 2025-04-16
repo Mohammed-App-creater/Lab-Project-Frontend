@@ -1,0 +1,27 @@
+"use client"
+
+import AddNewMemberCard from "@/components/divisions/AddNewMemberCard"
+import AddNewMember from "@/components/member/add.member.card"
+import MemberTable from "@/components/member/member.table"
+import { useState } from "react"
+
+
+export default function MemberPage() {
+  const [showForm, setShowForm] = useState(false)
+
+  return (
+    <div className="relative">
+      {/* Apply blur when modal is open */}
+      <div className={`${showForm ? "blur-sm pointer-events-none select-none" : ""}`}>
+        <MemberTable
+          userRole="admin"
+          onAddMember={() => setShowForm(true)}
+        />
+      </div>
+
+      {/* Modal Form */}
+      {showForm && <AddNewMember onCancel={() => setShowForm(false)} />}
+    </div>
+  )
+
+}
