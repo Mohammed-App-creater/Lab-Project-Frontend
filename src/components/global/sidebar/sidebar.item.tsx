@@ -53,10 +53,10 @@ function SidebarItem() {
           All Members
         </Link>
         <Link 
-          href="/member" 
+          href="/alldivision" 
           className={`flex items-center px-3 py-2 rounded-r-lg hover:bg-[#0030870D] hover:text-blue-700 ${
-            isActive('/divisions') 
-              ? 'text-blue-700 bg-blue-50 border-l-4 border-blue-700' 
+            isActive('/alldivision') 
+              ? 'text-blue-700 border-l-4 border-blue-700' 
               : 'text-gray-700 hover:border-l-4 hover:border-blue-700'
           }`}
         >
@@ -64,7 +64,7 @@ function SidebarItem() {
           All Divisions
         </Link>
         <Link 
-          href="/division" 
+          href="/attendance" 
           className={`flex items-center px-3 py-2 rounded-r-lg hover:bg-[#0030870D] hover:text-blue-700 ${
             isActive('/attendance') 
               ? 'text-blue-700 bg-blue-50 border-l-4 border-blue-700' 
@@ -75,7 +75,7 @@ function SidebarItem() {
           Attendance
         </Link>
         <Link 
-          href="/sessions" 
+          href="/session" 
           className={`flex items-center px-3 py-2 rounded-r-lg hover:bg-[#0030870D] hover:text-blue-700 ${
             isActive('/sessions') 
               ? 'text-blue-700 bg-blue-50 border-l-4 border-blue-700' 

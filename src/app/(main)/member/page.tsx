@@ -1,15 +1,27 @@
-import LoginPage from '@/components/global/login/login'
-import MemberTable from '@/components/member/member.table'
-import AttendancePage from '@/components/member/profile/attendance.page'
-import ProgressPage from '@/components/member/profile/progress.page'
-import React from 'react'
+"use client"
 
-function page() {
+import AddNewMemberCard from "@/components/divisions/AddNewMemberCard"
+import AddNewMember from "@/components/member/add.member.card"
+import MemberTable from "@/components/member/member.table"
+import { useState } from "react"
+
+
+export default function MemberPage() {
+  const [showForm, setShowForm] = useState(false)
+
   return (
-    <div className='p-5 ml-1'>
-      <MemberTable userRole='admin' />
+    <div className="relative">
+      {/* Apply blur when modal is open */}
+      <div className={`${showForm ? "blur-sm pointer-events-none select-none" : ""}`}>
+        <MemberTable
+          userRole="admin"
+          onAddMember={() => setShowForm(true)}
+        />
+      </div>
+
+      {/* Modal Form */}
+      {showForm && <AddNewMember onCancel={() => setShowForm(false)} />}
     </div>
   )
-}
 
-export default page
+}

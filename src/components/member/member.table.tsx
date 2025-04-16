@@ -128,9 +128,10 @@ const members: Member[] = [
 // Define the props for our component
 type MemberTableProps = {
   userRole: "admin" | "manager" | "viewer"
+  onAddMember: () => void
 }
 
-export default function MemberTable({ userRole }: MemberTableProps) {
+export default function MemberTable({ userRole, onAddMember }: MemberTableProps) {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const totalItems = members.length
@@ -179,7 +180,8 @@ export default function MemberTable({ userRole }: MemberTableProps) {
         return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300"
     }
   }
-
+{/*space-y-4 inset-shadow-2xs shadow-xl p-3 rounded-2xl*/}
+{/*fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50*/}
   return (
     <div className="space-y-4 inset-shadow-2xs shadow-xl p-3 rounded-2xl">
       <div className="flex items-center justify-between">
@@ -204,9 +206,8 @@ export default function MemberTable({ userRole }: MemberTableProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Only show Add Member button for admin and manager roles */}
           {(userRole === "admin" || userRole === "manager") && (
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="bg-blue-600 hover:bg-blue-700" onClick={onAddMember}>
               <Plus className="w-4 h-4 mr-2" />
               Add Member
             </Button>

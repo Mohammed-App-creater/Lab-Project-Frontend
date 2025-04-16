@@ -1,5 +1,5 @@
 import type React from "react"
-import { ArrowDownIcon, ArrowUpIcon } from "lucide-react"
+import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb"
 import { Users, Layers, Calendar, BarChart2 } from "lucide-react"
 
 interface MetricCardProps {
@@ -15,7 +15,7 @@ interface MetricCardProps {
 
 function MetricCard({ title, value, change, icon, lastUpdated }: MetricCardProps) {
   return (
-    <div className="rounded-lg border bg-white p-4 shadow-sm">
+    <div className="rounded-lg border p-4 m-3 shadow-sm">
       <div className="flex items-center">
       {icon}
         <div className="text-sm font-medium text-gray-500 pl-4">{title}</div>
@@ -28,11 +28,23 @@ function MetricCard({ title, value, change, icon, lastUpdated }: MetricCardProps
           }`}
         >
           {change.trend === "up" ? (
-            <ArrowUpIcon className="mr-0.5 h-3 w-3" />
-          ) : (
-            <ArrowDownIcon className="mr-0.5 h-3 w-3" />
-          )}
+            <div className="flex items-center gap-1 w-[54px] rounded-[5px] p-[5px] mb-3 bg-[#30BE821A]">
+              <TbTriangleFilled className="mr-0.5 h-3 w-3 text-green-400 " />
           {change.value}%
+          </div>
+            
+          ) : (
+            <div className="flex items-center gap-1 w-[54px] rounded-[5px] p-[5px] mb-3 bg-[#F45B691A]">
+              <TbTriangleInvertedFilled className="mr-0.5 h-3 w-3 text-red-500" />
+          {change.value}%
+          </div>
+            
+          )}
+           {/* {change.trend === "up"} ?  (<div className="bg-[#30BE821A]">
+          {change.value}%
+          </div>) : (<div className="bg-[#F45B69]">
+          {change.value}%
+          </div>) */}
         </span>
       </div>
       <hr />
@@ -74,7 +86,7 @@ export function MetricCards() {
   ]
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid grid-gap-4 sm:grid-cols-2 lg:grid-cols-2">
       {metrics.map((metric) => (
         <MetricCard
           key={metric.title}

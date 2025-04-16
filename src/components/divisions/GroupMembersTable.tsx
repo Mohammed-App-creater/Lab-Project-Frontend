@@ -162,7 +162,7 @@ export function GroupMembersTableUI() {
   }
 
   return (
-    <div className="p-6 bg-white rounded-lg border">
+    <div className="ml-2 p-3 rounded-lg border">
       <div className="mb-6 flex items-center justify-between">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -187,7 +187,7 @@ export function GroupMembersTableUI() {
       <div className="rounded-lg border">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-50 border-b">
+            <tr className="border-b">
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Member Name</th>
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Member ID</th>
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Attendance</th>

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Link } from "lucide-react"
 import { useFormik } from "formik"
 import * as Yup from "yup"
 
@@ -11,32 +11,61 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 
+import { useRouter } from 'next/navigation';
+
+
 export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword)
-  }
 
-  const formik = useFormik({
+  const router = useRouter();
+
+  type LoginValues = {
+    email: string;
+    password: string;
+  };
+  
+  const loginValidationSchema = Yup.object({
+    email: Yup.string().email("Invalid email").required("Email is required"),
+    password: Yup.string().required("Password is required"),
+  });
+  
+  const loginFormik = useFormik<LoginValues>({
     initialValues: {
       email: "",
       password: "",
     },
-    validationSchema: Yup.object({
-      email: Yup.string()
-        .email("Invalid email format")
-        .required("Email is required"),
-      password: Yup.string()
-        .min(6, "Password must be at least 6 characters")
-        .required("Password is required"),
-    }),
-    onSubmit: (values) => {
-      console.log("Login values:", values, { rememberMe })
-      alert("Login successful!")
+    validationSchema: loginValidationSchema,
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        });
+  
+        if (!response.ok) {
+          throw new Error("Invalid credentials");
+        }
+  
+        const data: { token: string; user: { email: string } } = await response.json();
+        console.log("Login successful:", data);
+
+        localStorage.setItem("token", data.token);
+        router.push("/dashboard");
+  
+        resetForm();
+      } catch (error: any) {
+        console.error("Login failed:", error.message);
+      } finally {
+        setSubmitting(false);
+      }
     },
-  })
+  });
+  
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
@@ -67,7 +96,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <form onSubmit={formik.handleSubmit} className="space-y-6">
+        <form onSubmit={loginFormik.handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="email" className="text-[#003087]">
               Email Address
@@ -78,13 +107,13 @@ export default function LoginPage() {
               type="email"
               placeholder="robertallen@example.com"
               className="h-12"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
+              value={loginFormik.values.email}
+              onChange={loginFormik.handleChange}
+              onBlur={loginFormik.handleBlur}
             />
-            {formik.touched.email && formik.errors.email && (
+            {loginFormik.touched.email && loginFormik.errors.email && (
               <span className="text-sm text-red-500">
-                {formik.errors.email}
+                {loginFormik.errors.email}
               </span>
             )}
           </div>
@@ -99,21 +128,21 @@ export default function LoginPage() {
                 name="password"
                 type={showPassword ? "text" : "password"}
                 className="h-12 pr-10"
-                value={formik.values.password}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
+                value={loginFormik.values.password}
+                onChange={loginFormik.handleChange}
+                onBlur={loginFormik.handleBlur}
               />
               <button
                 type="button"
-                onClick={togglePasswordVisibility}
+                onClick={() => setShowPassword(true)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            {formik.touched.password && formik.errors.password && (
+            {loginFormik.touched.password && loginFormik.errors.password && (
               <span className="text-sm text-red-500">
-                {formik.errors.password}
+                {loginFormik.errors.password}
               </span>
             )}
           </div>

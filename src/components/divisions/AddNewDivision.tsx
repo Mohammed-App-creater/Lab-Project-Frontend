@@ -1,10 +1,18 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
 
-export function AddNewDivisionUI() {
+export function AddNewDivisionUI({ onClose }: { onClose: () => void }) {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
       <div className="bg-white rounded-lg shadow-lg w-full max-w-md">
         <div className="p-6 pb-4">
           <h2 className="text-lg font-semibold">Add New Division</h2>
@@ -29,10 +37,12 @@ export function AddNewDivisionUI() {
         </div>
 
         <div className="flex justify-between p-4 border-t">
-          <Button variant="outline" className="rounded-md px-4">
+          <Button variant="outline" className="rounded-md px-4" onClick={onClose}>
             Cancel
           </Button>
-          <Button className="bg-blue-900 hover:bg-blue-700 rounded-md px-4">Add Division</Button>
+          <Button className="bg-blue-900 hover:bg-blue-700 rounded-md px-4">
+            Add Division
+          </Button>
         </div>
       </div>
     </div>
