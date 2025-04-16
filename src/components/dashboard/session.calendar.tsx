@@ -38,11 +38,11 @@ export default function SessionCalendar() {
 
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <Button variant="outline" size="icon" className="h-8 w-8 bg-primary text-white">
+          <Button variant="outline" size="icon" className="h-8 w-8 bg-[#003087] text-white">
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <h3 className="font-medium">July, 2023</h3>
-          <Button variant="outline" size="icon" className="h-8 w-8 bg-primary text-white">
+          <Button variant="outline" size="icon" className="h-8 w-8 bg-[#003087] text-white">
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
@@ -56,7 +56,7 @@ export default function SessionCalendar() {
           className="rounded-md border"
           classNames={{
             day_selected:
-              "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+              "bg-[#003087] text-primary-foreground hover:bg-[#003087] hover:text-primary-foreground focus:bg-[#003087] focus:text-primary-foreground",
             day_today: "bg-accent text-accent-foreground",
             day: cn("h-9 w-9 p-0 font-normal aria-selected:opacity-100"),
             day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",

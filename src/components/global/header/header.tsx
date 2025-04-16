@@ -50,9 +50,9 @@ function Header({ user = { name: "Henok Assefa", role: "UI/UX DESIGNER" } }: Hea
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="flex items-center rounded-md border-gray-200 hover:border-gray-300 transition-colors"
+              className="flex items-center h-[50px] rounded-md border-gray-200 hover:border-gray-300 transition-colors"
             >
-              <Avatar className="h-7 w-fit rounded-sm">
+              <Avatar className=" w-[40px] h-[40px] rounded-sm">
                 <AvatarImage src="profile.svg" alt="Henok Assefa" />
                 <AvatarFallback>HA</AvatarFallback>
               </Avatar>

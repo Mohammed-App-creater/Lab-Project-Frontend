@@ -96,7 +96,7 @@ const sampleData: Group[] = [
 
 export function DivisionProfileUI() {
   return (
-    <div className="p-6 bg-white">
+    <div className="p-6 ">
       <div className="mb-6 flex items-center justify-between">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -110,7 +110,7 @@ export function DivisionProfileUI() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {sampleData.map((group) => (
-          <div key={group.id} className="rounded-lg border bg-white shadow-sm">
+          <div key={group.id} className="rounded-lg border shadow-sm">
             <div className="flex items-center justify-between p-4 pb-2">
               <div>
                 <h2 className="text-lg font-bold">{group.name}</h2>
