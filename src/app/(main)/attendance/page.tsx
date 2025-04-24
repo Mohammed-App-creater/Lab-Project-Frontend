@@ -5,10 +5,10 @@ import { Input } from "@/components/ui/input"
 import { fetchSessions } from "@/lib/data"
 import SessionsList from "@/components/attendance/session.list"
 
-export default async function DashboardPage() {
+export default async function Page() {
   const sessions = await fetchSessions()
-
   return (
+    <div className="m-3 shadow-xl p-3 rounded-2xl">
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center justify-between">
         <div className="relative w-full max-w-sm">
@@ -36,6 +36,7 @@ export default async function DashboardPage() {
       <Suspense fallback={<div>Loading sessions...</div>}>
         <SessionsList sessions={sessions} />
       </Suspense>
+    </div>
     </div>
   )
 }

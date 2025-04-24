@@ -6,19 +6,18 @@ import { useFormik } from "formik"
 import * as Yup from "yup"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, 
-  
-  SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
+
 
 const validationSchema = Yup.object({
   email: Yup.string().email("Invalid email address").required("Email is required"),
-  generatedPassword: Yup.string().required("Password is required"),
+  password: Yup.string().required("Password is required"),
 })
 
 // { onCancel }: { onCancel: () => void }
 export default function AddNewMember({ onCancel }: { onCancel: () => void }) {
-  const [generatedPassword, setGeneratedPassword] = useState("")
+  const [password, setpassword] = useState("")
 
   // Generate a random password
   const generatePassword = () => {
@@ -27,26 +26,35 @@ export default function AddNewMember({ onCancel }: { onCancel: () => void }) {
     for (let i = 0; i < 12; i++) {
       password += chars.charAt(Math.floor(Math.random() * chars.length))
     }
-    setGeneratedPassword(password)
-    formik.setFieldValue("generatedPassword", password)
+    setpassword(password)
+    formik.setFieldValue("password", password)
   }
 
 
 type FormValues = {
   email: string;
-  generatedPassword: string;
+  password: string;
+  DivisionId: string;
+  groupId: string;
+  gender: string;
 };
 
   // Initialize Formik
 const formik = useFormik<FormValues>({
   initialValues: {
     email: "",
-    generatedPassword: "",
+    password: "",
+    DivisionId: "cd5c8e05-533f-4b76-9769-4d1638530104",
+    groupId: "d4a18c91-5197-4c71-902f-fbc8f3366f0b",
+    gender: "Male",
   },
   validationSchema,
   onSubmit: async (values, { resetForm, setSubmitting }) => {
     try {
-      const response = await fetch("/api/register", {
+      console.log("Submitting form with values:", values)
+      setSubmitting(true)
+      // Send the form data to the server
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -137,7 +145,7 @@ const formik = useFormik<FormValues>({
                 id="randomPassword"
                 name="randomPassword"
                 placeholder="Random Password"
-                value={generatedPassword}
+                value={password}
                 readOnly
                 className="bg-white flex-1"
               />
@@ -149,16 +157,16 @@ const formik = useFormik<FormValues>({
             {/* Enter Generated Password */}
             <div>
               <Input
-                id="generatedPassword"
-                name="generatedPassword"
+                id="password"
+                name="password"
                 placeholder="Enter Generated Password"
-                value={formik.values.generatedPassword}
+                value={formik.values.password}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="bg-white"
               />
-              {formik.touched.generatedPassword && formik.errors.generatedPassword && (
-                <p className="text-sm text-red-500 mt-1">{formik.errors.generatedPassword}</p>
+              {formik.touched.password && formik.errors.password && (
+                <p className="text-sm text-red-500 mt-1">{formik.errors.password}</p>
               )}
             </div>
 

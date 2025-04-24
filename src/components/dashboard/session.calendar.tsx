@@ -14,11 +14,11 @@ export default function SessionCalendar() {
   const sessions = [
     {
       date: "Wednesday, 06 July 2023",
-      events: [
+      events: [     
         { time: "09:30", department: "CPD", title: "Contest in CPD Division" },
         { time: "12:00", department: "Development Division", title: "Development Weekly Sessions" },
         { time: "01:30", department: "Cyber", title: "Cyber Weekly Sessions" },
-      ],
+      ],  
     },
     {
       date: "Thursday, 07 July 2023",

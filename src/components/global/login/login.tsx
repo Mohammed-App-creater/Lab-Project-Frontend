@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 
 
 export default function LoginPage() {
-  const [rememberMe, setRememberMe] = useState(true)
+  const [remember, setRemember] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
 
 
@@ -24,6 +24,7 @@ export default function LoginPage() {
   type LoginValues = {
     email: string;
     password: string;
+    remember: boolean;
   };
   
   const loginValidationSchema = Yup.object({
@@ -35,11 +36,15 @@ export default function LoginPage() {
     initialValues: {
       email: "",
       password: "",
+      remember: false,
     },
     validationSchema: loginValidationSchema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        const response = await fetch("/api/login", {
+        console.log("Submitting form with values:", values);
+        setSubmitting(true);
+        // Send the form data to the server
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -150,8 +155,8 @@ export default function LoginPage() {
           <div className="flex items-center space-x-2">
             <Checkbox
               id="remember"
-              checked={rememberMe}
-              onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+              checked={remember}
+              onCheckedChange={(checked) => setRemember(checked as boolean)}
             />
             <Label htmlFor="remember" className="text-sm font-medium">
               Remember Me
