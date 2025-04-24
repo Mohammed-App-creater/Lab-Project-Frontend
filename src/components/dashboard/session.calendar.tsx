@@ -47,28 +47,20 @@ export default function SessionCalendar() {
   ];
 
   return (
-<<<<<<< HEAD
     <div className="w-full max-w-md mx-auto bg-[#F8F8F8] rounded-lg overflow-hidden shadow-sm border">
       <div className="p-4 flex items-center justify-between bg-slate-50">
         <h2 className="text-lg font-bold ">Session</h2>
         <div className="flex items-center justify-center w-12 h-12 bg-[#7152F31A] rounded  " >
           <CalendarDays className="h-6 w-6 text-[#003087] " />
         </div>
-=======
-    <div className="w-full max-w-md mx-auto  rounded-lg overflow-hidden shadow-sm border">
-      <div className="p-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Session</h2>
-        <Database className="h-5 w-5 text-slate-500" />
->>>>>>> ce45037ea1ae1cbfdd742478a90a4f238a77f7b3
       </div>
 
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
-<<<<<<< HEAD
           <Button
             variant="outline"
             size="icon"
-            className="h-8 w-8 bg-[#003087] text-white "
+            className="h-8 w-8 bg-[#003087] text-white"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
@@ -76,17 +68,9 @@ export default function SessionCalendar() {
           <Button
             variant="outline"
             size="icon"
-            className="h-8 w-8 bg-[#003087]  text-white"
+            className="h-8 w-8 bg-[#003087] text-white"
           >
             <ArrowRight className="h-4 w-4" />
-=======
-          <Button variant="outline" size="icon" className="h-8 w-8 bg-[#003087] text-white">
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <h3 className="font-medium">July, 2023</h3>
-          <Button variant="outline" size="icon" className="h-8 w-8 bg-[#003087] text-white">
-            <ChevronRight className="h-4 w-4" />
->>>>>>> ce45037ea1ae1cbfdd742478a90a4f238a77f7b3
           </Button>
         </div>
 
@@ -103,11 +87,7 @@ export default function SessionCalendar() {
             root: "border-none p-0",
             caption: "hidden",
             day_selected:
-<<<<<<< HEAD
               "bg-[#003087]  rounded-full text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-[#003087] focus:text-primary-foreground",
-=======
-              "bg-[#003087] text-primary-foreground hover:bg-[#003087] hover:text-primary-foreground focus:bg-[#003087] focus:text-primary-foreground",
->>>>>>> ce45037ea1ae1cbfdd742478a90a4f238a77f7b3
             day_today: "bg-accent text-accent-foreground",
             day: cn("h-9 w-9 p-0 font-normal aria-selected:opacity-100"),
             day_range_middle:
