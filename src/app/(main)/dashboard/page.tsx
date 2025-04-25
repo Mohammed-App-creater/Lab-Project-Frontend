@@ -6,13 +6,13 @@ import React from 'react'
 
 export default function page() {
   return (
-    <div className='flex justify-between w-[1000px] ml-2.5 mt-2.5'>
-      <div>
+    <div className='flex w-full justify-end '>
+      <div className=' w-2/3 pr-4'>
         <EventCard />
         <MetricCards />
         <AttendanceOverview />
       </div>
-      <div>
+      <div className='w-1/3 h-full flex flex-col gap-4'>
       <SessionCalendar />
       </div>
     </div>

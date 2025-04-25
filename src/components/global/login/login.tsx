@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { Eye, EyeOff, Link } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react"
 import { useFormik } from "formik"
 import * as Yup from "yup"
 
@@ -63,8 +63,12 @@ export default function LoginPage() {
         router.push("/dashboard");
   
         resetForm();
-      } catch (error: any) {
-        console.error("Login failed:", error.message);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error("Login failed:", error.message);
+        } else {
+          console.error("Login failed:", error);
+        }
       } finally {
         setSubmitting(false);
       }

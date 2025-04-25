@@ -15,7 +15,7 @@ interface MetricCardProps {
 
 function MetricCard({ title, value, change, icon, lastUpdated }: MetricCardProps) {
   return (
-    <div className="rounded-lg border p-4 m-3 shadow-sm">
+    <div className="rounded-lg border px-4 py-9 m-3 shadow-sm">
       <div className="flex items-center">
       {icon}
         <div className="text-sm font-medium text-gray-500 pl-4">{title}</div>

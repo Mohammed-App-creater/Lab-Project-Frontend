@@ -9,8 +9,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from 'next/link';
@@ -25,7 +23,7 @@ interface HeaderProps {
 
 function Header({ user = { name: "Henok Assefa", role: "UI/UX DESIGNER" } }: HeaderProps) {
   return (
-    <header className="flex items-center justify-between py-4 px-6 w-[1030px]">
+    <header className="flex items-center justify-between py-4 px-6 w-full">
       <div>
         <h1 className="text-xl font-semibold">Hello Henok👋🏻</h1>
         <p className="text-sm text-muted-foreground">Good Morning</p>
