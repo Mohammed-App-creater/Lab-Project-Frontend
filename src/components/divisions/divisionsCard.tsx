@@ -1,18 +1,74 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Search, ChevronRight, Plus } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { AddNewDivisionUI } from "./AddNewDivision"
+import { useEffect, useState } from "react";
+import { Search, ChevronRight, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AddNewDivisionUI } from "./AddNewDivision";
+import { useRouter } from "next/navigation";
 
+type DivisionGroupsDto = {
+  groups: DivisionGroupDto[];
+  name: string;
+  id: string;
+  description: string | null;
+  imageUrl: string | null;
+  establishedAt: Date | null;
+  currentHeadID: string | null;
+};
+
+type DivisionGroupDto = {
+  id: string;
+  name: string;
+  memberCount: number; // Add memberCount here
+  groups: GroupDto[];
+};
+
+type GroupDto = {
+  id: string;
+  name: string;
+  description: string | null;
+  updatedAt: Date;
+  memberCount: number;
+};
 
 export default function Divisions() {
-  const [showModal, setShowModal] = useState(false)
+  const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
+  const [divisions, setDivisions] = useState<DivisionGroupsDto[]>([]);
+
+  useEffect(() => {
+    console.log("fetching started ...");
+    const fetchDivision = async () => {
+      try {
+        const divisions = await fetch(
+          "http://localhost:3000/api/division/all-divisions-and-groups"
+        );
+        if (!divisions) {
+          throw new Error("No Division found");
+        }
+        const dates = await divisions.json();
+        setDivisions(dates);
+        await console.log(dates);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchDivision();
+  }, []);
+
+  const handleViewAll = (divisionId: string) => {
+    router.push(`/alldivision/${divisionId}`);
+  };
+
+  const handleToGroup = (divisionId: string, groupId: string) => {
+    router.push(`/alldivision/${divisionId}/${groupId}`);
+  };
 
   return (
-    <div className="space-y-2 ml-3 inset-shadow-2xs shadow-xl p-3 rounded-2xl">
+    <div className=" p-3 mb-10 rounded-lg border-[1.5px] border-[#A2A1A833]">
       <div className="container mx-auto p-2">
         <div className="flex justify-between items-center mb-6">
           <div className="relative w-64">
@@ -28,36 +84,43 @@ export default function Divisions() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[
-            { title: "Data Science Division", key: "ds", groups: 10 },
-            { title: "Development Division", key: "dev", groups: 10 },
-            { title: "CPD Division", key: "cpd", groups: 5 },
-            { title: "Cyber Division", key: "cyber", groups: 10 }
-          ].map((division) => (
-            <Card className="overflow-hidden" key={division.key}>
+          {divisions.map((division) => (
+            <Card className="overflow-hidden" key={division.id}>
               <CardHeader className="pb-2 flex flex-row justify-between items-center">
-                <CardTitle className="text-lg font-semibold">{division.title}</CardTitle>
-                <Button variant="link" className="text-blue-600 p-0 h-auto">View All</Button>
+                <CardTitle className="text-lg font-semibold">
+                  {division.name}
+                </CardTitle>
+                <Button
+                  variant="link"
+                  onClick={() => {
+                    handleViewAll(division.id);
+                  }}
+                  className="text-blue-600 p-0 h-auto"
+                >
+                  View All
+                </Button>
               </CardHeader>
               <CardContent className="text-sm text-gray-500 pb-2">
-                {division.groups} Groups
+                {division.groups.length} Groups
               </CardContent>
               <div className="divide-y">
-                {[1, 2, 3, 4].map((groupNum) => (
+                {division.groups.map((group) => (
                   <div
-                    key={`${division.key}-group-${groupNum}`}
+                    key={`${group.id}-group-${group.name}`}
                     className="flex items-center justify-between p-4 hover:bg-[#0036870d] cursor-pointer"
                   >
                     <div>
-                      <div className="font-medium">Group {groupNum}</div>
+                      <div className="font-medium">Group {group.name}</div>
                       <div className="text-sm text-gray-500">
-                        {
-                          division.key === "dev" && groupNum === 3 ? 42 :
-                          groupNum === 2 ? 24 : 32
-                        } Members
+                        {`${group.memberCount}  Members`}
                       </div>
                     </div>
-                    <ChevronRight className="h-5 w-5 text-gray-400" />
+                    <ChevronRight
+                      onClick={() => {
+                        handleToGroup(division.id, group.id);
+                      }}
+                      className="h-5 w-5 text-gray-400"
+                    />
                   </div>
                 ))}
               </div>
@@ -69,5 +132,5 @@ export default function Divisions() {
       {/* Show Modal */}
       {showModal && <AddNewDivisionUI onClose={() => setShowModal(false)} />}
     </div>
-  )
+  );
 }

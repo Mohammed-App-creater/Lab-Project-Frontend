@@ -1,92 +1,116 @@
-import type React from "react"
-import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb"
-import { Users, Layers, Calendar, BarChart2 } from "lucide-react"
+import type React from "react";
+import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb";
+import { Users, Layers, Calendar, BarChart2 } from "lucide-react";
 
 interface MetricCardProps {
-  title: string
-  value: string | number
+  title: string;
+  value: string | number;
   change: {
-    value: number
-    trend: "up" | "down"
-  }
-  icon: React.ReactNode
-  lastUpdated: string
+    value: number;
+    trend: "up" | "down";
+  };
+  icon: React.ReactNode;
+  lastUpdated: string;
 }
 
-function MetricCard({ title, value, change, icon, lastUpdated }: MetricCardProps) {
+type dataType = {
+  totalMembers: number;
+  totalDivisions: number;
+  attendanceRate: number;
+  upcomingSessions: number;
+};
+
+function MetricCard({
+  title,
+  value,
+  change,
+  icon,
+  lastUpdated,
+}: MetricCardProps) {
   return (
-    <div className="rounded-lg border p-4 m-3 shadow-sm">
+    <div className="rounded-lg border px-4 py-9 m-3 shadow-sm">
       <div className="flex items-center">
-      {icon}
+        {icon}
         <div className="text-sm font-medium text-gray-500 pl-4">{title}</div>
       </div>
       <div className="mt-2 flex items-baseline justify-between">
         <h3 className="text-3xl font-bold">{value}</h3>
         <span
-          className={`ml-2 flex items-center text-xs font-medium${
+          className={`ml-2 flex items-center text-xs font-medium ${
             change.trend === "up" ? "text-green-500" : "text-red-500"
-          }`}
+          }`} // ✅ Added space inside className
         >
           {change.trend === "up" ? (
             <div className="flex items-center gap-1 w-[54px] rounded-[5px] p-[5px] mb-3 bg-[#30BE821A]">
-              <TbTriangleFilled className="mr-0.5 h-3 w-3 text-green-400 " />
-          {change.value}%
-          </div>
-            
+              <TbTriangleFilled className="h-3 w-3 text-green-400" />
+              {change.value}%
+            </div>
           ) : (
             <div className="flex items-center gap-1 w-[54px] rounded-[5px] p-[5px] mb-3 bg-[#F45B691A]">
-              <TbTriangleInvertedFilled className="mr-0.5 h-3 w-3 text-red-500" />
-          {change.value}%
-          </div>
-            
+              <TbTriangleInvertedFilled className="h-3 w-3 text-red-500" />
+              {change.value}%
+            </div>
           )}
-           {/* {change.trend === "up"} ?  (<div className="bg-[#30BE821A]">
-          {change.value}%
-          </div>) : (<div className="bg-[#F45B69]">
-          {change.value}%
-          </div>) */}
         </span>
       </div>
       <hr />
       <div className="mt-2 text-xs text-gray-400">Updated: {lastUpdated}</div>
     </div>
-  )
+  );
 }
 
-export function MetricCards() {
+const fetchDivisions = async () => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACK_END_URL}api/dashboard/summary`
+    );
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching divisions:", error);
+    throw error; 
+  }
+};
+
+export async function MetricCards() {
+  const { totalDivisions, totalMembers, attendanceRate, upcomingSessions }: dataType = await fetchDivisions(); 
+
   const metrics = [
     {
       title: "Total Members",
-      value: 162,
+      value: totalMembers,
       change: { value: 12, trend: "up" as const },
       icon: <Users className="h-5 w-5 text-indigo-600" />,
-      lastUpdated: "July 14, 2023",
+      lastUpdated: new Date().toLocaleDateString(), // ✅ Dynamic date instead of hardcoded
     },
     {
       title: "Total Divisions",
-      value: 5,
+      value: totalDivisions,
       change: { value: 9, trend: "up" as const },
       icon: <Layers className="h-5 w-5 text-purple-600" />,
-      lastUpdated: "July 14, 2023",
+      lastUpdated: new Date().toLocaleDateString(),
     },
     {
       title: "Attendance Rate",
-      value: "68%",
+      value: `${attendanceRate}%`,
       change: { value: 4, trend: "down" as const },
       icon: <BarChart2 className="h-5 w-5 text-blue-600" />,
-      lastUpdated: "July 14, 2023",
+      lastUpdated: new Date().toLocaleDateString(),
     },
     {
       title: "Upcoming Sessions",
-      value: 12,
+      value: upcomingSessions,
       change: { value: 15, trend: "up" as const },
       icon: <Calendar className="h-5 w-5 text-blue-600" />,
-      lastUpdated: "July 14, 2023",
+      lastUpdated: new Date().toLocaleDateString(),
     },
-  ]
+  ];
 
   return (
-    <div className="grid grid-gap-4 sm:grid-cols-2 lg:grid-cols-2">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
       {metrics.map((metric) => (
         <MetricCard
           key={metric.title}
@@ -98,6 +122,5 @@ export function MetricCards() {
         />
       ))}
     </div>
-  )
+  );
 }
-

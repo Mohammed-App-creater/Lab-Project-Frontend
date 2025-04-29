@@ -9,40 +9,49 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from 'next/link';
+import { PublicUserDTO } from "@/type/user"
 
-interface HeaderProps {
-  user?: {
-    name: string
-    role: string
-    avatar?: string
+
+
+function Header() {
+  const userData: PublicUserDTO | null = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string) : null;
+  const handleLogout = () => {
+   localStorage.removeItem("user")
+   localStorage.removeItem("token") 
   }
-}
 
-function Header({ user = { name: "Henok Assefa", role: "UI/UX DESIGNER" } }: HeaderProps) {
+  const Greeting = (): string =>{
+    const currentHour = new Date().getHours()
+    if (currentHour < 12) {
+      return "Good Morning"
+    } else if (currentHour < 18) {
+      return "Good Afternoon"
+    } else {
+      return "Good Evening"
+    }
+  }
   return (
-    <header className="flex items-center justify-between py-4 px-6 w-[1030px]">
+    <header className="flex items-center justify-between py-4  w-full">
       <div>
-        <h1 className="text-xl font-semibold">Hello Henok👋🏻</h1>
-        <p className="text-sm text-muted-foreground">Good Morning</p>
+        <h1 className="text-xl font-semibold">Hello {userData?.firstName}👋🏻</h1>
+        <p className="text-sm text-muted-foreground">{Greeting()}</p>
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="relative">
-          <CiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative ">
+          <CiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Search"
-            className="w-64 pl-10 pr-4 py-2 rounded-sm bg-slate-"
+            className="w-64 pl-15 pr-4 py-6 text-2xl rounded-sm  bg-slate-"
           />
         </div>
 
-        <Button variant="outline" size="icon" className="relative">
-          <HiOutlineBell className="h-5 w-5" />
+        <Button variant="outline" size="icon" className="relative p-6">
+          <HiOutlineBell className="h-8 w-8" />
           <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
         </Button>
 
@@ -53,12 +62,12 @@ function Header({ user = { name: "Henok Assefa", role: "UI/UX DESIGNER" } }: Hea
               className="flex items-center h-[50px] rounded-md border-gray-200 hover:border-gray-300 transition-colors"
             >
               <Avatar className=" w-[40px] h-[40px] rounded-sm">
-                <AvatarImage src="profile.svg" alt="Henok Assefa" />
+                <AvatarImage src="profile.svg" alt={`${userData?.firstName ?? ''} ${userData?.lastName ?? ''}`} />
                 <AvatarFallback>HA</AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-xs text-left">
-                <span className="font-bold">{user.name}</span>
-                <span className="text-muted-foreground">{user.role}</span>
+                <span className="font-bold text-[16px]">{userData?.firstName}</span>
+                <span className="text-muted-foreground front-light text-xs">{userData?.role?.name ? userData.role.name : "Trainee"}</span>
               </div>
               <IoChevronDownOutline className="w-4 h-4 text-muted-foreground" />
             </Button>
@@ -69,7 +78,7 @@ function Header({ user = { name: "Henok Assefa", role: "UI/UX DESIGNER" } }: Hea
                 <CiUser /> My Profile
               </DropdownMenuItem>
             </Link>
-            <Link href="/login">
+            <Link onClick={handleLogout} href="/login" >
               <DropdownMenuItem className="text-red-500">
                 <CiLogout className="text-red-500" /> Logout
               </DropdownMenuItem>

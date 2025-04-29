@@ -1,24 +1,26 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useFormik } from "formik"
 import * as Yup from "yup"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, 
-  
-  SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
+
 
 const validationSchema = Yup.object({
   email: Yup.string().email("Invalid email address").required("Email is required"),
-  generatedPassword: Yup.string().required("Password is required"),
+  password: Yup.string().required("Password is required"),
 })
 
 // { onCancel }: { onCancel: () => void }
 export default function AddNewMember({ onCancel }: { onCancel: () => void }) {
-  const [generatedPassword, setGeneratedPassword] = useState("")
+  const [password, setpassword] = useState("")
+  const [division, setDivision] = useState("")
+  const [group, setGroup] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   // Generate a random password
   const generatePassword = () => {
@@ -27,26 +29,35 @@ export default function AddNewMember({ onCancel }: { onCancel: () => void }) {
     for (let i = 0; i < 12; i++) {
       password += chars.charAt(Math.floor(Math.random() * chars.length))
     }
-    setGeneratedPassword(password)
-    formik.setFieldValue("generatedPassword", password)
+    setpassword(password)
+    formik.setFieldValue("password", password)
   }
 
 
 type FormValues = {
   email: string;
-  generatedPassword: string;
+  password: string;
+  DivisionId: string;
+  groupId: string;
+  gender: string;
 };
 
   // Initialize Formik
 const formik = useFormik<FormValues>({
   initialValues: {
     email: "",
-    generatedPassword: "",
+    password: "",
+    DivisionId: "cd5c8e05-533f-4b76-9769-4d1638530104",
+    groupId: "d4a18c91-5197-4c71-902f-fbc8f3366f0b",
+    gender: "Male",
   },
   validationSchema,
   onSubmit: async (values, { resetForm, setSubmitting }) => {
     try {
-      const response = await fetch("/api/register", {
+      console.log("Submitting form with values:", values)
+      setSubmitting(true)
+      // Send the form data to the server
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,6 +73,7 @@ const formik = useFormik<FormValues>({
       console.log("Success:", data.message);
 
       resetForm();
+      onCancel(); // Close the modal after successful submission
     } catch (error: any) {
       console.error("Error:", error.message);
     } finally {
@@ -70,11 +82,39 @@ const formik = useFormik<FormValues>({
   },
 })
 
+useEffect(() => {
+    setIsLoading(true);
+    const fetchData = async () => {
+      try {
+        const [divResponse, groupResponse] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/division`),
+          fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/group`),
+        ]);
+
+        if (!divResponse.ok || !groupResponse.ok) {
+          throw new Error("Failed to fetch divisions");
+        }
+        const DivisionData = await divResponse.json();
+        const GroupData = await groupResponse.json();
+        console.log("Fetched divisions:", DivisionData);
+        console.log("Fetched groups:", GroupData);
+        setDivision(DivisionData);
+        setGroup(GroupData);
+      } catch (error) {
+        console.error("Error fetching divisions:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardContent className="pt-6">
-          <h2 className="text-xl font-semibold mb-6 text-center">Add New Member</h2>
+    <div className="fixed inset-0  bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <Card className="w-full max-w-sm shadow-lg">
+        <CardContent className="">
+          <h2 className="text-xl  font-bold mb-6">Add New Member</h2>
           <form onSubmit={formik.handleSubmit} className="space-y-4">
             {/* Division Select */}
             <div>
@@ -83,7 +123,7 @@ const formik = useFormik<FormValues>({
                 // onValueChange={(value) => formik.setFieldValue("division", value)}
                 // value={formik.values.division}
               >
-                <SelectTrigger className="w-full bg-white">
+                <SelectTrigger className="w-full py-7  bg-white">
                   <SelectValue placeholder="Select Division" />
                 </SelectTrigger>
                 <SelectContent>
@@ -103,7 +143,7 @@ const formik = useFormik<FormValues>({
                 // onValueChange={(value) => formik.setFieldValue("group", value)}
                 // value={formik.values.group}
               >
-                <SelectTrigger className="w-full bg-white">
+                <SelectTrigger className="w-full py-7 bg-white">
                   <SelectValue placeholder="Select Group" />
                 </SelectTrigger>
                 <SelectContent>
@@ -137,7 +177,7 @@ const formik = useFormik<FormValues>({
                 id="randomPassword"
                 name="randomPassword"
                 placeholder="Random Password"
-                value={generatedPassword}
+                value={password}
                 readOnly
                 className="bg-white flex-1"
               />
@@ -149,16 +189,16 @@ const formik = useFormik<FormValues>({
             {/* Enter Generated Password */}
             <div>
               <Input
-                id="generatedPassword"
-                name="generatedPassword"
+                id="password"
+                name="password"
                 placeholder="Enter Generated Password"
-                value={formik.values.generatedPassword}
+                value={formik.values.password}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 className="bg-white"
               />
-              {formik.touched.generatedPassword && formik.errors.generatedPassword && (
-                <p className="text-sm text-red-500 mt-1">{formik.errors.generatedPassword}</p>
+              {formik.touched.password && formik.errors.password && (
+                <p className="text-sm text-red-500 mt-1">{formik.errors.password}</p>
               )}
             </div>
 
