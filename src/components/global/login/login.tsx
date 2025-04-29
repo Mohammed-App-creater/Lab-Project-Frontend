@@ -62,11 +62,11 @@ export default function LoginPage() {
           throw new Error("Invalid credentials");
         }
 
-        const data: { token: string; user: { email: string } } =
+        const data: { accessToken: string; user: object } =
           await response.json();
         console.log("Login successful:", data);
 
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", data.accessToken);
         localStorage.setItem("user", JSON.stringify(data.user));
         await new Promise((resolve) => setTimeout(resolve, 4000));
 

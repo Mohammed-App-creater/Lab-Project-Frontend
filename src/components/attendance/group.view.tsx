@@ -26,7 +26,7 @@ export default function GroupView({ session, onGroupAttendanceClick }: GroupView
                 <h3 className="font-semibold text-lg">{group.name}</h3>
                 <Button
                   size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="bg-blue-900 hover:bg-blue-700 text-white"
                   onClick={() => onGroupAttendanceClick(group.id)}
                 >
                   Attendance

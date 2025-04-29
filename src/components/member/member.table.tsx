@@ -236,7 +236,7 @@ export default function MemberTable({
         <div className="flex items-center gap-2">
           {(userRole === "admin" || userRole === "manager") && (
             <Button
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-[#003087] hover:bg-[#002f87e7]"
               onClick={onAddMember}
             >
               <Plus className="w-4 h-4 mr-2" />

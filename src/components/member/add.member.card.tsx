@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useFormik } from "formik"
 import * as Yup from "yup"
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,9 @@ const validationSchema = Yup.object({
 // { onCancel }: { onCancel: () => void }
 export default function AddNewMember({ onCancel }: { onCancel: () => void }) {
   const [password, setpassword] = useState("")
+  const [division, setDivision] = useState("")
+  const [group, setGroup] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   // Generate a random password
   const generatePassword = () => {
@@ -79,11 +82,39 @@ const formik = useFormik<FormValues>({
   },
 })
 
+useEffect(() => {
+    setIsLoading(true);
+    const fetchData = async () => {
+      try {
+        const [divResponse, groupResponse] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/division`),
+          fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/group`),
+        ]);
+
+        if (!divResponse.ok || !groupResponse.ok) {
+          throw new Error("Failed to fetch divisions");
+        }
+        const DivisionData = await divResponse.json();
+        const GroupData = await groupResponse.json();
+        console.log("Fetched divisions:", DivisionData);
+        console.log("Fetched groups:", GroupData);
+        setDivision(DivisionData);
+        setGroup(GroupData);
+      } catch (error) {
+        console.error("Error fetching divisions:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardContent className="pt-6">
-          <h2 className="text-xl font-semibold mb-6 text-center">Add New Member</h2>
+    <div className="fixed inset-0  bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <Card className="w-full max-w-sm shadow-lg">
+        <CardContent className="">
+          <h2 className="text-xl  font-bold mb-6">Add New Member</h2>
           <form onSubmit={formik.handleSubmit} className="space-y-4">
             {/* Division Select */}
             <div>
@@ -92,7 +123,7 @@ const formik = useFormik<FormValues>({
                 // onValueChange={(value) => formik.setFieldValue("division", value)}
                 // value={formik.values.division}
               >
-                <SelectTrigger className="w-full bg-white">
+                <SelectTrigger className="w-full py-7  bg-white">
                   <SelectValue placeholder="Select Division" />
                 </SelectTrigger>
                 <SelectContent>
@@ -112,7 +143,7 @@ const formik = useFormik<FormValues>({
                 // onValueChange={(value) => formik.setFieldValue("group", value)}
                 // value={formik.values.group}
               >
-                <SelectTrigger className="w-full bg-white">
+                <SelectTrigger className="w-full py-7 bg-white">
                   <SelectValue placeholder="Select Group" />
                 </SelectTrigger>
                 <SelectContent>
