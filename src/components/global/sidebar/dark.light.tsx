@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { FiSun } from 'react-icons/fi';
 
 
-
 export default function DarkLight() {
   const [theme, setTheme] = useState<"light" | "dark">("light")
 
@@ -34,13 +33,13 @@ export default function DarkLight() {
   }
 
   return (
-    <div className="pt-4 mt-18">
-         <div className="flex items-center justify-between">
-            <Button onClick={toggleTheme} variant="default" size="sm" className="bg-blue-900 hover:bg-blue-800 h-10 w-25 px-3">
+    <div className="pb-5  ">  
+         <div className="flex items-center justify-center gap-2 ">
+            <Button onClick={()=>{setTheme("light")}} variant="default" size="sm" className="bg-blue-900 hover:bg-blue-800 h-10 w-25 px-3">
               <FiSun className="w-4 h-4 mr-2" />
               Light
             </Button>
-            <Button onClick={toggleTheme} variant="ghost" size="sm" className="h-10 w-25 px-3 bg-[#A2A1A80D]">
+            <Button onClick={()=>{setTheme("dark")}} variant="ghost" size="sm" className="h-10 w-25 px-3 bg-[#A2A1A80D]">
               <GoMoon className="w-4 h-6 mr-2" />
               Dark
             </Button>

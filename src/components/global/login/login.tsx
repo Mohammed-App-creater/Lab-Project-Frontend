@@ -1,74 +1,111 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import { Eye, EyeOff, Link } from "lucide-react"
-import { useFormik } from "formik"
-import * as Yup from "yup"
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { Eye, EyeOff } from "lucide-react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
-import { useRouter } from 'next/navigation';
-
+import { useRouter } from "next/navigation";
+import  PageLoader  from "./pageLoader"
 
 export default function LoginPage() {
-  const [rememberMe, setRememberMe] = useState(true)
-  const [showPassword, setShowPassword] = useState(false)
-
+  const [remember, setRemember] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isPageLoading, setIsPageLoading] = useState(false);
 
   const router = useRouter();
 
   type LoginValues = {
     email: string;
     password: string;
+    remember: boolean;
   };
-  
+
   const loginValidationSchema = Yup.object({
     email: Yup.string().email("Invalid email").required("Email is required"),
     password: Yup.string().required("Password is required"),
   });
-  
+
   const loginFormik = useFormik<LoginValues>({
     initialValues: {
       email: "",
       password: "",
+      remember: false,
     },
     validationSchema: loginValidationSchema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        const response = await fetch("/api/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        });
-  
+        console.log("Submitting form with values:", values);
+        setError("");
+        setSubmitting(true);
+        setIsPageLoading(true);
+        // Send the form data to the server
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/login`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(values),
+          }
+        );
+
         if (!response.ok) {
           throw new Error("Invalid credentials");
         }
-  
-        const data: { token: string; user: { email: string } } = await response.json();
+
+        const data: { accessToken: string; user: object } =
+          await response.json();
         console.log("Login successful:", data);
 
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        await new Promise((resolve) => setTimeout(resolve, 4000));
+
         router.push("/dashboard");
-  
+
         resetForm();
-      } catch (error: any) {
-        console.error("Login failed:", error.message);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.log("Login failed:", error.message);
+          setError(error.message);
+        } else {
+          console.error("Login failed:", error);
+        }
       } finally {
+        setIsPageLoading(false);
         setSubmitting(false);
       }
     },
   });
-  
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        loginFormik.handleSubmit();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown as EventListener);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown as EventListener);
+    };
+  }, [loginFormik]);
+
+ 
+ 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
+      {isPageLoading && <PageLoader />}
       <div className="w-full max-w-md space-y-8">
         <div className="space-y-6">
           <div className="flex gap-7 items-center">
@@ -94,6 +131,13 @@ export default function LoginPage() {
             <h1 className="text-2xl font-bold">Welcome 👋</h1>
             <p className="text-sm text-muted-foreground">Please login here</p>
           </div>
+          {error && (
+            <div className="text-sm p-4 bg-red-100 rounded-r-lg  border-l-4 border-red-600  text-red-500">
+              <p className="text-lg">
+                {error} <span className="text-4xl">😒</span>
+              </p>
+            </div>
+          )}
         </div>
 
         <form onSubmit={loginFormik.handleSubmit} className="space-y-6">
@@ -150,8 +194,8 @@ export default function LoginPage() {
           <div className="flex items-center space-x-2">
             <Checkbox
               id="remember"
-              checked={rememberMe}
-              onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+              checked={remember}
+              onCheckedChange={(checked) => setRemember(checked as boolean)}
             />
             <Label htmlFor="remember" className="text-sm font-medium">
               Remember Me
@@ -167,5 +211,5 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
-  )
+  );
 }
