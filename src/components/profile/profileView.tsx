@@ -14,7 +14,6 @@ interface ProfileViewProps {
 export default function ProfileView({ userData, onEdit }: ProfileViewProps) {
   const [activeTab, setActiveTab] = useState<TabType>("required")
 
-  // Sample resources data
   const resources = [
     { name: "Data science & AI challenges.", link: "https://googlecodejam.com/challenges" },
     { name: "Math-based programming problems.", link: "https://googlecodejam.com/challenges" },

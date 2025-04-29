@@ -1,6 +1,7 @@
 import type React from "react"
 import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb"
-import { Users, Layers, Calendar, BarChart2 } from "lucide-react"
+import { Users, Layers } from "lucide-react"
+import { LuCalendarCheck, LuClock10 } from "react-icons/lu"
 
 interface MetricCardProps {
   title: string
@@ -15,10 +16,10 @@ interface MetricCardProps {
 
 function MetricCard({ title, value, change, icon, lastUpdated }: MetricCardProps) {
   return (
-    <div className="rounded-lg border p-4 m-3 shadow-sm">
+    <div className="rounded-lg border p-4 m-3">
       <div className="flex items-center">
-      {icon}
-        <div className="text-sm font-medium text-gray-500 pl-4">{title}</div>
+              {icon}
+        <div className="text-sm font-normal text-[#16151C] pl-4">{title}</div>
       </div>
       <div className="mt-2 flex items-baseline justify-between">
         <h3 className="text-3xl font-bold">{value}</h3>
@@ -47,8 +48,8 @@ function MetricCard({ title, value, change, icon, lastUpdated }: MetricCardProps
           </div>) */}
         </span>
       </div>
-      <hr />
-      <div className="mt-2 text-xs text-gray-400">Updated: {lastUpdated}</div>
+      <hr/>
+      <div className="mt-2 text-xs text-[#A2A1A8]">Update: {lastUpdated}</div>
     </div>
   )
 }
@@ -59,29 +60,29 @@ export function MetricCards() {
       title: "Total Members",
       value: 162,
       change: { value: 12, trend: "up" as const },
-      icon: <Users className="h-5 w-5 text-indigo-600" />,
-      lastUpdated: "July 14, 2023",
+      icon: <Users className="h-9 w-9 text-[#003087] bg-[#7152F30D] p-2 rounded-sm" />,
+      lastUpdated: "July 16, 2025",
     },
     {
       title: "Total Divisions",
       value: 5,
-      change: { value: 9, trend: "up" as const },
-      icon: <Layers className="h-5 w-5 text-purple-600" />,
-      lastUpdated: "July 14, 2023",
+      change: { value: 5, trend: "up" as const },
+      icon: <Layers className="h-9 w-9 text-[#003087] bg-[#7152F30D] p-2 rounded-sm" />,
+      lastUpdated: "July 14, 2025",
     },
     {
       title: "Attendance Rate",
       value: "68%",
-      change: { value: 4, trend: "down" as const },
-      icon: <BarChart2 className="h-5 w-5 text-blue-600" />,
+      change: { value: 8, trend: "down" as const },
+      icon: <LuCalendarCheck className="h-9 w-9 text-[#003087] bg-[#7152F30D] p-2 rounded-sm" />,
       lastUpdated: "July 14, 2023",
     },
     {
       title: "Upcoming Sessions",
       value: 12,
-      change: { value: 15, trend: "up" as const },
-      icon: <Calendar className="h-5 w-5 text-blue-600" />,
-      lastUpdated: "July 14, 2023",
+      change: { value: 12, trend: "up" as const },
+      icon: <LuClock10 className="h-9 w-9 text-[#003087] bg-[#7152F30D] p-2 rounded-sm" />,
+      lastUpdated: "July 10, 2025",
     },
   ]
 

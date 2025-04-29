@@ -1,6 +1,6 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { MapPin } from "lucide-react"
 
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export default function ProfileHeader() {
   return (
@@ -8,9 +8,8 @@ export default function ProfileHeader() {
       <div className="h-40 bg-[#2c3e67] w-full"></div>
 
       <div className="absolute bottom-4 left-6 flex items-end gap-4">
-
         <Avatar className="h-20 w-20 border-4 border-white">
-          <AvatarImage src="profile.svg" alt="Henok Assefa" />
+          <AvatarImage src="/profile.svg" alt="Henok Assefa" />
           <AvatarFallback>H A</AvatarFallback>
         </Avatar>
 

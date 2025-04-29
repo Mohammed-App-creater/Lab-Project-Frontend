@@ -53,7 +53,7 @@ export default function ProfilePage() {
             </TabsContent>
 
             <TabsContent value="optional" className="mt-0">
-              <div className="text-center py-12 text-gray-500">Optional information section</div>
+              <div className="text-center py-12 text-gray-500">Optional information section </div>
             </TabsContent>
 
             <TabsContent value="resources" className="mt-0">
