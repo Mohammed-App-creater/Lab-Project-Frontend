@@ -70,6 +70,7 @@ const formik = useFormik<FormValues>({
       console.log("Success:", data.message);
 
       resetForm();
+      onCancel(); // Close the modal after successful submission
     } catch (error: any) {
       console.error("Error:", error.message);
     } finally {

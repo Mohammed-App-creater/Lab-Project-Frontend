@@ -8,7 +8,7 @@ import SessionsList from "@/components/attendance/session.list"
 export default async function Page() {
   const sessions = await fetchSessions()
   return (
-    <div className="m-3 shadow-xl p-3 rounded-2xl">
+    <div className="m-3 npm border-[1.5px]  p-3 rounded-2xl">
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center justify-between">
         <div className="relative w-full max-w-sm">

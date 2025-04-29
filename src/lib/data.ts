@@ -6,6 +6,9 @@ export async function fetchSessions(): Promise<Session[]> {
 
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 500))
+  const attendanceData = await fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/attendance/get-all-attendance`)
+  await console.log(" Attendance: ",attendanceData)
+  
 
   return [
     {

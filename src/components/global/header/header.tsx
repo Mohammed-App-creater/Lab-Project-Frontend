@@ -22,8 +22,12 @@ interface HeaderProps {
 }
 
 function Header({ user = { name: "Henok Assefa", role: "UI/UX DESIGNER" } }: HeaderProps) {
+  const handleLogout = () => {
+   localStorage.removeItem("user")
+   localStorage.removeItem("token") 
+  }
   return (
-    <header className="flex items-center justify-between py-4 px-6 w-full">
+    <header className="flex items-center justify-between py-4  w-full">
       <div>
         <h1 className="text-xl font-semibold">Hello Henok👋🏻</h1>
         <p className="text-sm text-muted-foreground">Good Morning</p>
@@ -67,7 +71,7 @@ function Header({ user = { name: "Henok Assefa", role: "UI/UX DESIGNER" } }: Hea
                 <CiUser /> My Profile
               </DropdownMenuItem>
             </Link>
-            <Link href="/login">
+            <Link onClick={handleLogout} href="/login" >
               <DropdownMenuItem className="text-red-500">
                 <CiLogout className="text-red-500" /> Logout
               </DropdownMenuItem>

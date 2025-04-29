@@ -33,8 +33,8 @@ export default function DarkLight() {
   }
 
   return (
-    <div className="pb-5 mt-15">  
-         <div className="flex items-center justify-between">
+    <div className="pb-5  ">  
+         <div className="flex items-center justify-center gap-2 ">
             <Button onClick={()=>{setTheme("light")}} variant="default" size="sm" className="bg-blue-900 hover:bg-blue-800 h-10 w-25 px-3">
               <FiSun className="w-4 h-4 mr-2" />
               Light

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Lexend } from "next/font/google";
 import "./globals.css";
+import { Suspense } from "react";
+import { LoadingSpinner } from "@/components/global/login/loading";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +16,7 @@ const geistMono = Geist_Mono({
 
 const lexend = Lexend({
   variable: "--font-lexend",
-})
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -31,7 +33,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${lexend.variable} antialiased`}
       >
-        {children}
+        <Suspense fallback={<LoadingSpinner fullPage={true} />}>
+          {children}
+        </Suspense>
       </body>
     </html>
   );
