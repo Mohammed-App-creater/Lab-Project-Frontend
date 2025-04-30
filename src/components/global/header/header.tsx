@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Link from 'next/link';
 import { PublicUserDTO } from "@/type/user"
+import Breadcrumb from "./Breadcrumb";
 
 
 
@@ -36,8 +37,7 @@ function Header() {
   return (
     <header className="flex items-center justify-between py-4  w-full">
       <div>
-        <h1 className="text-xl font-semibold">Hello {userData?.firstName}👋🏻</h1>
-        <p className="text-sm text-muted-foreground">{Greeting()}</p>
+      <Breadcrumb />
       </div>
 
       <div className="flex items-center gap-4">
