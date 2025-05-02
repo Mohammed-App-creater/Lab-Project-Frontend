@@ -16,6 +16,7 @@ interface CreateSessionDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSubmit?: (data: SessionFormData) => void
+  onSessionCreated?: () => void
 }
 
 export interface TimeSlot {
@@ -52,15 +53,15 @@ const GROUPS = [
   { id: "group-3-id", label: "Div 3" },
 ]
 
-export function CreateSessionDialog({ open, onOpenChange, onSubmit }: CreateSessionDialogProps) {
+export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCreated }: CreateSessionDialogProps) {
   const [formData, setFormData] = useState<SessionFormData>({
     title: "",
     description: "",
     startMonth: "",
     endTMonth: "",
     location: "",
-    creatorId: "098bc22d-aca2-44fb-ac27-2347d4459e86",
-    divisionId: "",
+    creatorId: "355569f7-0930-4146-bfbf-b5644dc77427",
+    divisionId: "bc539ae7-1452-4bc4-9e1b-f2b030c4215c",
     tags: [],
     timeSlotAndGroup: {
       groupIds: [],
@@ -143,31 +144,41 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit }: CreateSess
   // Submit handler (backend compatible)
   const handleSubmit = async () => {
     try {
-      const formattedData = {
-        ...formData,
-        startMonth: formData.startMonth,
-        endTMonth: formData.endTMonth,
-        timeSlotAndGroup: {
-          ...formData.timeSlotAndGroup,
-          timeSlots: formData.timeSlotAndGroup.timeSlots.map(slot => ({
-            ...slot,
-            date: slot.date,
-            startTime: slot.startTime,
-            endTime: slot.endTime
-          }))
-        }
+      if (!formData.title || !formData.description || !formData.startMonth || !formData.endTMonth || !formData.location || !formData.divisionId) {
+        toast.error("Please fill in all required fields")
+        return
       }
+
+      if (formData.timeSlotAndGroup.timeSlots.length === 0) {
+        toast.error("Please add at least one time slot")
+        return
+      }
+
+      // Log the data being sent
+      console.log("Sending session data:", formData)
+
       const response = await fetch('https://csec-lab-portal-backend.onrender.com/api/session/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formattedData)
+        body: JSON.stringify(formData)
       })
-      if (!response.ok) throw new Error('Failed to create session')
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error("Error response:", errorData)
+        throw new Error(errorData.message || 'Failed to create session')
+      }
+
+      const responseData = await response.json()
+      console.log("Success response:", responseData)
+
       toast.success('Session created successfully')
       onSubmit?.(formData)
+      onSessionCreated?.()
       onOpenChange(false)
     } catch (error) {
-      toast.error('Failed to create session')
+      console.error("Error creating session:", error)
+      toast.error(error instanceof Error ? error.message : 'Failed to create session')
     }
   }
 
@@ -181,6 +192,21 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit }: CreateSess
               placeholder="Session Title"
               value={formData.title}
               onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
+            />
+            <Input
+              placeholder="Location"
+              value={formData.location}
+              onChange={e => setFormData(prev => ({ ...prev, location: e.target.value }))}
+            />
+            <Input
+              placeholder="Description"
+              value={formData.description}
+              onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            />
+            <Input
+              placeholder="Tags (comma separated)"
+              value={formData.tags.join(', ')}
+              onChange={e => setFormData(prev => ({ ...prev, tags: e.target.value.split(',').map(tag => tag.trim()) }))}
             />
             <Select value={formData.divisionId} onValueChange={handleDivisionChange}>
               <SelectTrigger>

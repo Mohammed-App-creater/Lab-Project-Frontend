@@ -201,51 +201,53 @@ export default function SessionsEventsPage() {
     }
   }
 
-  useEffect(() => {
-    const fetchSessions = async () => {
-      try {
-        setLoading(true)
-        const response = await fetch(`https://csec-lab-portal-backend.onrender.com/api/session/sessions?limit=${itemsPerPage}&page=${currentPage}`)
-        if (!response.ok) {
-          throw new Error('Failed to fetch sessions')
-        }
-        const data = await response.json()
-        
-        // Transform the backend data to match the SessionItem interface
-        const transformedSessions = data.map((session: any) => ({
-          id: session.id,
-          status: session.timeSlots?.[0]?.status || "Planned",
-          division: session.tags?.[0] || "General",
-          title: session.title,
-          date: new Date(session.startMonth).toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          }),
-          groups: session.groups.map((group: any) => ({
-            id: group.id,
-            name: group.name
-          })),
-          venue: session.location,
-          timeRemaining: session.timeSlots?.[0]?.status === "Planned" ? "Upcoming" : undefined,
-          timeAgo: session.timeSlots?.[0]?.status === "Ended" ? "Completed" : undefined
-        }))
-        
-        setSessions(transformedSessions)
-        
-        // Get total count from response headers or calculate based on data length
-        const totalCount = data.length
-        const calculatedTotalPages = Math.ceil(totalCount / itemsPerPage)
-        setTotalPages(calculatedTotalPages)
-        setTotalSessions(totalCount)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred')
-      } finally {
-        setLoading(false)
+  const fetchSessions = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`https://csec-lab-portal-backend.onrender.com/api/session/sessions?limit=${itemsPerPage}&page=${currentPage}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch sessions')
       }
+      const data = await response.json()
+      
+      const transformedSessions = data.map((session: any) => ({
+        id: session.id,
+        status: session.timeSlots?.[0]?.status || "Planned",
+        division: session.tags?.[0] || "General",
+        title: session.title,
+        date: new Date(session.startMonth).toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }),
+        groups: session.groups.map((group: any) => ({
+          id: group.id,
+          name: group.name
+        })),
+        venue: session.location,
+        timeRemaining: session.timeSlots?.[0]?.status === "Planned" ? "Upcoming" : undefined,
+        timeAgo: session.timeSlots?.[0]?.status === "Ended" ? "Completed" : undefined
+      }))
+      
+      setSessions(transformedSessions)
+      
+      const totalCount = data.length
+      const calculatedTotalPages = Math.ceil(totalCount / itemsPerPage)
+      setTotalPages(calculatedTotalPages)
+      setTotalSessions(totalCount)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setLoading(false)
     }
+  }
 
+  const handleSessionCreated = () => {
+    fetchSessions()
+  }
+
+  useEffect(() => {
     if (activeTab === 'sessions') {
       fetchSessions()
     } else if (activeTab === 'events') {
@@ -508,7 +510,8 @@ export default function SessionsEventsPage() {
       <CreateSessionDialog
         open={createSessionOpen}
         onOpenChange={setCreateSessionOpen}
-        
+        onSubmit={handleCreateSession}
+        onSessionCreated={handleSessionCreated}
       />
 
       <CreateEventDialog 

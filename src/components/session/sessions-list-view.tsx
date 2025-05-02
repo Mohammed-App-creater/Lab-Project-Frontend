@@ -29,7 +29,7 @@ export function SessionsListView({ sessions }: SessionsListViewProps) {
       case "Started":
         return "bg-green-100 text-green-800 border-green-200"
       case "Planned":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200"
+        return "bg-green-100 text-green-800 border-green-200"
       case "Ended":
         return "bg-red-100 text-red-800 border-red-200"
       default:
