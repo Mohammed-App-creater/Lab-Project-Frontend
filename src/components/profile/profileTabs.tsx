@@ -1,7 +1,11 @@
+
+
+
 "use client"
 
 import { User, FileText, BookOpen } from "lucide-react"
-import { TabType } from "@/app/profile/page"
+import { TabType } from "@/types/user"
+
 interface ProfileTabsProps {
   activeTab: TabType
   onTabChange: (tab: TabType) => void
@@ -9,11 +13,11 @@ interface ProfileTabsProps {
 
 export default function ProfileTabs({ activeTab, onTabChange }: ProfileTabsProps) {
   return (
-    <div className="flex border-b">
+    <div className="flex">
       <button
         className={`flex items-center px-4 py-2 border-b-2 ${
           activeTab === "required"
-            ? "border-blue-800 text-blue-800"
+            ? "border-blue-900 text-blue-900"
             : "border-transparent text-gray-600 hover:text-gray-800"
         }`}
         onClick={() => onTabChange("required")}
@@ -25,7 +29,7 @@ export default function ProfileTabs({ activeTab, onTabChange }: ProfileTabsProps
       <button
         className={`flex items-center px-4 py-2 border-b-2 ${
           activeTab === "optional"
-            ? "border-blue-800 text-blue-800"
+            ? "border-blue-900 text-blue-900"
             : "border-transparent text-gray-600 hover:text-gray-800"
         }`}
         onClick={() => onTabChange("optional")}
@@ -37,7 +41,7 @@ export default function ProfileTabs({ activeTab, onTabChange }: ProfileTabsProps
       <button
         className={`flex items-center px-4 py-2 border-b-2 ${
           activeTab === "resources"
-            ? "border-blue-800 text-blue-800"
+            ? "border-blue-900 text-blue-900"
             : "border-transparent text-gray-600 hover:text-gray-800"
         }`}
         onClick={() => onTabChange("resources")}

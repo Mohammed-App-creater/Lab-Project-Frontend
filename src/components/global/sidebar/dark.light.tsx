@@ -32,15 +32,20 @@ export default function DarkLight() {
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light")
   }
-
+  const lightToggleTheme=()=>{
+    setTheme("light")
+  }
+  const darkToggleTheme=()=>{
+    setTheme("dark")
+  }
   return (
     <div className="pt-4 mt-16">
          <div className="flex items-center justify-between">
-            <Button onClick={toggleTheme} variant="default" size="sm" className="bg-blue-900 hover:bg-blue-800 h-10 w-25 px-3">
+            <Button onClick={lightToggleTheme} variant="default" size="sm" className="bg-blue-900 hover:bg-blue-800 h-10 w-25 px-3">
               <FiSun className="w-4 h-4 mr-2" />
               Light
             </Button>
-            <Button onClick={toggleTheme} variant="ghost" size="sm" className="h-10 w-25 px-3 bg-[#A2A1A80D] text-[#16151C]">
+            <Button onClick={darkToggleTheme} variant="ghost" size="sm" className="h-10 w-25 px-3 bg-[#A2A1A80D] text-[#16151C]">
               <GoMoon className="w-4 h-6 mr-1" />
               Dark
             </Button>

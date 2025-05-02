@@ -1,94 +1,121 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Calendar } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { UserData } from "@/types/user";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 interface OptionalInfoTabProps {
-  userData: any
-  onCancel: () => void
-  onSave: () => void
+  userData: UserData;
+  onCancel: () => void;
+  onSave: (updatedData: UserData) => void;
 }
 
+const validationSchema = Yup.object({
+  universityId: Yup.string().required("University ID is required"),
+  linkedin: Yup.string().url("Enter a valid URL"),
+  instagram: Yup.string().matches(/^\S*$/, "No spaces allowed"),
+  cv: Yup.string().url("Enter a valid CV URL"),
+  codeforces: Yup.string(),
+  leetcode: Yup.string(),
+  dateOfBirth: Yup.string(),
+  joiningDate: Yup.string(),
+  shortBio: Yup.string(),
+});
+
 export default function OptionalInfoTab({ userData, onCancel, onSave }: OptionalInfoTabProps) {
-  const [formData, setFormData] = useState(userData)
-
-  const handleChange = (field: string, value: string) => {
-    setFormData((prev: any) => ({ ...prev, [field]: value }))
-  }
-
   return (
-    <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">University ID</label>
-          <Input value={formData.universityId} onChange={(e) => handleChange("universityId", e.target.value)} />
-        </div>
+    <Formik
+      initialValues={userData}
+      validationSchema={validationSchema}
+      onSubmit={async (values, { setSubmitting }) => {
+        try {
+          const res = await fetch("https://csec-lab-portal-backend.onrender.com/api/user/update-user-profile", {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(values),
+          });
 
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Instagram Handle</label>
-          <Input
-            value={formData.instagramHandle || ""}
-            onChange={(e) => handleChange("instagramHandle", e.target.value)}
-          />
-        </div>
+          if (!res.ok) {
+            throw new Error("Failed to update user info");
+          }
 
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">LinkedIn URL</label>
-          <Input value={formData.linkedinUrl} onChange={(e) => handleChange("linkedinUrl", e.target.value)} />
-        </div>
+          const updatedUser = await res.json();
+          onSave(updatedUser);
+        } catch (error) {
+          console.error("Error updating user:", error);
+          // You can show toast here (e.g. react-hot-toast)
+        } finally {
+          setSubmitting(false);
+        }
+      }}
+    >
+      {({ isSubmitting }) => (
+        <Form className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <Field name="universityId" as={Input} placeholder="University ID" />
+              <ErrorMessage name="universityId" component="div" className="text-red-500 text-sm" />
+            </div>
 
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Date of Birth</label>
-          <div className="relative">
-            <Input value={formData.dateOfBirth} onChange={(e) => handleChange("dateOfBirth", e.target.value)} />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-              <Calendar className="h-4 w-4" />
+            <div>
+              <Field name="instagram" as={Input} placeholder="Instagram Handle" />
+              <ErrorMessage name="instagram" component="div" className="text-red-500 text-sm" />
+            </div>
+
+            <div>
+              <Field name="linkedin" as={Input} placeholder="LinkedIn URL" />
+              <ErrorMessage name="linkedin" component="div" className="text-red-500 text-sm" />
+            </div>
+
+            <div>
+              <Field name="dateOfBirth" as={Input} type="date" placeholder="Date of Birth" />
+            </div>
+
+            <div>
+              <Field name="codeforces" as={Input} placeholder="Codeforces Handle" />
+            </div>
+
+            <div>
+              <Field name="cv" as={Input} placeholder="CV URL" />
+              <ErrorMessage name="cv" component="div" className="text-red-500 text-sm" />
+            </div>
+
+            <div>
+              <Field name="leetcode" as={Input} placeholder="Leetcode Handle" />
+            </div>
+
+            <div>
+              <Field name="joiningDate" as={Input} type="date" placeholder="Joining Date" />
             </div>
           </div>
-        </div>
 
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Codeforces Handle</label>
-          <Input value={formData.codeforces} onChange={(e) => handleChange("codeforces", e.target.value)} />
-        </div>
-
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">CV</label>
-          <Input value={formData.cv} onChange={(e) => handleChange("cv", e.target.value)} />
-        </div>
-
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Leetcode Handle</label>
-          <Input value={formData.leetcode} onChange={(e) => handleChange("leetcode", e.target.value)} />
-        </div>
-
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Joining Date</label>
-          <div className="relative">
-            <Input value={formData.joiningDate} onChange={(e) => handleChange("joiningDate", e.target.value)} />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-              <Calendar className="h-4 w-4" />
-            </div>
+          <div className="mt-4">
+            <Field
+              name="shortBio"
+              as="textarea"
+              placeholder="Short Bio"
+              className="w-full rounded-md border px-3 py-2"
+            />
           </div>
-        </div>
-      </div>
 
-      <div className="mt-6">
-        <label className="block text-sm text-gray-500 mb-1">Short Bio</label>
-        <Textarea value={formData.shortBio} onChange={(e) => handleChange("shortBio", e.target.value)} rows={4} />
-      </div>
-
-      <div className="flex justify-end mt-8 gap-3">
-        <Button variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button className="bg-blue-800 hover:bg-blue-700 text-white" onClick={onSave}>
-          Update
-        </Button>
-      </div>
-    </div>
-  )
+          <div className="flex justify-end mt-8 gap-3">
+            <Button variant="outline" type="button" onClick={onCancel} disabled={isSubmitting}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="bg-blue-800 hover:bg-blue-700 text-white"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Updating..." : "Update"}
+            </Button>
+          </div>
+        </Form>
+      )}
+    </Formik>
+  );
 }

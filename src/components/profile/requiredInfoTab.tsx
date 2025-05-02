@@ -1,123 +1,277 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Calendar } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { UserData } from "@/types/user";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 interface RequiredInfoTabProps {
-  userData: any
-  onCancel: () => void
-  onSave: () => void
+  userData: UserData;
+  onCancel: () => void;
+  onSave: (updatedData: UserData) => void;
 }
 
-export default function RequiredInfoTab({ userData, onCancel, onSave }: RequiredInfoTabProps) {
-  const [formData, setFormData] = useState(userData)
+const validationSchema = Yup.object({
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  phone: Yup.string().required("Phone number is required"),
+  gender: Yup.string().required("Gender is required"),
+  dateOfBirth: Yup.string().required("Date of Birth is required"),
+  github: Yup.string().url("Enter a valid Github URL"),
+  telegramHandle: Yup.string(),
+  expectedGraduationYear: Yup.string(),
+  specialization: Yup.string(),
+  department: Yup.string(),
+  mentor: Yup.string(),
+});
 
-  const handleChange = (field: string, value: string) => {
-    setFormData((prev: any) => ({ ...prev, [field]: value }))
-  }
-
+export default function RequiredInfoTab({
+  userData,
+  onCancel,
+  onSave,
+}: RequiredInfoTabProps) {
   return (
-    <div>
-      <div className="mb-6 flex justify-center">
-        <div className="relative">
-          <img
-            src={formData.profileImage || "image1.svg"}
-            alt="Profile"
-            className="h-20 w-20 rounded-md object-cover"
-          />
-        </div>
-      </div>
+    <Formik
+      initialValues={{
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        gender: "",
+        dateOfBirth: "",
+        github: "",
+        telegramHandle: "",
+        expectedGraduationYear: "",
+        specialization: "",
+        department: "",
+        mentor: "",
+      }}
+      validationSchema={validationSchema}
+      onSubmit={async (values, { setSubmitting }) => {
+        try {
+          const res = await fetch(
+            "https://csec-lab-portal-backend.onrender.com/api/user/update",
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(values),
+            }
+          );
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">First Name</label>
-          <Input value={formData.firstName} onChange={(e) => handleChange("firstName", e.target.value)} />
-        </div>
+          if (!res.ok) {
+            throw new Error("Failed to update required info");
+          }
 
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Last Name</label>
-          <Input value={formData.lastName} onChange={(e) => handleChange("lastName", e.target.value)} />
-        </div>
-
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Mobile Number</label>
-          <Input value={formData.mobileNumber} onChange={(e) => handleChange("mobileNumber", e.target.value)} />
-        </div>
-
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Email</label>
-          <Input value={formData.email} onChange={(e) => handleChange("email", e.target.value)} />
-        </div>
-
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Date of Birth</label>
-          <div className="relative">
-            <Input value={formData.dateOfBirth} onChange={(e) => handleChange("dateOfBirth", e.target.value)} />
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-              <Calendar className="h-4 w-4" />
+          const updatedUser = await res.json();
+          onSave(updatedUser);
+        } catch (err) {
+          console.error("Update error:", err);
+        } finally {
+          setSubmitting(false);
+        }
+      }}
+    >
+      {({ handleChange, setFieldValue, isSubmitting }) => (
+        <Form>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-400">
+            {/* First Name */}
+            <div>
+              <Field
+                name="firstName"
+                as={Input}
+                placeholder="First Name"
+                onChange={handleChange}
+              />
+              <ErrorMessage
+                name="firstName"
+                component="div"
+                className="text-red-500 text-sm"
+              />
             </div>
-          </div>
-        </div>
 
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Github</label>
-          <Input value={formData.github} onChange={(e) => handleChange("github", e.target.value)} />
-        </div>
+            {/* Last Name */}
+            <div>
+              <Field
+                name="lastName"
+                as={Input}
+                placeholder="Last Name"
+                onChange={handleChange}
+              />
+              <ErrorMessage
+                name="lastName"
+                component="div"
+                className="text-red-500 text-sm"
+              />
+            </div>
 
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Gender</label>
-          <Select value={formData.gender} onValueChange={(value) => handleChange("gender", value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select gender" />
-            </SelectTrigger>
-            <SelectContent>
+            {/* Mobile Number */}
+            <div>
+              <Field
+                name="phone"
+                as={Input}
+                placeholder="Mobile Number"
+                onChange={handleChange}
+              />
+              <ErrorMessage
+                name="phone"
+                component="div"
+                className="text-red-500 text-sm"
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <Field
+                name="email"
+                as={Input}
+                placeholder="Email Address"
+                onChange={handleChange}
+              />
+              <ErrorMessage
+                name="email"
+                component="div"
+                className="text-red-500 text-sm"
+              />
+            </div>
+
+            {/* Date of Birth */}
+            <div>
+              <Field
+                name="dateOfBirth"
+                as={Input}
+                type="date"
+                placeholder="Date of Birth"
+                onChange={handleChange}
+              />
+              <ErrorMessage
+                name="dateOfBirth"
+                component="div"
+                className="text-red-500 text-sm"
+              />
+            </div>
+
+            {/* Github */}
+            <div>
+              <Field
+                name="github"
+                as={Input}
+                placeholder="Github "
+                onChange={handleChange}
+              />
+              <ErrorMessage
+                name="github"
+                component="div"
+                className="text-red-500 text-sm"
+              />
+            </div>
+
+            {/* Gender */}
+            <div>
+   <Field name="gender">
+    {({ field, form }: { field: any; form: any }) => (
+      <Select
+        value={field.value}
+        onValueChange={(val) => form.setFieldValue("gender", val)}
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Gender" className="text-gray-500"/>
+        </SelectTrigger>
+          <SelectContent>
               <SelectItem value="Male">Male</SelectItem>
               <SelectItem value="Female">Female</SelectItem>
               <SelectItem value="Other">Other</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Telegram Handle</label>
-          <Input value={formData.telegramHandle} onChange={(e) => handleChange("telegramHandle", e.target.value)} />
-        </div>
-
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Expected Graduation Year</label>
-          <Input
-            value={formData.expectedGraduationYear}
-            onChange={(e) => handleChange("expectedGraduationYear", e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Specialization</label>
-          <Input value={formData.specialization} onChange={(e) => handleChange("specialization", e.target.value)} />
-        </div>
-
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Department</label>
-          <Input value={formData.department} onChange={(e) => handleChange("department", e.target.value)} />
-        </div>
-
-        <div>
-          <label className="block text-sm text-gray-500 mb-1">Mentor</label>
-          <Input value={formData.mentor} onChange={(e) => handleChange("mentor", e.target.value)} />
-        </div>
-      </div>
-
-      <div className="flex justify-end mt-8 gap-3">
-        <Button variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button className="bg-blue-800 hover:bg-blue-700 text-white" onClick={onSave}>
-          Update
-        </Button>
-      </div>
+           </SelectContent>
+         </Select>
+        )}
+        </Field>
+     <ErrorMessage
+      name="gender"
+      component="div"
+      className="text-red-500 text-sm mt-1"
+      />
     </div>
-  )
+
+            {/* Telegram Handle */}
+            <div>
+              <Field
+                name="telegramHandle"
+                as={Input}
+                placeholder="Telegram Handle"
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Expected Graduation Year */}
+            <div>
+              <Field
+                name="expectedGraduationYear"
+                as={Input}
+                placeholder="Expected Graduation Year"
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Specialization */}
+            <div>
+              <Field
+                name="specialization"
+                as={Input}
+                placeholder="Specialization"
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Department */}
+            <div>
+              <Field
+                name="department"
+                as={Input}
+                placeholder="Department"
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Mentor */}
+            <div>
+              <Field
+                name="mentor"
+                as={Input}
+                placeholder="Mentor"
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end mt-8 gap-3">
+            <Button
+              variant="outline"
+              type="button"
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="bg-blue-800 hover:bg-blue-700 text-white"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Updating..." : "Update"}
+            </Button>
+          </div>
+        </Form>
+      )}
+    </Formik>
+  );
 }

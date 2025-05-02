@@ -98,7 +98,7 @@ export default function ProfileView({ userData, onEdit }: ProfileViewProps) {
           </div>
         </div>
       </div>
-      <div className="container px-4 pt-16 pb-6 max-w-4xl">
+      <div className="px-4 pt-16 pb-6 max-w-4xl">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="w-full md:w-48 flex-shrink-0">
             <div className="bg-white rounded-md shadow-sm overflow-hidden">
@@ -166,7 +166,7 @@ export default function ProfileView({ userData, onEdit }: ProfileViewProps) {
             ) : null}
 
             {activeTab === "required" && (
-              <div className="bg-white rounded-md shadow-sm p-6">
+              <div className="bg-white p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <div>
                     <p className="text-sm text-gray-500">First Name</p>
@@ -221,7 +221,7 @@ export default function ProfileView({ userData, onEdit }: ProfileViewProps) {
             )}
 
             {activeTab === "optional" && (
-              <div className="bg-white rounded-md shadow-sm p-6">
+              <div className="bg-white p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                   <div>
                     <p className="text-sm text-gray-500">University ID</p>
@@ -264,12 +264,12 @@ export default function ProfileView({ userData, onEdit }: ProfileViewProps) {
             )}
 
             {activeTab === "resources" && (
-              <div className="bg-white rounded-md shadow-sm p-6">
+              <div className="bg-white p-6">
                 <div className="space-y-4">
                   {resources.map((resource, index) => (
                     <div
                       key={index}
-                      className="flex justify-between items-center border-b pb-3 last:border-b-0 last:pb-0"
+                      className="flex justify-between items-center pb-3 last:border-b-0 last:pb-0"
                     >
                       <div>
                         <p className="font-medium">{resource.name}</p>

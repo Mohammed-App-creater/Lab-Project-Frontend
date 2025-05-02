@@ -1,23 +1,26 @@
+
+
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { User, Calendar, BarChart2, AlertCircle } from "lucide-react"
+import { Calendar, BarChart2, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import type { SidebarTabType } from "@/app/profile/page"
+import { SidebarTabType, User } from "@/types/user"
 
 interface SidebarProps {
   activePage: SidebarTabType
+  user: User
 }
 
-export function ProfileSidebar({ activePage }: SidebarProps) {
+export function ProfileSidebar({ activePage, user }: SidebarProps) {
   const params = useParams()
-  const memberId = params?.id || "1" 
+  const memberId = params?.id || user.id
 
   const navItems = [
     {
-      icon: <User className="h-5 w-5 mr-2" />,
+      icon: <Calendar className="h-5 w-5 mr-2" />,
       label: "Profile",
       href: `/profile/${memberId}`,
       id: "profile" as SidebarTabType,
@@ -43,9 +46,9 @@ export function ProfileSidebar({ activePage }: SidebarProps) {
   ]
 
   return (
-    <div className="w-56 h-fit rounded-2xl">
+    <div className="w-56 h-fit rounded-2xl border-1 border-[#A2A1A833] mt-6">
       <div className="flex flex-col h-full">
-        <div className="py-4">
+        <div>
           <div className="space-y-1">
             {navItems.map((item) => (
               <Link href={item.href} key={item.id}>
@@ -69,3 +72,4 @@ export function ProfileSidebar({ activePage }: SidebarProps) {
     </div>
   )
 }
+
