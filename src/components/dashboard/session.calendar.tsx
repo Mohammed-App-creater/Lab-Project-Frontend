@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Database, MoreVertical } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Database, MoreVertical } from "lucide-react";
 
 // Interfaces
 interface TimeSlotDetails {
