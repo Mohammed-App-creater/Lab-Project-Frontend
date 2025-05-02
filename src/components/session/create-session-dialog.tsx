@@ -42,10 +42,14 @@ export interface SessionFormData {
 
 // Division and group options (with IDs for backend)
 const DIVISIONS = [
-  { id: "bc539ae7-1452-4bc4-9e1b-f2b030c4215c", label: "CPD" },
-  { id: "dev-division-id", label: "Dev" },
-  { id: "cyber-division-id", label: "Cyber" },
-  { id: "dataScience-division-id", label: "Data Science" },
+  { id: "bc539ae7-1452-4bc4-9e1b-f2b030c4215c", name: "CPD" },
+  { id: "12cbd8c6-a767-4222-8e4e-4f03ab4ac364", name: "CBD" },
+  { id: "cd5c8e05-533f-4b76-9769-4d1638530104", name: "DEV" },
+  { id: "01124c17-f6e4-4f7b-a6e4-1284f5e43899", name: "Seberscurty" },
+  { id: "efb164f0-da36-4988-93b0-29a57c444c8f", name: "DS" },
+  { id: "8721a8a7-9a61-4f4d-841a-62167a3c83a7", name: "Test Division" },
+  { id: "d78522ec-d906-4fa5-b3f8-b03ecd94c5bc", name: "Test Division2" },
+  { id: "b180ee47-3d91-41d4-8139-04ad027081de", name: "Test Division3" },
 ]
 
 export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCreated }: CreateSessionDialogProps) {
@@ -290,17 +294,65 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
                 <SelectValue placeholder="Session Division" />
               </SelectTrigger>
               <SelectContent>
-                {DIVISIONS.map(d => <SelectItem key={d.id} value={d.id}>{d.label}</SelectItem>)}
+                {DIVISIONS.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
               </SelectContent>
             </Select>
-            <Select value={formData.timeSlotAndGroup.groupIds[0] || ""} onValueChange={handleGroupChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="Session Group" />
-              </SelectTrigger>
-              <SelectContent>
-                {groups.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            {/* Dropdown for groups with tag display */}
+            <div className="col-span-2">
+              <label className="block mb-1 font-medium">Session Groups</label>
+              <Select
+                value=""
+                onValueChange={id => {
+                  if (!formData.timeSlotAndGroup.groupIds.includes(id)) {
+                    setFormData(prev => ({
+                      ...prev,
+                      timeSlotAndGroup: {
+                        ...prev.timeSlotAndGroup,
+                        groupIds: [...prev.timeSlotAndGroup.groupIds, id]
+                      }
+                    }))
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Group(s)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {groups
+                    .filter(g => !formData.timeSlotAndGroup.groupIds.includes(g.id))
+                    .map(g => (
+                      <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              {/* Tags for selected groups */}
+              <div className="flex flex-wrap gap-2 mt-2">
+                {formData.timeSlotAndGroup.groupIds.map(id => {
+                  const group = groups.find(g => g.id === id)
+                  if (!group) return null
+                  return (
+                    <span key={id} className="flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
+                      {group.name}
+                      <button
+                        type="button"
+                        className="ml-1 text-blue-600 hover:text-red-500 focus:outline-none"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            timeSlotAndGroup: {
+                              ...prev.timeSlotAndGroup,
+                              groupIds: prev.timeSlotAndGroup.groupIds.filter(gid => gid !== id)
+                            }
+                          }))
+                        }}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )
+                })}
+              </div>
+            </div>
             <div className="flex gap-2">
               <Popover open={showStartCalendar} onOpenChange={setShowStartCalendar}>
                 <PopoverTrigger asChild>
