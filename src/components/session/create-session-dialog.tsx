@@ -47,11 +47,6 @@ const DIVISIONS = [
   { id: "cyber-division-id", label: "Cyber" },
   { id: "dataScience-division-id", label: "Data Science" },
 ]
-const GROUPS = [
-  { id: "475906f0-12e3-4147-b0c7-d3b7602c2c60", label: "Div 1" },
-  { id: "group-2-id", label: "Div 2" },
-  { id: "group-3-id", label: "Div 3" },
-]
 
 export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCreated }: CreateSessionDialogProps) {
   const [formData, setFormData] = useState<SessionFormData>({
@@ -60,7 +55,7 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
     startMonth: "",
     endTMonth: "",
     location: "",
-    creatorId: "355569f7-0930-4146-bfbf-b5644dc77427",
+    creatorId: "098bc22d-aca2-44fb-ac27-2347d4459e86",
     divisionId: "bc539ae7-1452-4bc4-9e1b-f2b030c4215c",
     tags: [],
     timeSlotAndGroup: {
@@ -68,6 +63,7 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
       timeSlots: []
     }
   })
+  const [groups, setGroups] = useState<Array<{ id: string; name: string }>>([])
   const [newTimeSlot, setNewTimeSlot] = useState<TimeSlot>({
     date: "",
     startTime: "",
@@ -77,6 +73,34 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
   const [showEndCalendar, setShowEndCalendar] = useState(false)
   const startCalendarRef = useRef<HTMLDivElement>(null)
   const endCalendarRef = useRef<HTMLDivElement>(null)
+
+  // Fetch groups when division changes
+  const fetchGroups = async (divisionId: string) => {
+    try {
+      const response = await fetch(`https://csec-lab-portal-backend.onrender.com/api/division/groups`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ divisionId })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch groups')
+      }
+
+      const data = await response.json()
+      setGroups(data.groups)
+    } catch (error) {
+      console.error('Error fetching groups:', error)
+      toast.error('Failed to fetch groups')
+    }
+  }
+
+  // Initial fetch of groups
+  useEffect(() => {
+    fetchGroups(formData.divisionId)
+  }, [])
 
   // Close calendar on outside click
   useEffect(() => {
@@ -93,9 +117,11 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
   }, [showStartCalendar, showEndCalendar])
 
   // Handlers for dropdowns
-  const handleDivisionChange = (id: string) => {
-    setFormData((prev) => ({ ...prev, divisionId: id }))
+  const handleDivisionChange = async (id: string) => {
+    setFormData((prev) => ({ ...prev, divisionId: id, timeSlotAndGroup: { ...prev.timeSlotAndGroup, groupIds: [] } }))
+    await fetchGroups(id)
   }
+
   const handleGroupChange = (id: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -120,16 +146,20 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
     setNewTimeSlot((prev) => ({ ...prev, [field]: value }))
   }
   const addTimeSlot = () => {
-    if (newTimeSlot.date && newTimeSlot.startTime && newTimeSlot.endTime) {
-      setFormData((prev) => ({
-        ...prev,
-        timeSlotAndGroup: {
-          ...prev.timeSlotAndGroup,
-          timeSlots: [...prev.timeSlotAndGroup.timeSlots, { ...newTimeSlot }]
-        }
-      }))
-      setNewTimeSlot({ date: "", startTime: "", endTime: "" })
+    if (!newTimeSlot.date || !newTimeSlot.startTime || !newTimeSlot.endTime) {
+      toast.error('Please fill in date, start time, and end time for the time slot.')
+      console.warn('Attempted to add incomplete time slot:', newTimeSlot)
+      return
     }
+    console.log('Adding time slot:', newTimeSlot)
+    setFormData((prev) => ({
+      ...prev,
+      timeSlotAndGroup: {
+        ...prev.timeSlotAndGroup,
+        timeSlots: [...prev.timeSlotAndGroup.timeSlots, { ...newTimeSlot }]
+      }
+    }))
+    setNewTimeSlot({ date: "", startTime: "", endTime: "" })
   }
   const removeTimeSlot = (index: number) => {
     setFormData((prev) => ({
@@ -154,19 +184,66 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
         return
       }
 
-      // Log the data being sent
-      console.log("Sending session data:", formData)
+      if (formData.timeSlotAndGroup.groupIds.length === 0) {
+        toast.error("Please select a group")
+        return
+      }
+
+      // --- Silly error scan ---
+      if (formData.timeSlotAndGroup.groupIds.some(id => !id || id.length < 10)) {
+        console.warn('Warning: Some groupIds are empty or too short:', formData.timeSlotAndGroup.groupIds)
+      }
+      if (formData.tags.length === 0) {
+        console.warn('Warning: tags array is empty')
+      }
+      if (formData.timeSlotAndGroup.timeSlots.some(slot => !slot.date || !slot.startTime || !slot.endTime)) {
+        console.warn('Warning: Some timeSlots are missing fields:', formData.timeSlotAndGroup.timeSlots)
+      }
+      // --- End silly error scan ---
+
+      // Transform timeSlots to API format
+      const transformedTimeSlots = formData.timeSlotAndGroup.timeSlots.map(slot => {
+        // slot.date: yyyy-MM-dd, slot.startTime: HH:mm, slot.endTime: HH:mm
+        // Compose ISO strings
+        const dateISO = new Date(slot.date + 'T00:00:00.000Z').toISOString();
+        const startTimeISO = new Date(slot.date + 'T' + slot.startTime + ':00.000Z').toISOString();
+        const endTimeISO = new Date(slot.date + 'T' + slot.endTime + ':00.000Z').toISOString();
+        return {
+          date: dateISO,
+          startTime: startTimeISO,
+          endTime: endTimeISO
+        };
+      });
+
+      const formattedBody = {
+        ...formData,
+        timeSlotAndGroup: {
+          ...formData.timeSlotAndGroup,
+          timeSlots: transformedTimeSlots
+        }
+      };
+
+      // Log the formatted body before sending
+      console.log('Formatted session body to send:', JSON.stringify(formattedBody, null, 2))
 
       const response = await fetch('https://csec-lab-portal-backend.onrender.com/api/session/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formattedBody)
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
-        console.error("Error response:", errorData)
-        throw new Error(errorData.message || 'Failed to create session')
+        let errorMsg = 'Failed to create session';
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.message || JSON.stringify(errorData);
+          console.error("Error response:", errorData);
+        } catch (e) {
+          errorMsg = await response.text();
+          console.error("Error response (text):", errorMsg);
+        }
+        toast.error(errorMsg)
+        return;
       }
 
       const responseData = await response.json()
@@ -221,7 +298,7 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
                 <SelectValue placeholder="Session Group" />
               </SelectTrigger>
               <SelectContent>
-                {GROUPS.map(g => <SelectItem key={g.id} value={g.id}>{g.label}</SelectItem>)}
+                {groups.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
               </SelectContent>
             </Select>
             <div className="flex gap-2">
@@ -340,16 +417,12 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
           ))}
           {/* Add time slot row */}
           <div className="grid grid-cols-4 gap-4 items-end mb-4">
-            <Select value={newTimeSlot.date} onValueChange={val => handleTimeSlotChange('date', val)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Day" />
-              </SelectTrigger>
-              <SelectContent>
-                {["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"].map(day => (
-                  <SelectItem key={day} value={day}>{day}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Input
+              type="date"
+              value={newTimeSlot.date}
+              onChange={e => handleTimeSlotChange('date', e.target.value)}
+              placeholder="Select Date"
+            />
             <Input
               type="time"
               value={newTimeSlot.startTime}
