@@ -21,4 +21,14 @@ export type Session = {
   date: string
   status: "ended" | "planned"
   groups: Group[]
+  timeSlots: SessionTimeSlot[]
+}
+
+export type SessionTimeSlot = {
+  id: string;
+  sessionId: string | null;
+  date: Date;
+  startTime: Date;
+  endTime: Date;
+  status: 'Ended' | 'Planned' | 'Ongoing' | 'Cancelled';
 }

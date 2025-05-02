@@ -1,229 +1,123 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import type { Session, AttendanceStatus } from "@/lib/types"
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import { Plus, Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import Link from "next/link"
-import { HeadsUp } from "./headsup.card"
+import { useQuery } from "@tanstack/react-query"
+import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb"
+import { Users, Layers, Calendar, BarChart2 } from "lucide-react"
 
-type AttendanceTableProps = {
-  session: Session
-  groupId: string
-  onSave: () => void
+interface MetricCardProps {
+  title: string
+  value: string | number
+  change: {
+    value: number
+    trend: "up" | "down"
+  }
+  icon: React.ReactNode
+  lastUpdated: string
 }
 
-export default function AttendanceTable({ session, groupId, onSave }: AttendanceTableProps) {
-  // Find the selected group
-  const selectedGroup = session.groups.find((group) => group.id === groupId)
+type dataType = {
+  totalMembers: number
+  totalDivisions: number
+  attendanceRate: number
+  upcomingSessions: number
+}
 
-  const [groupMembers, setGroupMembers] = useState(selectedGroup ? selectedGroup.members : [])
+function MetricCard({ title, value, change, icon, lastUpdated }: MetricCardProps) {
+  return (
+    <div className="rounded-lg border px-4 py-9 m-3 shadow-sm">
+      <div className="flex items-center">
+        {icon}
+        <div className="text-sm font-medium text-gray-500 pl-4">{title}</div>
+      </div>
+      <div className="mt-2 flex items-baseline justify-between">
+        <h3 className="text-3xl font-bold">{value}</h3>
+        <span
+          className={`ml-2 flex items-center text-xs font-medium ${
+            change.trend === "up" ? "text-green-500" : "text-red-500"
+          }`}
+        >
+          {change.trend === "up" ? (
+            <div className="flex items-center gap-1 w-[54px] rounded-[5px] p-[5px] mb-3 bg-[#30BE821A]">
+              <TbTriangleFilled className="h-3 w-3 text-green-400" />
+              {change.value}%
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 w-[54px] rounded-[5px] p-[5px] mb-3 bg-[#F45B691A]">
+              <TbTriangleInvertedFilled className="h-3 w-3 text-red-500" />
+              {change.value}%
+            </div>
+          )}
+        </span>
+      </div>
+      <hr />
+      <div className="mt-2 text-xs text-gray-400">Updated: {lastUpdated}</div>
+    </div>
+  )
+}
 
-  useEffect(() => {
-    if (selectedGroup) {
-      setGroupMembers(selectedGroup.members)
-    } else {
-      setGroupMembers([])
-    }
-  }, [selectedGroup])
+const fetchSummary = async (): Promise<dataType> => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/dashboard/summary`)
+  if (!response.ok) {
+    throw new Error("Failed to fetch summary data")
+  }
+  const json = await response.json()
+  return json.data
+}
 
-  const [attendanceData, setAttendanceData] = useState<Record<string, AttendanceStatus>>(() => {
-    // Initialize with existing attendance data or default to "present"
-    if (selectedGroup) {
-      return selectedGroup.members.reduce(
-        (acc, member) => {
-          acc[member.id] = member.attendance || "present"
-          return acc
-        },
-        {} as Record<string, AttendanceStatus>,
-      )
-    } else {
-      return {}
-    }
+export default function MetricCards() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["dashboardSummary"],
+    queryFn: fetchSummary,
   })
 
-  useEffect(() => {
-    if (selectedGroup) {
-      setAttendanceData(
-        groupMembers.reduce(
-          (acc, member) => {
-            acc[member.id] = member.attendance || "present"
-            return acc
-          },
-          {} as Record<string, AttendanceStatus>,
-        ),
-      )
-    }
-  }, [groupMembers, selectedGroup])
+  if (isLoading) return <div>Loading metrics...</div>
+  if (error) return <div>Failed to load metrics.</div>
 
-  if (!selectedGroup) {
-    return <div>Group not found</div>
-  }
+  const { totalDivisions, totalMembers, attendanceRate, upcomingSessions } = data!
 
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
-  const totalPages = Math.ceil(groupMembers.length / itemsPerPage)
-
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const currentMembers = groupMembers.slice(startIndex, startIndex + itemsPerPage)
-
-  const handleAttendanceChange = (memberId: string, status: AttendanceStatus) => {
-    setAttendanceData((prev) => ({
-      ...prev,
-      [memberId]: status,
-    }))
-  }
-
-  const handleSave = async () => {
-    // In a real app, you would save the attendance data to the server here
-    console.log("Saving attendance data for group:", selectedGroup.name, attendanceData)
-
-    // Mock API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    onSave()
-  }
-
-  const [showModal, setShowModal] = useState(false)
+  const metrics = [
+    {
+      title: "Total Members",
+      value: totalMembers,
+      change: { value: 12, trend: "up" as const },
+      icon: <Users className="h-5 w-5 text-indigo-600" />,
+      lastUpdated: new Date().toLocaleDateString(),
+    },
+    {
+      title: "Total Divisions",
+      value: totalDivisions,
+      change: { value: 9, trend: "up" as const },
+      icon: <Layers className="h-5 w-5 text-purple-600" />,
+      lastUpdated: new Date().toLocaleDateString(),
+    },
+    {
+      title: "Attendance Rate",
+      value: `${attendanceRate}%`,
+      change: { value: 4, trend: "down" as const },
+      icon: <BarChart2 className="h-5 w-5 text-blue-600" />,
+      lastUpdated: new Date().toLocaleDateString(),
+    },
+    {
+      title: "Upcoming Sessions",
+      value: upcomingSessions,
+      change: { value: 15, trend: "up" as const },
+      icon: <Calendar className="h-5 w-5 text-blue-600" />,
+      lastUpdated: new Date().toLocaleDateString(),
+    },
+  ]
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">{session.title}</h2>
-          <p className="text-muted-foreground">{selectedGroup.name} - Attendance</p>
-        </div>
-        <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white">
-          Save
-        </Button>
-      </div>
-
-      <div className="relative w-full max-w-sm">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input type="search" placeholder="Search members" className="w-full pl-8 bg-white" />
-      </div>
-
-      <div className="bg-white rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[250px]">Member Name</TableHead>
-              <TableHead className="text-center">Attendance</TableHead>
-              <TableHead className="text-center">Excused</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentMembers.map((member) => (
-              <TableRow key={member.id}>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Avatar>
-                      <AvatarImage src={member.avatar || "/placeholder.svg"} alt={member.name} />
-                      <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <span>{member.name}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex justify-center gap-2">
-                    <Button
-                      variant={attendanceData[member.id] === "present" ? "default" : "outline"}
-                      size="sm"
-                      className={`rounded-full ${
-                        attendanceData[member.id] === "present"
-                          ? "bg-green-500 hover:bg-green-600 text-white"
-                          : "text-green-500 border-green-200 hover:bg-green-50"
-                      }`}
-                      onClick={() => handleAttendanceChange(member.id, "present")}
-                    >
-                      Present
-                    </Button>
-                    <Button
-                      variant={attendanceData[member.id] === "absent" ? "default" : "outline"}
-                      size="sm"
-                      className={`rounded-full ${
-                        attendanceData[member.id] === "absent"
-                          ? "bg-red-500 hover:bg-red-600 text-white"
-                          : "text-red-500 border-red-200 hover:bg-red-50"
-                      }`}
-                      onClick={() => handleAttendanceChange(member.id, "absent")}
-                    >
-                      Absent
-                    </Button>
-                  </div>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Button
-                              onClick={() => setShowModal(true)}
-                              className="bg-blue-600 hover:bg-blue-700 text-white"
-                            >
-                              <Plus className="mr-2 h-4 w-4" /> Heads Up
-                            </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">
-            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, groupMembers.length)} out of{" "}
-            {groupMembers.length} records
-          </div>
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    if (currentPage > 1) setCurrentPage(currentPage - 1)
-                  }}
-                />
-              </PaginationItem>
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <PaginationItem key={i}>
-                  <PaginationLink
-                    href="#"
-                    isActive={currentPage === i + 1}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      setCurrentPage(i + 1)
-                    }}
-                  >
-                    {i + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    if (currentPage < totalPages) setCurrentPage(currentPage + 1)
-                  }}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
-       {showModal && <HeadsUp onClose={() => setShowModal(false)} />}
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
+      {metrics.map((metric) => (
+        <MetricCard
+          key={metric.title}
+          title={metric.title}
+          value={metric.value}
+          change={metric.change}
+          icon={metric.icon}
+          lastUpdated={metric.lastUpdated}
+        />
+      ))}
     </div>
-
-    
   )
 }

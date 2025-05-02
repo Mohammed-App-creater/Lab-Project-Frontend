@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Lexend } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
+import { ReactQueryProvider } from "@/lib/react-query-provider";
 import { LoadingSpinner } from "@/components/global/login/loading";
 
 const geistSans = Geist({
@@ -33,9 +34,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${lexend.variable} antialiased`}
       >
-        <Suspense fallback={<LoadingSpinner fullPage={true} />}>
-          {children}
-        </Suspense>
+        <ReactQueryProvider>
+          <Suspense fallback={<LoadingSpinner fullPage={true} />}>
+            {children}
+          </Suspense>
+        </ReactQueryProvider>
       </body>
     </html>
   );

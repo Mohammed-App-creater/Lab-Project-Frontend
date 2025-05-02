@@ -1,4 +1,7 @@
+"use client";
+
 import type React from "react";
+import { useQuery } from "@tanstack/react-query";
 import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb";
 import { Users, Layers, Calendar, BarChart2 } from "lucide-react";
 
@@ -13,7 +16,7 @@ interface MetricCardProps {
   lastUpdated: string;
 }
 
-type dataType = {
+type DataType = {
   totalMembers: number;
   totalDivisions: number;
   attendanceRate: number;
@@ -38,7 +41,7 @@ function MetricCard({
         <span
           className={`ml-2 flex items-center text-xs font-medium ${
             change.trend === "up" ? "text-green-500" : "text-red-500"
-          }`} // ✅ Added space inside className
+          }`}
         >
           {change.trend === "up" ? (
             <div className="flex items-center gap-1 w-[54px] rounded-[5px] p-[5px] mb-3 bg-[#30BE821A]">
@@ -59,24 +62,30 @@ function MetricCard({
   );
 }
 
-const fetchDivisions = async () => {
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_END_URL}api/dashboard/summary`
-    );
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error("Error fetching divisions:", error);
-    throw error; 
-  }
+// Do_Not_Tell_To_Anyone_Please
+
+const fetchSummary = async (): Promise<DataType> => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/dashboard/summary`,{
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (!res.ok) throw new Error("Failed to fetch summary data");
+  const json = await res.json();
+  return json.data;
 };
 
-export async function MetricCards() {
-  const { totalDivisions, totalMembers, attendanceRate, upcomingSessions }: dataType = await fetchDivisions(); 
+export function MetricCards() {
+  const { data, isError } = useQuery({
+    queryKey: ["dashboard-summary"],
+    queryFn: fetchSummary,
+  });
+
+  if (isError || !data) return <div>Error loading metrics</div>;
+
+  const { totalMembers, totalDivisions, attendanceRate, upcomingSessions } = data;
 
   const metrics = [
     {
@@ -84,7 +93,7 @@ export async function MetricCards() {
       value: totalMembers,
       change: { value: 12, trend: "up" as const },
       icon: <Users className="h-5 w-5 text-indigo-600" />,
-      lastUpdated: new Date().toLocaleDateString(), // ✅ Dynamic date instead of hardcoded
+      lastUpdated: new Date().toLocaleDateString(),
     },
     {
       title: "Total Divisions",

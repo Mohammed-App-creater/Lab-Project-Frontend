@@ -11,6 +11,7 @@ type GroupViewProps = {
 }
 
 export default function GroupView({ session, onGroupAttendanceClick }: GroupViewProps) {
+  console.log("Session data:", session)
   return (
     <div>
       <div className="mb-6">
