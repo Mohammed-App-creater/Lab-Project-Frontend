@@ -147,177 +147,6 @@ const sampleSessions: Session[] = [
   },
 ]
 
-// Sample data for events table
-const sampleEvents: Event[] = [
-  {
-    id: "1",
-    date: "July 01, 2023",
-    title: "Cyber Security Tutorial",
-    type: "CPD",
-    visibility: "Public",
-    status: "Started",
-  },
-  {
-    id: "2",
-    date: "July 02, 2023",
-    title: "Cyber Security Tutorial",
-    type: "CPD",
-    visibility: "Public",
-    status: "Started",
-  },
-  {
-    id: "3",
-    date: "July 03, 2023",
-    title: "Weekly session",
-    type: "CPD",
-    visibility: "Members",
-    status: "Started",
-  },
-  {
-    id: "4",
-    date: "July 04, 2023",
-    title: "Cyber Security Tutorial",
-    type: "CPD",
-    visibility: "Public",
-    status: "Ended",
-  },
-  {
-    id: "5",
-    date: "July 05, 2023",
-    title: "Contest",
-    type: "CPD",
-    visibility: "Public",
-    status: "Ended",
-  },
-  {
-    id: "6",
-    date: "July 06, 2023",
-    title: "Contest",
-    type: "CPD",
-    visibility: "Public",
-    status: "Planned",
-  },
-  {
-    id: "7",
-    date: "July 07, 2023",
-    title: "Game Night",
-    type: "Dev",
-    visibility: "Members",
-    status: "Started",
-  },
-  {
-    id: "8",
-    date: "July 08, 2023",
-    title: "Seminar",
-    type: "Dev",
-    visibility: "Public",
-    status: "Ended",
-  },
-]
-
-// Sample data for session cards
-const sessionCards: SessionItem[] = [
-  {
-    id: "1",
-    status: "Planned",
-    division: "Dev Division",
-    title: "Development weekly session",
-    date: "Wednesday, 05 July 2023",
-    groups: [
-      { id: "1", name: "Group 1" },
-      { id: "2", name: "Group 2" },
-      { id: "3", name: "Group 3" },
-    ],
-    venue: "Lab 1",
-    timeRemaining: "1d 12h 31m left",
-  },
-  {
-    id: "2",
-    status: "Planned",
-    division: "Dev Division",
-    title: "Development weekly session",
-    date: "Wednesday, 05 July 2023",
-    groups: [
-      { id: "1", name: "Group 1" },
-      { id: "2", name: "Group 2" },
-      { id: "3", name: "Group 3" },
-    ],
-    venue: "Lab 1",
-    timeRemaining: "1d 12h 31m left",
-  },
-  {
-    id: "3",
-    status: "Ended",
-    division: "Dev Division",
-    title: "Development weekly session",
-    date: "Wednesday, 05 July 2023",
-    groups: [
-      { id: "1", name: "Group 1" },
-      { id: "2", name: "Group 2" },
-      { id: "3", name: "Group 3" },
-    ],
-    venue: "Lab 1",
-    timeAgo: "1d 12h 5m ago",
-  },
-  {
-    id: "4",
-    status: "Planned",
-    division: "Dev Division",
-    title: "Development weekly session",
-    date: "Wednesday, 05 July 2023",
-    groups: [
-      { id: "1", name: "Group 1" },
-      { id: "2", name: "Group 2" },
-      { id: "3", name: "Group 3" },
-    ],
-    venue: "Lab 1",
-    timeRemaining: "1d 12h 31m left",
-  },
-]
-
-// Sample data for event cards
-const eventCards: EventItem[] = [
-  {
-    id: "1",
-    status: "Planned",
-    title: "Tutorial",
-    description: "Cyber Security Tutorial",
-    date: "Wednesday, 06 July 2023",
-    visibility: "Public",
-    venue: "Lab 1",
-    timeRemaining: "1d 12h 31m left",
-  },
-  {
-    id: "2",
-    status: "Planned",
-    title: "Game Night",
-    description: "Funny Games Beyond Coding",
-    date: "Wednesday, 06 July 2023",
-    visibility: "Members",
-    venue: "Lab 1",
-    timeRemaining: "1d 12h 31m left",
-  },
-  {
-    id: "3",
-    status: "Ended",
-    title: "Seminar",
-    description: "Working Remotely",
-    date: "Wednesday, 06 July 2023",
-    visibility: "Public",
-    venue: "Lab 1",
-    timeAgo: "1d 12h 5m ago",
-  },
-  {
-    id: "4",
-    status: "Planned",
-    title: "Dev Division",
-    description: "Development weekly session",
-    date: "Wednesday, 06 July 2023",
-    visibility: "Members",
-    venue: "Lab 1",
-    timeRemaining: "1d 12h 31m left",
-  },
-]
 
 export default function SessionsEventsPage() {
   const [activeTab, setActiveTab] = useState<"sessions" | "events">("sessions")
@@ -333,6 +162,44 @@ export default function SessionsEventsPage() {
   const [totalSessions, setTotalSessions] = useState(0)
   const [totalEvents, setTotalEvents] = useState(0)
   const [itemsPerPage, setItemsPerPage] = useState(10)
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch(`https://csec-lab-portal-backend.onrender.com/api/event/events?limit=${itemsPerPage}&page=${currentPage}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch events')
+      }
+      const data = await response.json()
+      
+      const transformedEvents = data.map((event: any) => ({
+        id: event.id,
+        date: new Date(event.startDate).toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }),
+        title: event.title,
+        type: event.tags?.[0] || 'General',
+        visibility: event.visibility,
+        status: event.status
+      }))
+      
+      setEvents(transformedEvents)
+      
+      if (data.length === itemsPerPage) {
+        setTotalPages(currentPage + 1)
+      } else {
+        setTotalPages(currentPage)
+      }
+      setTotalEvents((currentPage - 1) * itemsPerPage + data.length)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -372,46 +239,6 @@ export default function SessionsEventsPage() {
         const calculatedTotalPages = Math.ceil(totalCount / itemsPerPage)
         setTotalPages(calculatedTotalPages)
         setTotalSessions(totalCount)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    const fetchEvents = async () => {
-      try {
-        setLoading(true)
-        const response = await fetch(`https://csec-lab-portal-backend.onrender.com/api/event/events?limit=${itemsPerPage}&page=${currentPage}`)
-        if (!response.ok) {
-          throw new Error('Failed to fetch events')
-        }
-        const data = await response.json()
-        
-        // Transform the backend data to match the Event interface
-        const transformedEvents = data.map((event: any) => ({
-          id: event.id,
-          date: new Date(event.startDate).toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          }),
-          title: event.title,
-          type: event.tags?.[0] || 'General',
-          visibility: event.visibility,
-          status: event.status
-        }))
-        
-        setEvents(transformedEvents)
-        
-        // Since we don't have total count from API, we'll estimate based on the current page
-        if (data.length === itemsPerPage) {
-          setTotalPages(currentPage + 1)
-        } else {
-          setTotalPages(currentPage)
-        }
-        setTotalEvents((currentPage - 1) * itemsPerPage + data.length)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred')
       } finally {
@@ -474,6 +301,10 @@ export default function SessionsEventsPage() {
   const handleDeleteEvent = (id: string) => {
     console.log("Deleting event with ID:", id)
     // Implement delete functionality
+  }
+
+  const handleEventCreated = () => {
+    fetchEvents()
   }
 
   return (
@@ -680,7 +511,12 @@ export default function SessionsEventsPage() {
         
       />
 
-      <CreateEventDialog open={createEventOpen} onOpenChange={setCreateEventOpen} onSubmit={handleCreateEvent} />
+      <CreateEventDialog 
+        open={createEventOpen} 
+        onOpenChange={setCreateEventOpen} 
+        onSubmit={handleCreateEvent}
+        onEventCreated={handleEventCreated}
+      />
     </div>
   )
 }

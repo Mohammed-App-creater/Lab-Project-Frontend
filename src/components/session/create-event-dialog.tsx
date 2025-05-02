@@ -8,42 +8,76 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
+import { format } from "date-fns"
 
 interface CreateEventDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSubmit?: (data: EventFormData) => void
+  onEventCreated?: () => void
 }
 
 export interface EventFormData {
   title: string
-  visibility: "Public" | "Members"
-  date: string
+  startDate: string
   startTime: string
   endTime: string
-  selectedDate?: number
+  creatorId: string
+  visibility: "PUBLIC" | "MEMBERS"
+  tag: string[]
+  divisionId: string | null
+  groups: string[]
 }
 
-export function CreateEventDialog({ open, onOpenChange, onSubmit }: CreateEventDialogProps) {
+export function CreateEventDialog({ open, onOpenChange, onSubmit, onEventCreated }: CreateEventDialogProps) {
   const [formData, setFormData] = useState<EventFormData>({
     title: "",
-    visibility: "Public",
-    date: "",
+    startDate: "",
     startTime: "",
     endTime: "",
+    creatorId: "098bc22d-aca2-44fb-ac27-2347d4459e86",
+    visibility: "PUBLIC",
+    tag: ["SEC", "CPD"],
+    divisionId: null,
+    groups: []
   })
 
   const [showCalendar, setShowCalendar] = useState(false)
-  const [currentMonth, setCurrentMonth] = useState("January")
-  const [selectedDate, setSelectedDate] = useState<number | null>(2)
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
   const handleChange = (field: keyof EventFormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleSubmit = () => {
-    onSubmit?.(formData)
-    onOpenChange(false)
+  const handleSubmit = async () => {
+    try {
+      if (!formData.title || !formData.startDate || !formData.startTime || !formData.endTime) {
+        toast.error("Please fill in all required fields")
+        return
+      }
+
+      const response = await fetch('https://csec-lab-portal-backend.onrender.com/api/event/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create event')
+      }
+
+      toast.success("Event created successfully")
+      onSubmit?.(formData)
+      onEventCreated?.()
+      onOpenChange(false)
+    } catch (error) {
+      console.error('Error creating event:', error)
+      toast.error("Failed to create event")
+    }
   }
 
   const toggleCalendar = () => {
@@ -51,70 +85,34 @@ export function CreateEventDialog({ open, onOpenChange, onSubmit }: CreateEventD
   }
 
   const prevMonth = () => {
-    // Logic to go to previous month
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ]
-    const currentIndex = months.indexOf(currentMonth)
-    if (currentIndex > 0) {
-      setCurrentMonth(months[currentIndex - 1])
-    } else {
-      setCurrentMonth(months[11])
-    }
+    setCurrentMonth((prev) => (prev === 0 ? 11 : prev - 1))
   }
 
   const nextMonth = () => {
-    // Logic to go to next month
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ]
-    const currentIndex = months.indexOf(currentMonth)
-    if (currentIndex < 11) {
-      setCurrentMonth(months[currentIndex + 1])
-    } else {
-      setCurrentMonth(months[0])
-    }
+    setCurrentMonth((prev) => (prev === 11 ? 0 : prev + 1))
   }
 
   const selectDate = (date: number) => {
-    setSelectedDate(date)
-    setFormData((prev) => ({ ...prev, selectedDate: date, date: `${date} ${currentMonth}` }))
+    const selected = new Date(new Date().getFullYear(), currentMonth, date)
+    setSelectedDate(selected)
+    const isoDate = format(selected, 'yyyy-MM-dd')
+    setFormData((prev) => ({ ...prev, startDate: isoDate }))
     setShowCalendar(false)
   }
 
-  // Calendar data for January
-  const days = [
-    { day: 31, isCurrentMonth: false },
-    ...Array.from({ length: 31 }, (_, i) => ({ day: i + 1, isCurrentMonth: true })),
-    ...Array.from({ length: 4 }, (_, i) => ({ day: i + 1, isCurrentMonth: false })),
-  ]
+  const getDaysInMonth = (month: number, year: number) => {
+    return new Date(year, month + 1, 0).getDate()
+  }
 
-  const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+  const getFirstDayOfMonth = (month: number, year: number) => {
+    return new Date(year, month, 1).getDay()
+  }
 
-  const isHighlighted = (day: number) => day === 18
-  const isSelected = (day: number) => day === selectedDate
+  const currentYear = new Date().getFullYear()
+  const daysInMonth = getDaysInMonth(currentMonth, currentYear)
+  const firstDayOfMonth = getFirstDayOfMonth(currentMonth, currentYear)
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1)
+  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -137,7 +135,9 @@ export function CreateEventDialog({ open, onOpenChange, onSubmit }: CreateEventD
                     className="flex items-center justify-between border rounded-md p-2 cursor-pointer"
                     onClick={toggleCalendar}
                   >
-                    <span className="text-gray-500">Select Date</span>
+                    <span className="text-gray-500">
+                      {selectedDate ? format(selectedDate, 'MMM dd, yyyy') : 'Select Date'}
+                    </span>
                     <span className="text-gray-400">
                       <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -156,7 +156,9 @@ export function CreateEventDialog({ open, onOpenChange, onSubmit }: CreateEventD
                         <button onClick={prevMonth} className="p-1">
                           <ChevronLeft className="h-4 w-4" />
                         </button>
-                        <span className="font-medium">{currentMonth}</span>
+                        <span className="font-medium">
+                          {new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
+                        </span>
                         <button onClick={nextMonth} className="p-1">
                           <ChevronRight className="h-4 w-4" />
                         </button>
@@ -169,20 +171,29 @@ export function CreateEventDialog({ open, onOpenChange, onSubmit }: CreateEventD
                           </div>
                         ))}
 
-                        {days.map((day, i) => (
-                          <div
-                            key={i}
-                            className={cn(
-                              "text-center py-1 text-sm cursor-pointer",
-                              !day.isCurrentMonth && "text-gray-300",
-                              isSelected(day.day) && day.isCurrentMonth && "bg-blue-100 rounded-md",
-                              isHighlighted(day.day) && day.isCurrentMonth && "bg-blue-700 text-white rounded-md",
-                            )}
-                            onClick={() => day.isCurrentMonth && selectDate(day.day)}
-                          >
-                            {day.day}
-                          </div>
+                        {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+                          <div key={`empty-${i}`} className="text-center py-1 text-sm" />
                         ))}
+
+                        {days.map((day) => {
+                          const currentDate = new Date(currentYear, currentMonth, day)
+                          const isSelected = selectedDate && format(selectedDate, 'yyyy-MM-dd') === format(currentDate, 'yyyy-MM-dd')
+                          const isToday = format(new Date(), 'yyyy-MM-dd') === format(currentDate, 'yyyy-MM-dd')
+
+                          return (
+                            <div
+                              key={day}
+                              className={cn(
+                                "text-center py-1 text-sm cursor-pointer",
+                                isSelected && "bg-blue-100 rounded-md",
+                                isToday && !isSelected && "bg-gray-100 rounded-md"
+                              )}
+                              onClick={() => selectDate(day)}
+                            >
+                              {day}
+                            </div>
+                          )
+                        })}
                       </div>
                     </div>
                   )}
@@ -194,15 +205,15 @@ export function CreateEventDialog({ open, onOpenChange, onSubmit }: CreateEventD
                   <h3 className="text-sm font-medium">Select Visibility</h3>
                   <RadioGroup
                     value={formData.visibility}
-                    onValueChange={(value: "Public" | "Members") => handleChange("visibility", value)}
+                    onValueChange={(value: "PUBLIC" | "MEMBERS") => handleChange("visibility", value)}
                     className="flex space-x-4"
                   >
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Public" id="public" />
+                      <RadioGroupItem value="PUBLIC" id="public" />
                       <Label htmlFor="public">Public</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Members" id="members" />
+                      <RadioGroupItem value="MEMBERS" id="members" />
                       <Label htmlFor="members">Only for Members</Label>
                     </div>
                   </RadioGroup>
