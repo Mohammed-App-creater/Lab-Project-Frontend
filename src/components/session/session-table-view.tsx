@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { ChevronLeft, ChevronRight, Pencil, Trash } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -12,22 +11,35 @@ export interface Session {
   title: string
   division: string
   totalGroups: number
-  status: "Started" | "Ended" | "Planned"
+  status: "Planned" | "Started" | "Ended"
 }
 
 interface SessionsTableViewProps {
   sessions: Session[]
   onEdit?: (id: string) => void
   onDelete?: (id: string) => void
+  itemsPerPage: string
+  onItemsPerPageChange: (value: string) => void
+  currentPage: number
+  onPageChange: (newPage: number) => void
+  totalPages: number
+  totalSessions: number
 }
 
-export function SessionsTableView({ sessions, onEdit, onDelete }: SessionsTableViewProps) {
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState("10")
-
-  const totalPages = Math.ceil(sessions.length / Number.parseInt(itemsPerPage))
-  const startIndex = (currentPage - 1) * Number.parseInt(itemsPerPage)
-  const endIndex = startIndex + Number.parseInt(itemsPerPage)
+export function SessionsTableView({ 
+  sessions, 
+  onEdit, 
+  onDelete,
+  itemsPerPage,
+  onItemsPerPageChange,
+  currentPage,
+  onPageChange,
+  totalPages,
+  totalSessions
+}: SessionsTableViewProps) {
+  const itemsPerPageNum = parseInt(itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPageNum
+  const endIndex = startIndex + itemsPerPageNum
   const currentSessions = sessions.slice(startIndex, endIndex)
 
   const getStatusBadgeClass = (status: string) => {
@@ -52,7 +64,7 @@ export function SessionsTableView({ sessions, onEdit, onDelete }: SessionsTableV
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Date</th>
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Session Title</th>
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Division</th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Total groups</th>
+              <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Total Groups</th>
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Status</th>
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Actions</th>
             </tr>
@@ -91,7 +103,7 @@ export function SessionsTableView({ sessions, onEdit, onDelete }: SessionsTableV
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-500">Showing</span>
-          <Select value={itemsPerPage} onValueChange={setItemsPerPage}>
+          <Select value={itemsPerPage} onValueChange={onItemsPerPageChange}>
             <SelectTrigger className="h-8 w-16">
               <SelectValue placeholder="10" />
             </SelectTrigger>
@@ -103,7 +115,7 @@ export function SessionsTableView({ sessions, onEdit, onDelete }: SessionsTableV
           </Select>
         </div>
         <div className="text-sm text-gray-500">
-          Showing {startIndex + 1} to {Math.min(endIndex, sessions.length)} out of {sessions.length} records
+          Showing {startIndex + 1} to {Math.min(endIndex, totalSessions)} out of {totalSessions} records
         </div>
         <div className="flex items-center gap-1">
           <Button
@@ -111,7 +123,7 @@ export function SessionsTableView({ sessions, onEdit, onDelete }: SessionsTableV
             size="icon"
             className="h-8 w-8 p-0"
             disabled={currentPage === 1}
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            onClick={() => onPageChange(currentPage - 1)}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -121,7 +133,7 @@ export function SessionsTableView({ sessions, onEdit, onDelete }: SessionsTableV
               key={i + 1}
               variant="outline"
               className={`h-8 w-8 p-0 ${currentPage === i + 1 ? "bg-blue-600 text-white" : ""}`}
-              onClick={() => setCurrentPage(i + 1)}
+              onClick={() => onPageChange(i + 1)}
             >
               {i + 1}
             </Button>
@@ -132,7 +144,7 @@ export function SessionsTableView({ sessions, onEdit, onDelete }: SessionsTableV
             size="icon"
             className="h-8 w-8 p-0"
             disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() => onPageChange(currentPage + 1)}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>

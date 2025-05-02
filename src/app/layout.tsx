@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Lexend } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
 import { LoadingSpinner } from "@/components/global/login/loading";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
         <Suspense fallback={<LoadingSpinner fullPage={true} />}>
           {children}
         </Suspense>
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

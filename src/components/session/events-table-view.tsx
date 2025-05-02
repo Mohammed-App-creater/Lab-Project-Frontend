@@ -19,15 +19,28 @@ interface EventsTableViewProps {
   events: Event[]
   onEdit?: (id: string) => void
   onDelete?: (id: string) => void
+  itemsPerPage: string
+  onItemsPerPageChange: (value: string) => void
+  currentPage: number
+  onPageChange: (newPage: number) => void
+  totalPages: number
+  totalEvents: number
 }
 
-export function EventsTableView({ events, onEdit, onDelete }: EventsTableViewProps) {
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState("10")
-
-  const totalPages = Math.ceil(events.length / Number.parseInt(itemsPerPage))
-  const startIndex = (currentPage - 1) * Number.parseInt(itemsPerPage)
-  const endIndex = startIndex + Number.parseInt(itemsPerPage)
+export function EventsTableView({ 
+  events, 
+  onEdit, 
+  onDelete,
+  itemsPerPage,
+  onItemsPerPageChange,
+  currentPage,
+  onPageChange,
+  totalPages,
+  totalEvents
+}: EventsTableViewProps) {
+  const itemsPerPageNum = parseInt(itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPageNum
+  const endIndex = startIndex + itemsPerPageNum
   const currentEvents = events.slice(startIndex, endIndex)
 
   const getStatusBadgeClass = (status: string) => {
@@ -106,7 +119,7 @@ export function EventsTableView({ events, onEdit, onDelete }: EventsTableViewPro
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-500">Showing</span>
-          <Select value={itemsPerPage} onValueChange={setItemsPerPage}>
+          <Select value={itemsPerPage} onValueChange={onItemsPerPageChange}>
             <SelectTrigger className="h-8 w-16">
               <SelectValue placeholder="10" />
             </SelectTrigger>
@@ -118,7 +131,7 @@ export function EventsTableView({ events, onEdit, onDelete }: EventsTableViewPro
           </Select>
         </div>
         <div className="text-sm text-gray-500">
-          Showing {startIndex + 1} to {Math.min(endIndex, events.length)} out of {events.length} records
+          Showing {startIndex + 1} to {Math.min(endIndex, totalEvents)} out of {totalEvents} records
         </div>
         <div className="flex items-center gap-1">
           <Button
@@ -126,7 +139,7 @@ export function EventsTableView({ events, onEdit, onDelete }: EventsTableViewPro
             size="icon"
             className="h-8 w-8 p-0"
             disabled={currentPage === 1}
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            onClick={() => onPageChange(currentPage - 1)}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -136,7 +149,7 @@ export function EventsTableView({ events, onEdit, onDelete }: EventsTableViewPro
               key={i + 1}
               variant="outline"
               className={`h-8 w-8 p-0 ${currentPage === i + 1 ? "bg-blue-600 text-white" : ""}`}
-              onClick={() => setCurrentPage(i + 1)}
+              onClick={() => onPageChange(i + 1)}
             >
               {i + 1}
             </Button>
@@ -147,7 +160,7 @@ export function EventsTableView({ events, onEdit, onDelete }: EventsTableViewPro
             size="icon"
             className="h-8 w-8 p-0"
             disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() => onPageChange(currentPage + 1)}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
