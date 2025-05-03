@@ -4,6 +4,7 @@ import type React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb";
 import { Users, Layers, Calendar, BarChart2 } from "lucide-react";
+import MetricCardsLoading from "./MetricCardsLoading";
 
 interface MetricCardProps {
   title: string;
@@ -78,10 +79,12 @@ const fetchSummary = async (): Promise<DataType> => {
 };
 
 export function MetricCards() {
-  const { data, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["dashboard-summary"],
     queryFn: fetchSummary,
   });
+
+  if (isLoading) return <MetricCardsLoading />;
 
   if (isError || !data) return <div>Error loading metrics</div>;
 

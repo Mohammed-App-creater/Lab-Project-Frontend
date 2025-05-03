@@ -8,6 +8,7 @@ import SessionsList from "@/components/attendance/session.list"
 export default async function DashboardPage() {
   const sessions = await fetchSessions()
 
+
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex items-center justify-between">

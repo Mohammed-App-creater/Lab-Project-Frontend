@@ -64,9 +64,8 @@ export default function SessionsList({ sessions }: SessionsListProps) {
           </Button>
         </div>
         <AttendanceTable 
-          session={activeSession} 
-          groupId={activeGroup}
-          onSave={handleBackToGroups} 
+          sessionId={activeSession.id} 
+          groupId={activeGroup} 
         />
       </div>
     )

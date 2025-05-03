@@ -1,6 +1,6 @@
 "use client"
 
-import type { Session } from "@/lib/types"
+import type {  Session } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -11,7 +11,6 @@ type GroupViewProps = {
 }
 
 export default function GroupView({ session, onGroupAttendanceClick }: GroupViewProps) {
-  console.log("Session data:", session)
   return (
     <div>
       <div className="mb-6">
@@ -34,26 +33,26 @@ export default function GroupView({ session, onGroupAttendanceClick }: GroupView
                 </Button>
               </div>
 
-              <div className="text-sm text-muted-foreground mb-4">{group.members.length} Members</div>
+              <div className="text-sm text-muted-foreground mb-4">{group.members.data.length} Members</div>
 
               <div className="space-y-3">
                 {/* Show only up to 5 members per group */}
-                {group.members.slice(0, 5).map((member) => (
+                {group.members.data.map((member) => (
                   <div key={member.id} className="flex items-center gap-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={member.avatar || "/placeholder.svg"} alt={member.name} />
-                      <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                      <AvatarImage src={member.profileImageUrl ?? ""} alt={`${member.firstName} ${member.lastName}`} />
+                      <AvatarFallback>{member.firstName?.charAt(0) || "U"}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium text-sm">{member.name}</p>
-                      <p className="text-xs text-muted-foreground">{member.role}</p>
+                      <p className="font-medium text-sm">{member.firstName}</p>
+                      <p className="text-xs text-muted-foreground">{member.specialty?? "Trainee"}</p>
                     </div>
                   </div>
                 ))}
 
                 {/* Show a message if there are more members */}
-                {group.members.length > 5 && (
-                  <div className="text-sm text-muted-foreground pt-2">+ {group.members.length - 5} more members</div>
+                {group.members.data.length > 5 && (
+                  <div className="text-sm text-muted-foreground pt-2">+ {group.members.data.length - 5} more members</div>
                 )}
               </div>
             </CardContent>

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
 import { PlusCircleIcon } from "lucide-react";
+import { split } from "lodash";
 
 type SessionCardProps = {
   session: Session;
@@ -23,17 +24,25 @@ export default function SessionCard({
     Cancelled: "text-gray-500 bg-gray-50",
   };
 
+
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-0">
         <div className="p-6">
           <div className="flex justify-between items-start mb-2">
-            <Badge
-              variant="outline"
-              className={`${statusColor[session.timeSlots[0].status]} border-0 rounded-md px-2 py-1 text-xs font-medium`}
-            >
-              {session.timeSlots[0].status}
-            </Badge>
+            <div className="flex flex-row-reverse gap-5 items-center">
+              <h1 className="text-lg font-bold ">
+                {session.tags.flatMap((tag) => split(tag, " ")).join(" ")}
+              </h1>
+              <Badge
+                variant="outline"
+                className={`${
+                  statusColor[session.timeSlots[0].status]
+                } border-0 rounded-md px-2 py-1 text-xs font-medium`}
+              >
+                {session.timeSlots[0].status}
+              </Badge>
+            </div>
             <Button
               size="lg"
               className="bg-blue-600 hover:bg-blue-700 text flex gap-1.5   text-white"
@@ -50,7 +59,11 @@ export default function SessionCard({
           </p>
           <div className="flex flex-wrap gap-2 mt-4">
             {session.groups.map((group) => (
-              <Badge key={group.id} variant="outline" className="border-3 rounded-2xl px-2 py-1 text-xs font-medium">
+              <Badge
+                key={group.id}
+                variant="outline"
+                className="border-3 rounded-2xl px-2 py-1 text-xs font-medium"
+              >
                 {group.name}
               </Badge>
             ))}

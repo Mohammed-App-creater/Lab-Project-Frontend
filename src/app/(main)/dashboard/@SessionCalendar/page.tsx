@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { transformApiData } from "@/lib/session-utils";
 import { SessionCalendar, SessionData } from "@/components/session/session-calendar";
+import { LoadingSpinner } from "@/components/global/login/loading";
 
 
   
@@ -45,7 +46,10 @@ export default function SessionsPage() {
 
   return (
     <div className="container h-screen py-10 ">
+      <Suspense fallback={<LoadingSpinner fullPage={false} />}>
       <SessionCalendar data={sessionData} isLoading={loading} error={error} />
+      </Suspense>
+
     </div>
   );
 }
