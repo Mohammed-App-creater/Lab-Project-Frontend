@@ -1,19 +1,16 @@
-import React from 'react'
-import SidebarItem from './sidebar.item'
-import { Card, CardContent } from "@/components/ui/card"
-import DarkLight from '@/components/global/sidebar/dark.light'
-
-
+import React from "react";
+import SidebarItem from "./sidebar.item";
+import { Card } from "@/components/ui/card";
+import DarkLight from "./dark.light";
 
 function SidebarCard() {
   return (
-    <div className="flex max-h-screen p-2.5 ">
-        <Card className="w-60 p-4 md:flex flex-col m-1 bg-[#34495E0D]">
-      <SidebarItem />
-      <DarkLight />
+    <div className="flex min-h-screen w-full p-6   ">
+      <Card className="w-full  p-4 md:flex flex-col justify-between ">
+        <SidebarItem />
+        <DarkLight />
       </Card>
     </div>
-    
-  )
+  );
 }
-export default SidebarCard
+export default SidebarCard;

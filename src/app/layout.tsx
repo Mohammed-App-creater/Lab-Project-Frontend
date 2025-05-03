@@ -1,7 +1,11 @@
-import type { Metadata } from "next"
-import { Geist, Geist_Mono, Lexend } from "next/font/google"
-import "./globals.css"
-import { Providers } from "./providers"
+import type { Metadata } from "next";
+import { Geist, Geist_Mono, Lexend } from "next/font/google";
+import "./globals.css";
+import { Suspense } from "react";
+import { ReactQueryProvider } from "@/lib/react-query-provider";
+import { LoadingSpinner } from "@/components/global/login/loading";
+import { Toaster } from "sonner";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +19,8 @@ const geistMono = Geist_Mono({
 
 const lexend = Lexend({
   variable: "--font-lexend",
-  subsets: ["latin"],
-})
+});
+
 
 export const metadata: Metadata = {
   title: "CSEC ASTU Portal",
@@ -29,9 +33,16 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${lexend.variable} antialiased`}>
-        <Providers>{children}</Providers>
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${lexend.variable} antialiased`}
+      >
+        <ReactQueryProvider>
+          <Suspense fallback={<LoadingSpinner fullPage={true} />}>
+          {children}
+        </Suspense>
+        <Toaster richColors position="top-right" />
+        </ReactQueryProvider>
       </body>
     </html>
   )

@@ -1,254 +1,115 @@
-// "use client"
+"use client";
 
-// import { useState } from "react"
-// import Image from "next/image"
-// import { Eye, EyeOff, Link } from "lucide-react"
-// import { useFormik } from "formik"
-// import * as Yup from "yup"
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { Eye, EyeOff } from "lucide-react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
-// import { Input } from "@/components/ui/input"
-// import { Button } from "@/components/ui/button"
-// import { Checkbox } from "@/components/ui/checkbox"
-// import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
-// import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
+import  PageLoader  from "./pageLoader"
 
+export default function LoginPage() {
+  const [remember, setRemember] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isPageLoading, setIsPageLoading] = useState(false);
 
-// export default function LoginPage() {
-//   const [rememberMe, setRememberMe] = useState(true)
-//   const [showPassword, setShowPassword] = useState(false)
-
-
-//   const router = useRouter();
-
-//   type LoginValues = {
-//     email: string;
-//     password: string;
-//   };
-  
-//   const loginValidationSchema = Yup.object({
-//     email: Yup.string().email("Invalid email").required("Email is required"),
-//     password: Yup.string().required("Password is required"),
-//   });
-  
-//   const loginFormik = useFormik<LoginValues>({
-//     initialValues: {
-//       email: "",
-//       password: "",
-//     },
-//     validationSchema: loginValidationSchema,
-//     onSubmit: async (values, { setSubmitting, resetForm }) => {
-//       try {
-//         const response = await fetch("/api/login", {
-//           method: "POST",
-//           headers: {
-//             "Content-Type": "application/json",
-//           },
-//           body: JSON.stringify(values),
-//         });
-  
-//         if (!response.ok) {
-//           throw new Error("Invalid credentials");
-//         }
-  
-//         const data: { token: string; user: { email: string } } = await response.json();
-//         console.log("Login successful:", data);
-
-//         localStorage.setItem("token", data.token);
-//         router.push("/dashboard");
-  
-//         resetForm();
-//       } catch (error: any) {
-//         console.error("Login failed:", error.message);
-//       } finally {
-//         setSubmitting(false);
-//       }
-//     },
-//   });
-  
-
-//   return (
-//     <div className="flex min-h-screen flex-col items-center justify-center p-4">
-//       <div className="w-full max-w-md space-y-8">
-//         <div className="space-y-6">
-//           <div className="flex gap-7 items-center">
-//             <div className="relative flex">
-//               <Image
-//                 src="/Vector.svg"
-//                 alt="Logo"
-//                 width={40}
-//                 height={40}
-//                 className="h-10 w-10"
-//               />
-//               <Image
-//                 src="/Vector1.svg"
-//                 alt="Logo overlay"
-//                 width={40}
-//                 height={40}
-//                 className="h-10 w-10 absolute left-4.5"
-//               />
-//             </div>
-//             <h1 className="font-bold text-3xl text-[#110051]">CSEC ASTU</h1>
-//           </div>
-//           <div>
-//             <h1 className="text-2xl font-bold">Welcome 👋</h1>
-//             <p className="text-sm text-muted-foreground">Please login here</p>
-//           </div>
-//         </div>
-
-//         <form onSubmit={loginFormik.handleSubmit} className="space-y-6">
-//           <div className="space-y-2">
-//             <Label htmlFor="email" className="text-[#003087]">
-//               Email Address
-//             </Label>
-//             <Input
-//               id="email"
-//               name="email"
-//               type="email"
-//               placeholder="robertallen@example.com"
-//               className="h-12"
-//               value={loginFormik.values.email}
-//               onChange={loginFormik.handleChange}
-//               onBlur={loginFormik.handleBlur}
-//             />
-//             {loginFormik.touched.email && loginFormik.errors.email && (
-//               <span className="text-sm text-red-500">
-//                 {loginFormik.errors.email}
-//               </span>
-//             )}
-//           </div>
-
-//           <div className="space-y-2">
-//             <Label htmlFor="password" className="text-[#003087]">
-//               Password
-//             </Label>
-//             <div className="relative">
-//               <Input
-//                 id="password"
-//                 name="password"
-//                 type={showPassword ? "text" : "password"}
-//                 className="h-12 pr-10"
-//                 value={loginFormik.values.password}
-//                 onChange={loginFormik.handleChange}
-//                 onBlur={loginFormik.handleBlur}
-//               />
-//               <button
-//                 type="button"
-//                 onClick={() => setShowPassword(true)}
-//                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-//               >
-//                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-//               </button>
-//             </div>
-//             {loginFormik.touched.password && loginFormik.errors.password && (
-//               <span className="text-sm text-red-500">
-//                 {loginFormik.errors.password}
-//               </span>
-//             )}
-//           </div>
-
-//           <div className="flex items-center space-x-2">
-//             <Checkbox
-//               id="remember"
-//               checked={rememberMe}
-//               onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-//             />
-//             <Label htmlFor="remember" className="text-sm font-medium">
-//               Remember Me
-//             </Label>
-//           </div>
-
-//           <Button
-//             type="submit"
-//             className="w-full h-12 bg-[#003087] hover:bg-[#0a2472]/90"
-//           >
-//             Login
-//           </Button>
-//         </form>
-//       </div>
-//     </div>
-//   )
-// }
-"use client"
-
-import { useState } from "react"
-import Image from "next/image"
-import { Eye, EyeOff } from "lucide-react"
-import { useFormik } from "formik"
-import * as Yup from "yup"
-import { useRouter } from "next/navigation"
-
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { useToast } from "@/components/ui/use-toast"
-
-export default function Login() {
-  const [rememberMe, setRememberMe] = useState(true)
-  const [showPassword, setShowPassword] = useState(false)
-  const router = useRouter()
-  const { toast } = useToast()
+  const router = useRouter();
 
   type LoginValues = {
-    email: string
-    password: string
-  }
+    email: string;
+    password: string;
+    remember: boolean;
+  };
 
   const loginValidationSchema = Yup.object({
     email: Yup.string().email("Invalid email address").required("Email is required"),
     password: Yup.string().required("Password is required"),
-  })
+  });
+
 
   const loginFormik = useFormik<LoginValues>({
     initialValues: {
       email: "",
       password: "",
+      remember: false,
     },
     validationSchema: loginValidationSchema,
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        // In a real application, this would be an API call
-        // For demo purposes, we'll simulate a successful login
-        console.log("Login attempt with:", values)
+        console.log("Submitting form with values:", values);
+        setError("");
+        setSubmitting(true);
+        setIsPageLoading(true);
+        // Send the form data to the server
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/login`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(values),
+          }
+        );
 
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-
-        // Mock successful login
-        const mockResponse = {
-          success: true,
-          token: "mock-jwt-token",
-          user: { email: values.email, name: "Henok Assefa", role: "admin" },
+        if (!response.ok) {
+          throw new Error("Invalid credentials");
         }
 
-        // Store token in localStorage
-        localStorage.setItem("token", mockResponse.token)
-        localStorage.setItem("user", JSON.stringify(mockResponse.user))
+        const data: { accessToken: string; user: object } =
+          await response.json();
+        console.log("Login successful:", data);
 
-        toast({
-          title: "Login successful",
-          description: "Welcome back to CSEC ASTU portal!",
-        })
+        localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        await new Promise((resolve) => setTimeout(resolve, 4000));
 
-        // Redirect to dashboard
-        router.push("/dashboard")
-      } catch (error: any) {
-        console.error("Login failed:", error.message)
-        toast({
-          title: "Login failed",
-          description: "Invalid email or password. Please try again.",
-          variant: "destructive",
-        })
+        router.push("/dashboard");
+
+        resetForm();
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.log("Login failed:", error.message);
+          setError(error.message);
+        } else {
+          console.error("Login failed:", error);
+        }
       } finally {
-        setSubmitting(false)
+        setIsPageLoading(false);
+        setSubmitting(false);
+        
       }
     },
-  })
+  });
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        loginFormik.handleSubmit();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown as EventListener);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown as EventListener);
+    };
+  }, [loginFormik]);
+
+ 
+ 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4 bg-gray-50">
-      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-lg shadow-md">
+
+    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+      {isPageLoading && <PageLoader />}
+      <div className="w-full max-w-md space-y-8">
         <div className="space-y-6">
           <div className="flex gap-7 items-center justify-center">
             <div className="relative flex">
@@ -267,6 +128,13 @@ export default function Login() {
             <h1 className="text-2xl font-bold">Welcome 👋</h1>
             <p className="text-sm text-muted-foreground">Please login here</p>
           </div>
+          {error && (
+            <div className="text-sm p-4 bg-red-100 rounded-r-lg  border-l-4 border-red-600  text-red-500">
+              <p className="text-lg">
+                {error} <span className="text-4xl">😒</span>
+              </p>
+            </div>
+          )}
         </div>
 
         <form onSubmit={loginFormik.handleSubmit} className="space-y-6">
@@ -316,20 +184,15 @@ export default function Login() {
             )}
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="remember"
-                checked={rememberMe}
-                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-              />
-              <Label htmlFor="remember" className="text-sm font-medium">
-                Remember Me
-              </Label>
-            </div>
-            <a href="#" className="text-sm font-medium text-blue-900 hover:underline">
-              Forgot Password?
-            </a>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="remember"
+              checked={remember}
+              onCheckedChange={(checked) => setRemember(checked as boolean)}
+            />
+            <Label htmlFor="remember" className="text-sm font-medium">
+              Remember Me
+            </Label>
           </div>
 
           <Button
@@ -342,5 +205,5 @@ export default function Login() {
         </form>
       </div>
     </div>
-  )
+  );
 }

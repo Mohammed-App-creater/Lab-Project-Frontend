@@ -1,276 +1,221 @@
+"use client";
 
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Pencil, Trash2, Plus, Filter, ChevronLeft, ChevronRight } from "lucide-react"
-import AddNewMember from "@/components/member/add.member.card"
-import Link from "next/link"
+import { useEffect, useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import {
+  Pencil,
+  Trash2,
+  Plus,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import PageLoader from "../global/login/pageLoader";
 
 type Member = {
-  id: string
-  name: string
-  avatar: string
-  memberId: string
-  division?: string
-  attendance: "Active" | "Needs Attention" | "Disabled"
-  year: string
-  status: "@1 Campus" | "withdrawn"
-}
+  id: string;
+  firstName: string | null;
+  middleName: string | null;
+  lastName: string | null;
+  gender: string;
+  email: string;
+  phone_number: string | null;
+  telegramUserName: string | null;
+  bio: string | null;
+  berthDate: string | null;
+  profileImageUrl: string | null;
+  clubStatus: string | null;
+  specialty: string | null;
+  cvUrl: string | null;
+  lastSeen: string;
+  Role: {
+    id: string;
+    name: string;
+  };
+  roleId: string;
+};
 
-// Sample data
-const initialMembers: Member[] = [
-  {
-    id: "1",
-    name: "Dontene Robertson",
-    avatar: "/profile.svg",
-    memberId: "UGR/25605/14",
-    division: "Design",
-    attendance: "Active",
-    year: "4th",
-    status: "@1 Campus",
-  },
-  {
-    id: "2",
-    name: "Floyd Hiles",
-    avatar: "/profile.svg",
-    memberId: "UGR/25605/14",
-    division: "Development",
-    attendance: "Active",
-    year: "5th",
-    status: "@1 Campus",
-  },
-  {
-    id: "3",
-    name: "Cody Fisher",
-    avatar: "/profile.svg",
-    memberId: "UGR/25605/14",
-    division: "CPD",
-    attendance: "Needs Attention",
-    year: "3rd",
-    status: "withdrawn",
-  },
-  {
-    id: "4",
-    name: "Dianne Russell",
-    avatar: "/profile.svg",
-    memberId: "UGR/25005/14",
-    division: "CPD",
-    attendance: "Active",
-    year: "4th",
-    status: "@1 Campus",
-  },
-  {
-    id: "5",
-    name: "Savannah Nguyen",
-    avatar: "/profile.svg",
-    memberId: "UGR/25005/14",
-    division: "CPD",
-    attendance: "Needs Attention",
-    year: "5th",
-    status: "@1 Campus",
-  },
-  {
-    id: "6",
-    name: "Jacob Jones",
-    avatar: "/profile.svg",
-    memberId: "UGR/25005/14",
-    division: "Development",
-    attendance: "Active",
-    year: "5th",
-    status: "@1 Campus",
-  },
-  {
-    id: "7",
-    name: "Marvin McKinney",
-    avatar: "/profile.svg",
-    memberId: "UGR/25005/14",
-    division: "Development",
-    attendance: "Active",
-    year: "5th",
-    status: "@1 Campus",
-  },
-  {
-    id: "8",
-    name: "Brooklyn Simmons",
-    avatar: "/profile.svg",
-    memberId: "UGR/25005/14",
-    division: "CPD",
-    attendance: "Active",
-    year: "5th",
-    status: "@1 Campus",
-  },
-  {
-    id: "9",
-    name: "Kristin Watson",
-    avatar: "/profile.svg",
-    memberId: "UGR/25005/14",
-    division: "Cyber",
-    attendance: "Needs Attention",
-    year: "5th",
-    status: "@1 Campus",
-  },
-  {
-    id: "10",
-    name: "Kathryn Murphy",
-    avatar: "/profile.svg",
-    memberId: "UGR/25005/14",
-    division: "Development",
-    attendance: "Active",
-    year: "5th",
-    status: "@1 Campus",
-  },
-  {
-    id: "11",
-    name: "Arlene McCoy",
-    avatar: "/profile.svg",
-    memberId: "UGR/25005/14",
-    division: "Development",
-    attendance: "Active",
-    year: "5th",
-    status: "@1 Campus",
-  },
-  {
-    id: "12",
-    name: "Arlene McCoy",
-    avatar: "/profile.svg",
-    memberId: "UGR/25005/14",
-    division: "Development",
-    attendance: "Active",
-    year: "5th",
-    status: "@1 Campus",
-  },
-  {
-    id: "13",
-    name: "Devon Lane",
-    avatar: "/profile.svg",
-    memberId: "UGR/25005/14",
-    division: "CPD",
-    attendance: "Active",
-    year: "5th",
-    status: "@1 Campus",
-  },
-]
+type PaginatedResponse = {
+  data: Member[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};
 
 type MemberTableProps = {
-  userRole: "admin" | "manager" | "viewer"
-}
+  userRole: "admin" | "manager" | "viewer";
+  onAddMember: () => void;
+};
 
-export default function MemberTable({ userRole }: MemberTableProps) {
-  const [members, setMembers] = useState<Member[]>(initialMembers)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(10)
-  const [showAddMember, setShowAddMember] = useState(false)
-  const [filters, setFilters] = useState({
-    division: "",
-    attendance: "",
-    status: "",
-  })
+export default function MemberTable({
+  userRole,
+  onAddMember,
+}: MemberTableProps) {
+  const [members, setMembers] = useState<Member[]>([]);
+  const [filteredMembers, setFilteredMembers] = useState<Member[]>([]);
+  const [paginationInfo, setPaginationInfo] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 0,
+  });
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Filter members based on search term and filters
-  const filteredMembers = members.filter((member) => {
-    const matchesSearch =
-      member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.memberId.toLowerCase().includes(searchTerm.toLowerCase())
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/all-users?limit=${paginationInfo.limit}&page=${paginationInfo.page}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch members");
+        const data: PaginatedResponse = await res.json();
+        setMembers(data.data);
+        setFilteredMembers(data.data); // Initialize filtered members with all members
+        setPaginationInfo({
+          total: data.total,
+          page: data.page,
+          limit: data.limit,
+          totalPages: data.totalPages,
+        });
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    const matchesDivision = !filters.division || filters.division === "all" || member.division === filters.division
-    const matchesAttendance =
-      !filters.attendance || filters.attendance === "all" || member.attendance === filters.attendance
-    const matchesStatus = !filters.status || filters.status === "all" || member.status === filters.status
+    fetchMembers();
+  }, [paginationInfo.limit, paginationInfo.page]);
 
-    return matchesSearch && matchesDivision && matchesAttendance && matchesStatus
-  })
-
-  const totalItems = filteredMembers.length
-  const totalPages = Math.ceil(totalItems / itemsPerPage)
-
-  // Calculate the current items to display based on pagination
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = filteredMembers.slice(indexOfFirstItem, indexOfLastItem)
-
-  // Handle page change
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber)
-  }
-
-  // Handle items per page change
-  const handleItemsPerPageChange = (value: string) => {
-    setItemsPerPage(Number(value))
-    setCurrentPage(1) // Reset to first page when changing items per page
-  }
-
-  // Handle search
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value)
-    setCurrentPage(1)
-  }
-
-  // Handle filter change
-  const handleFilterChange = (filterType: string, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [filterType]: value,
-    }))
-    setCurrentPage(1)
-  }
-
-  // Handle adding new member
-  const handleAddMember = (newMember: any) => {
-    const memberToAdd = {
-      id: (members.length + 1).toString(),
-      name: newMember.email.split("@")[0],
-      avatar: "/profile.svg",
-      memberId: `UGR/${Math.floor(10000 + Math.random() * 90000)}/14`,
-      division: newMember.division,
-      attendance: "Active" as const,
-      year: "1st",
-      status: "@1 Campus" as const,
+  // Filter members based on search term
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setFilteredMembers(members);
+    } else {
+      const filtered = members.filter((member) => {
+        const searchLower = searchTerm.toLowerCase();
+        return (
+          (member.firstName?.toLowerCase().includes(searchLower) ?? false) ||
+          (member.lastName?.toLowerCase().includes(searchLower) ?? false) ||
+          (member.email?.toLowerCase().includes(searchLower) ?? false) ||
+          (member.id?.toLowerCase().includes(searchLower) ?? false)
+        );
+      });
+      setFilteredMembers(filtered);
     }
-    setMembers([...members, memberToAdd])
-  }
+  }, [searchTerm, members]);
 
-  // Get attendance badge color based on status
-  const getAttendanceBadgeColor = (attendance: Member["attendance"]) => {
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handlePageChange = async (pageNumber: number) => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/all-users?limit=${paginationInfo.limit}&page=${pageNumber}`
+      );
+      if (!res.ok) throw new Error("Failed to fetch members");
+      const data: PaginatedResponse = await res.json();
+      setMembers(data.data);
+      setFilteredMembers(data.data);
+      setPaginationInfo({
+        total: data.total,
+        page: data.page,
+        limit: data.limit,
+        totalPages: data.totalPages,
+      });
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleItemsPerPageChange = async (value: string) => {
+    const newLimit = Number(value);
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/all-users?limit=${newLimit}&page=1`
+      );
+      if (!res.ok) throw new Error("Failed to fetch members");
+      const data: PaginatedResponse = await res.json();
+      setMembers(data.data);
+      setFilteredMembers(data.data);
+      setPaginationInfo({
+        total: data.total,
+        page: 1,
+        limit: newLimit,
+        totalPages: data.totalPages,
+      });
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getAttendanceBadgeColor = (attendance: string | null) => {
     switch (attendance) {
       case "Active":
-        return "bg-green-100 text-green-800 hover:bg-green-100"
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
       case "Needs Attention":
-        return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
-      case "Disabled":
-        return "bg-red-100 text-red-800 hover:bg-red-100"
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+      case "Inactive":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
       default:
-        return "bg-gray-100 text-gray-800 hover:bg-gray-100"
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
     }
-  }
+  };
 
-  // Get status badge color based on status
-  const getStatusBadgeColor = (status: Member["status"]) => {
+  const getStatusBadgeColor = (status: string) => {
     switch (status) {
-      case "@1 Campus":
-        return "bg-green-100 text-green-800 hover:bg-green-100"
-      case "withdrawn":
-        return "bg-purple-100 text-purple-800 hover:bg-purple-100"
+      case "On Campus":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+      case "Off Campus":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
+      case "Withdrawn":
+        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300";
       default:
-        return "bg-gray-100 text-gray-800 hover:bg-gray-100"
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
     }
-  }
+  };
+
+  if (loading) return PageLoader({ fullPage: false });
+  if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="space-y-4 shadow-lg p-3 rounded-2xl">
-      {showAddMember && <AddNewMember onCancel={() => setShowAddMember(false)} onInvite={handleAddMember} />}
-
+    <div className="space-y-4 inset-shadow-2xs shadow-xl border-1 border-[#34495E33] p-3 rounded-lg">
       <div className="flex items-center justify-between">
         <div className="relative w-64">
-          <Input placeholder="Search" className="pl-8" value={searchTerm} onChange={handleSearch} />
+          <Input
+            placeholder="Search by name, email, or ID"
+            className="pl-8"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <svg
               className="w-4 h-4 text-gray-500"
@@ -291,7 +236,10 @@ export default function MemberTable({ userRole }: MemberTableProps) {
 
         <div className="flex items-center gap-2">
           {(userRole === "admin" || userRole === "manager") && (
-            <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setShowAddMember(true)}>
+            <Button
+              className="bg-[#003087] hover:bg-[#002f87e7]"
+              onClick={onAddMember}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Member
             </Button>
@@ -348,66 +296,113 @@ export default function MemberTable({ userRole }: MemberTableProps) {
             <TableRow>
               <TableHead className="w-[200px]">Member Name</TableHead>
               <TableHead>Member ID</TableHead>
-              <TableHead>Division</TableHead>
+              {userRole === "admin" && <TableHead>Division</TableHead>}
               <TableHead>Attendance</TableHead>
               <TableHead>Year</TableHead>
               <TableHead>Status</TableHead>
-              {(userRole === "admin" || userRole === "manager") && <TableHead className="text-right">Action</TableHead>}
+              {(userRole === "admin" || userRole === "manager") && (
+                <TableHead className="text-right">Action</TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentItems.map((member) => (
-              <TableRow key={member.id}>
-                <TableCell className="font-medium">
-                  <Link href={`/profile/${member.id}`} className="flex items-center gap-2 hover:underline">
-                    <Avatar>
-                      <AvatarImage src={member.avatar || "/placeholder.svg"} alt={member.name} />
-                      <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <span>{member.name}</span>
-                  </Link>
-                </TableCell>
-                <TableCell>{member.memberId}</TableCell>
-                <TableCell>{member.division}</TableCell>
-                <TableCell>
-                  <Badge variant="outline" className={getAttendanceBadgeColor(member.attendance)}>
-                    {member.attendance}
-                  </Badge>
-                </TableCell>
-                <TableCell>{member.year}</TableCell>
-                <TableCell>
-                  <Badge variant="outline" className={getStatusBadgeColor(member.status)}>
-                    {member.status}
-                  </Badge>
-                </TableCell>
-                {(userRole === "admin" || userRole === "manager") && (
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      {userRole === "admin" && (
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      )}
+            {filteredMembers.length > 0 ? (
+              filteredMembers.map((member) => (
+                <TableRow className="border-b" key={member.id}>
+                  <TableCell className="font-medium py-4">
+                    <div className="flex items-center gap-2">
+                      <Avatar>
+                        <AvatarImage
+                          src={member.profileImageUrl || "/placeholder.svg"}
+                          alt={`${member.firstName || ""} ${
+                            member.lastName || ""
+                          }`}
+                        />
+                        <AvatarFallback>
+                          {member.firstName ? member.firstName.charAt(0) : "?"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span>{`${member.firstName || ""} ${
+                        member.lastName || ""
+                      }`}</span>
                     </div>
                   </TableCell>
-                )}
+                  <TableCell>{member.id}</TableCell>
+                  {userRole === "admin" && (
+                    <TableCell>{member.specialty || "N/A"}</TableCell>
+                  )}
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className={`${getAttendanceBadgeColor(
+                        member.clubStatus || "Inactive"
+                      )}`}
+                    >
+                      {member.clubStatus || "Inactive"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{"N/A"}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className={`${getStatusBadgeColor("On Campus")}`}
+                    >
+                      {"On Campus"}
+                    </Badge>
+                  </TableCell>
+                  {(userRole === "admin" || userRole === "manager") && (
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        {userRole === "admin" && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={
+                    userRole === "admin"
+                      ? 7
+                      : userRole === "manager" || userRole === "viewer"
+                      ? 6
+                      : 5
+                  }
+                  className="text-center py-8"
+                >
+                  No members found matching your search
+                </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>
 
+      {/* Pagination controls remain the same */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-500">Showing</span>
-          <Select defaultValue={itemsPerPage.toString()} onValueChange={handleItemsPerPageChange}>
+          <Select
+            defaultValue={paginationInfo.limit.toString()}
+            onValueChange={handleItemsPerPageChange}
+          >
             <SelectTrigger className="w-16 h-8">
-              <SelectValue placeholder={itemsPerPage.toString()} />
+              <SelectValue placeholder={paginationInfo.limit.toString()} />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="3">3</SelectItem>
               <SelectItem value="10">10</SelectItem>
               <SelectItem value="20">20</SelectItem>
               <SelectItem value="50">50</SelectItem>
@@ -415,7 +410,12 @@ export default function MemberTable({ userRole }: MemberTableProps) {
             </SelectContent>
           </Select>
           <span className="text-sm text-gray-500">
-            {`${indexOfFirstItem + 1} to ${Math.min(indexOfLastItem, totalItems)} out of ${totalItems} records`}
+            {`${
+              (paginationInfo.page - 1) * paginationInfo.limit + 1
+            } to ${Math.min(
+              paginationInfo.page * paginationInfo.limit,
+              paginationInfo.total
+            )} out of ${paginationInfo.total} records`}
           </span>
         </div>
 
@@ -424,49 +424,55 @@ export default function MemberTable({ userRole }: MemberTableProps) {
             variant="outline"
             size="icon"
             className="h-8 w-8"
-            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
+            onClick={() => handlePageChange(Math.max(1, paginationInfo.page - 1))}
+            disabled={paginationInfo.page === 1}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
 
-          {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-            // Show pages around the current page
-            let pageToShow = i + 1
-            if (currentPage > 3 && totalPages > 5) {
-              pageToShow = i + currentPage - 2
-              if (pageToShow > totalPages - 4) {
-                pageToShow = totalPages - 4 + i
-              }
+
+          {Array.from({ length: Math.min(paginationInfo.totalPages, 5) }, (_, i) => {
+            let pageNum;
+            if (paginationInfo.totalPages <= 5) {
+              pageNum = i + 1;
+            } else if (paginationInfo.page <= 3) {
+              pageNum = i + 1;
+            } else if (paginationInfo.page >= paginationInfo.totalPages - 2) {
+              pageNum = paginationInfo.totalPages - 4 + i;
+            } else {
+              pageNum = paginationInfo.page - 2 + i;
             }
 
-            if (pageToShow <= totalPages) {
-              return (
-                <Button
-                  key={pageToShow}
-                  variant={currentPage === pageToShow ? "default" : "outline"}
-                  size="sm"
-                  className={`h-8 w-8 ${currentPage === pageToShow ? "bg-blue-600 text-white" : ""}`}
-                  onClick={() => handlePageChange(pageToShow)}
-                >
-                  {pageToShow}
-                </Button>
-              )
-            }
-            return null
+            return (
+              <Button
+                key={pageNum}
+                variant="outline"
+                size="sm"
+                className={`h-8 w-8 ${
+                  paginationInfo.page === pageNum
+                    ? "bg-primary text-primary-foreground"
+                    : ""
+                }`}
+                onClick={() => handlePageChange(pageNum)}
+              >
+                {pageNum}
+              </Button>
+            );
           })}
 
           <Button
             variant="outline"
             size="icon"
             className="h-8 w-8"
-            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-            disabled={currentPage === totalPages}
+            onClick={() =>
+              handlePageChange(Math.min(paginationInfo.totalPages, paginationInfo.page + 1))
+            }
+            disabled={paginationInfo.page === paginationInfo.totalPages}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }
