@@ -40,19 +40,8 @@ export interface SessionFormData {
   }
 }
 
-// Division and group options (with IDs for backend)
-const DIVISIONS = [
-  { id: "bc539ae7-1452-4bc4-9e1b-f2b030c4215c", name: "CPD" },
-  { id: "12cbd8c6-a767-4222-8e4e-4f03ab4ac364", name: "CBD" },
-  { id: "cd5c8e05-533f-4b76-9769-4d1638530104", name: "DEV" },
-  { id: "01124c17-f6e4-4f7b-a6e4-1284f5e43899", name: "Seberscurty" },
-  { id: "efb164f0-da36-4988-93b0-29a57c444c8f", name: "DS" },
-  { id: "8721a8a7-9a61-4f4d-841a-62167a3c83a7", name: "Test Division" },
-  { id: "d78522ec-d906-4fa5-b3f8-b03ecd94c5bc", name: "Test Division2" },
-  { id: "b180ee47-3d91-41d4-8139-04ad027081de", name: "Test Division3" },
-]
-
 export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCreated }: CreateSessionDialogProps) {
+  const [divisions, setDivisions] = useState<Array<{ id: string; name: string }>>([])
   const [formData, setFormData] = useState<SessionFormData>({
     title: "",
     description: "",
@@ -60,7 +49,7 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
     endTMonth: "",
     location: "",
     creatorId: "098bc22d-aca2-44fb-ac27-2347d4459e86",
-    divisionId: "bc539ae7-1452-4bc4-9e1b-f2b030c4215c",
+    divisionId: "",
     tags: [],
     timeSlotAndGroup: {
       groupIds: [],
@@ -101,7 +90,30 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
     }
   }
 
-  // Initial fetch of groups
+  // Fetch divisions when component mounts
+  useEffect(() => {
+    const fetchDivisions = async () => {
+      try {
+        const response = await fetch('https://csec-lab-portal-backend.onrender.com/api/division/divisions-id')
+        if (!response.ok) {
+          throw new Error('Failed to fetch divisions')
+        }
+        const data = await response.json()
+        setDivisions(data)
+        // Set default division if available
+        if (data.length > 0) {
+          setFormData(prev => ({ ...prev, divisionId: data[0].id }))
+        }
+      } catch (error) {
+        console.error('Error fetching divisions:', error)
+      
+      }
+    }
+
+    fetchDivisions()
+  }, [])
+
+  // Fetch groups when division changes
   useEffect(() => {
     fetchGroups(formData.divisionId)
   }, [])
@@ -294,7 +306,7 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
                 <SelectValue placeholder="Session Division" />
               </SelectTrigger>
               <SelectContent>
-                {DIVISIONS.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
+                {divisions.map(d => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
               </SelectContent>
             </Select>
             {/* Dropdown for groups with tag display */}
