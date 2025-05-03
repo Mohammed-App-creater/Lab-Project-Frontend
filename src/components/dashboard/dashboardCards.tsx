@@ -1,4 +1,5 @@
-import type React from "react";
+"use client";
+import { useEffect, useState } from "react";
 import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb";
 import { Users, Layers, Calendar, BarChart2 } from "lucide-react";
 
@@ -12,13 +13,6 @@ interface MetricCardProps {
   icon: React.ReactNode;
   lastUpdated: string;
 }
-
-type dataType = {
-  totalMembers: number;
-  totalDivisions: number;
-  attendanceRate: number;
-  upcomingSessions: number;
-};
 
 function MetricCard({
   title,
@@ -38,7 +32,7 @@ function MetricCard({
         <span
           className={`ml-2 flex items-center text-xs font-medium ${
             change.trend === "up" ? "text-green-500" : "text-red-500"
-          }`} // ✅ Added space inside className
+          }`}
         >
           {change.trend === "up" ? (
             <div className="flex items-center gap-1 w-[54px] rounded-[5px] p-[5px] mb-3 bg-[#30BE821A]">
@@ -59,51 +53,57 @@ function MetricCard({
   );
 }
 
-const fetchDivisions = async () => {
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_END_URL}api/dashboard/summary`
-    );
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error("Error fetching divisions:", error);
-    throw error; 
-  }
-};
+export default function MetricCardsClient() {
+  const [metrics, setMetrics] = useState(null);
 
-export async function MetricCards() {
-  const { totalDivisions, totalMembers, attendanceRate, upcomingSessions }: dataType = await fetchDivisions(); 
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACK_END_URL}api/dashboard/summary`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      setMetrics(data.data);
+    };
+    fetchMetrics();
+  }, []);
 
-  const metrics = [
+  if (!metrics) return <div>Loading...</div>;
+
+  const { totalDivisions, totalMembers, attendanceRate, upcomingSessions } = metrics;
+
+  const metricsArr = [
     {
       title: "Total Members",
       value: totalMembers,
-      change: { value: 12, trend: "up" as const },
+      change: { value: 12, trend: "up" as "up" },
       icon: <Users className="h-5 w-5 text-indigo-600" />,
-      lastUpdated: new Date().toLocaleDateString(), // ✅ Dynamic date instead of hardcoded
+      lastUpdated: new Date().toLocaleDateString(),
     },
     {
       title: "Total Divisions",
       value: totalDivisions,
-      change: { value: 9, trend: "up" as const },
+      change: { value: 9, trend: "up" as "up" },
       icon: <Layers className="h-5 w-5 text-purple-600" />,
       lastUpdated: new Date().toLocaleDateString(),
     },
     {
       title: "Attendance Rate",
       value: `${attendanceRate}%`,
-      change: { value: 4, trend: "down" as const },
+      change: { value: 4, trend: "down" as "down" },
       icon: <BarChart2 className="h-5 w-5 text-blue-600" />,
       lastUpdated: new Date().toLocaleDateString(),
     },
     {
       title: "Upcoming Sessions",
       value: upcomingSessions,
-      change: { value: 15, trend: "up" as const },
+      change: { value: 15, trend: "up" as "up" },
       icon: <Calendar className="h-5 w-5 text-blue-600" />,
       lastUpdated: new Date().toLocaleDateString(),
     },
@@ -111,15 +111,8 @@ export async function MetricCards() {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
-      {metrics.map((metric) => (
-        <MetricCard
-          key={metric.title}
-          title={metric.title}
-          value={metric.value}
-          change={metric.change}
-          icon={metric.icon}
-          lastUpdated={metric.lastUpdated}
-        />
+      {metricsArr.map((metric) => (
+        <MetricCard key={metric.title} {...metric} />
       ))}
     </div>
   );
