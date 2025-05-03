@@ -4,6 +4,7 @@ import "./globals.css";
 import { Suspense } from "react";
 import { ReactQueryProvider } from "@/lib/react-query-provider";
 import { LoadingSpinner } from "@/components/global/login/loading";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,8 +37,9 @@ export default function RootLayout({
       >
         <ReactQueryProvider>
           <Suspense fallback={<LoadingSpinner fullPage={true} />}>
-            {children}
-          </Suspense>
+          {children}
+        </Suspense>
+        <Toaster richColors position="top-right" />
         </ReactQueryProvider>
       </body>
     </html>

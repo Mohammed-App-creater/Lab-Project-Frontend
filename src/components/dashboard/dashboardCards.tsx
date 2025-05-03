@@ -1,5 +1,3 @@
-"use client";
-
 import type React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb";
@@ -16,6 +14,7 @@ interface MetricCardProps {
   icon: React.ReactNode;
   lastUpdated: string;
 }
+
 
 type DataType = {
   totalMembers: number;
@@ -63,6 +62,7 @@ function MetricCard({
   );
 }
 
+
 // Do_Not_Tell_To_Anyone_Please
 
 const fetchSummary = async (): Promise<DataType> => {
@@ -90,18 +90,21 @@ export function MetricCards() {
 
   const { totalMembers, totalDivisions, attendanceRate, upcomingSessions } = data;
 
-  const metrics = [
+
+  const { totalDivisions, totalMembers, attendanceRate, upcomingSessions } = metrics;
+
+  const metricsArr = [
     {
       title: "Total Members",
       value: totalMembers,
-      change: { value: 12, trend: "up" as const },
+      change: { value: 12, trend: "up" as "up" },
       icon: <Users className="h-5 w-5 text-indigo-600" />,
       lastUpdated: new Date().toLocaleDateString(),
     },
     {
       title: "Total Divisions",
       value: totalDivisions,
-      change: { value: 9, trend: "up" as const },
+      change: { value: 9, trend: "up" as "up" },
       icon: <Layers className="h-5 w-5 text-purple-600" />,
       lastUpdated: new Date().toLocaleDateString(),
     },
@@ -115,7 +118,7 @@ export function MetricCards() {
     {
       title: "Upcoming Sessions",
       value: upcomingSessions,
-      change: { value: 15, trend: "up" as const },
+      change: { value: 15, trend: "up" as "up" },
       icon: <Calendar className="h-5 w-5 text-blue-600" />,
       lastUpdated: new Date().toLocaleDateString(),
     },
@@ -123,15 +126,8 @@ export function MetricCards() {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
-      {metrics.map((metric) => (
-        <MetricCard
-          key={metric.title}
-          title={metric.title}
-          value={metric.value}
-          change={metric.change}
-          icon={metric.icon}
-          lastUpdated={metric.lastUpdated}
-        />
+      {metricsArr.map((metric) => (
+        <MetricCard key={metric.title} {...metric} />
       ))}
     </div>
   );
