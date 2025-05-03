@@ -70,6 +70,7 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
   // Fetch groups when division changes
   const fetchGroups = async (divisionId: string) => {
     try {
+      if (!divisionId) return;
       const response = await fetch(`https://csec-lab-portal-backend.onrender.com/api/division/groups`, {
         method: 'POST',
         headers: {
@@ -116,7 +117,7 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
   // Fetch groups when division changes
   useEffect(() => {
     fetchGroups(formData.divisionId)
-  }, [])
+  }, [divisions, formData.divisionId])
 
   // Close calendar on outside click
   useEffect(() => {

@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
 
-const BASE_URL = "https://csec-lab-portal-backend.onrender.com";
 
 interface SocialLink {
   id: string;
@@ -52,63 +51,8 @@ interface UserStore {
   logout: () => void;
 }
 
-export const useUserStore = create<UserStore>((set) => ({
-  token: null,
-  user: null,
-  loading: false,
-  error: null,
+// Removed duplicate declaration of useUserStore
 
-  login: async (email, password, remember) => {
-    set({ loading: true, error: null });
-
-    try {
-      // Step 1: Login
-      const loginRes = await axios.post(`${BASE_URL}/api/auth/login`, {
-        email,
-        password,
-        remember,
-      });
-
-      const { token, user } = loginRes.data;
-
-      // Step 2: Fetch full profile using userId
-      const profileRes = await axios.post(
-        `${BASE_URL}/api/user/userProfile`,
-        { userId: user.id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      set({
-        token,
-        user: profileRes.data,
-        loading: false,
-      });
-
-      // Optional: persist token if remember is true
-      if (remember) {
-        localStorage.setItem("token", token);
-      }
-    } catch (err: any) {
-      set({
-        error: err.response?.data?.message || "Login failed",
-        loading: false,
-      });
-    }
-  },
-
-  logout: () => {
-    localStorage.removeItem("token");
-    set({
-      token: null,
-      user: null,
-    });
-  },
-}));
-=======
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 interface SocialLink {
@@ -141,18 +85,18 @@ interface Role {
 interface UserProfile {
     id: string;
     firstName: string;
-    middleName: string | null;
+    middleName: string
     lastName: string;
     gender: string;
     email: string;
     phone_number: string;
     telegramUserName: string;
-    bio: string | null;
-    berthDate: string | null;
-    profileImageUrl: string | null;
+    bio: string;
+    berthDate: string ;
+    profileImageUrl: string ;
     clubStatus: string;
-    specialty: string | null;
-    cvUrl: string | null;
+    specialty: string;
+    cvUrl: string;
     lastSeen: string;
     role: string;
     Role: Role[];

@@ -1,3 +1,4 @@
+'use client'
 import type React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb";
@@ -91,20 +92,19 @@ export function MetricCards() {
   const { totalMembers, totalDivisions, attendanceRate, upcomingSessions } = data;
 
 
-  const { totalDivisions, totalMembers, attendanceRate, upcomingSessions } = metrics;
 
   const metricsArr = [
     {
       title: "Total Members",
       value: totalMembers,
-      change: { value: 12, trend: "up" as "up" },
+      change: { value: 12, trend: "up" },
       icon: <Users className="h-5 w-5 text-indigo-600" />,
       lastUpdated: new Date().toLocaleDateString(),
     },
     {
       title: "Total Divisions",
       value: totalDivisions,
-      change: { value: 9, trend: "up" as "up" },
+      change: { value: 9, trend:  "up" },
       icon: <Layers className="h-5 w-5 text-purple-600" />,
       lastUpdated: new Date().toLocaleDateString(),
     },
@@ -118,7 +118,7 @@ export function MetricCards() {
     {
       title: "Upcoming Sessions",
       value: upcomingSessions,
-      change: { value: 15, trend: "up" as "up" },
+      change: { value: 15, trend: "up" },
       icon: <Calendar className="h-5 w-5 text-blue-600" />,
       lastUpdated: new Date().toLocaleDateString(),
     },

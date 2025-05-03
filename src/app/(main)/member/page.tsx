@@ -4,10 +4,9 @@
 import AddNewMember from "@/components/member/add.member.card"
 import MemberTable from "@/components/member/member.table"
 import { useState } from "react"
-import { useUserStore } from "@/store/userStore" // Assuming this is where userStore is defined
 
 export default function MemberPage() {
-  const { user} = useUserStore()
+
   const [showForm, setShowForm] = useState(false)
 
   return (
@@ -15,12 +14,11 @@ export default function MemberPage() {
       {/* Apply blur when modal is open */}
       <div className={`${showForm ? "blur-sm pointer-events-none select-none   " : ""} `}>
         <MemberTable
-          onAddMember={() => setShowForm(true)}
-        />
+          onAddMember={() => setShowForm(true)} userRole={"admin"}        />
       </div>
 
       {/* Modal Form */}
-      {showForm && user?.Role?.name === "admin" && <AddNewMember onCancel={() => setShowForm(false)} />}
+      {showForm &&<AddNewMember onCancel={() => setShowForm(false)} />}
     </div>
   )
 
