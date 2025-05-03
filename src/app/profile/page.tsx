@@ -15,7 +15,7 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   
 
-  const userId = "192de509-4940-4af1-a407-fed9b417b51e";
+  const userId = "355569f7-0930-4146-bfbf-b5644dc77427";
   const queryClient = useQueryClient();
 
   const { data: user, isLoading, error } = useQuery<User>({

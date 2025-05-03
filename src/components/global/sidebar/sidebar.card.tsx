@@ -1,7 +1,8 @@
 import React from 'react'
 import SidebarItem from './sidebar.item'
 import { Card, CardContent } from "@/components/ui/card"
-import DarkLight from './dark.light'
+import DarkLight from '@/components/global/sidebar/dark.light'
+
 
 
 function SidebarCard() {

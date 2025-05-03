@@ -19,7 +19,8 @@ export default function Page() {
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-5xl mx-4 p-6 border rounded-lg ">
+
+          <div className="max-w-5xl mx-4 p-4 border border-[#A2A1A833] rounded-lg ">
             <ResourceManagement />
           </div>
         </div>

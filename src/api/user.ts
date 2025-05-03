@@ -10,7 +10,7 @@ export const fetchUserProfile = async (userId: string): Promise<User> => {
     },
     body: JSON.stringify({ userId }),
   });
-
+  
   if (!response.ok) {
     throw new Error("Failed to fetch user profile");
   }

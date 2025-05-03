@@ -80,8 +80,7 @@ export default function RequiredInfoTab({
         } finally {
           setSubmitting(false);
         }
-      }}
-    >
+      }}>
       {({ handleChange, setFieldValue, isSubmitting }) => (
         <Form>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-400">
@@ -178,29 +177,30 @@ export default function RequiredInfoTab({
 
             {/* Gender */}
             <div>
-   <Field name="gender">
-    {({ field, form }: { field: any; form: any }) => (
-      <Select
-        value={field.value}
-        onValueChange={(val) => form.setFieldValue("gender", val)}
-      >
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Gender" className="text-gray-500"/>
-        </SelectTrigger>
-          <SelectContent>
-              <SelectItem value="Male">Male</SelectItem>
-              <SelectItem value="Female">Female</SelectItem>
-              <SelectItem value="Other">Other</SelectItem>
-           </SelectContent>
-         </Select>
-        )}
-        </Field>
-     <ErrorMessage
-      name="gender"
-      component="div"
-      className="text-red-500 text-sm mt-1"
-      />
-    </div>
+              <Field name="gender">
+                {({ field, form }: { field: any; form: any }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={(val) => form.setFieldValue("gender", val)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue
+                        placeholder="Gender"
+                        className="text-gray-500"
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              </Field>
+              <ErrorMessage
+                name="gender"
+                component="div"
+                className="text-red-500 text-sm mt-1"
+              />
+            </div>
 
             {/* Telegram Handle */}
             <div>
@@ -258,15 +258,13 @@ export default function RequiredInfoTab({
               variant="outline"
               type="button"
               onClick={onCancel}
-              disabled={isSubmitting}
-            >
+              disabled={isSubmitting}>
               Cancel
             </Button>
             <Button
               type="submit"
               className="bg-blue-800 hover:bg-blue-700 text-white"
-              disabled={isSubmitting}
-            >
+              disabled={isSubmitting}>
               {isSubmitting ? "Updating..." : "Update"}
             </Button>
           </div>

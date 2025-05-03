@@ -23,7 +23,7 @@ export default function ProgressPage() {
         </header>
 
         <main className="flex-1 overflow-y-auto p-4 w-[1030px]">
-          <ProfileHeader onEdit={handleToggleEdit} />
+          <ProfileHeader onEdit={handleToggleEdit} user={undefined} />
 
           <div className="flex gap-6 mt-5">
             <ProfileSidebar activePage="progress" />
