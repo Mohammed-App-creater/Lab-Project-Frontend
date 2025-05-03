@@ -7,8 +7,8 @@ import { useState } from "react"
 
 
 export default function MemberPage() {
-  const [showForm, setShowForm] = useState(false)
-
+  const [showForm, setShowForm] = useState(false);
+  
   return (
     <div className="relative h-full ">
       {/* Apply blur when modal is open */}

@@ -28,6 +28,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import PageLoader from "../global/login/pageLoader";
 
 type Member = {
   id: string;
@@ -202,7 +203,7 @@ export default function MemberTable({
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return PageLoader({ fullPage: false });
   if (error) return <p>Error: {error}</p>;
 
   return (
