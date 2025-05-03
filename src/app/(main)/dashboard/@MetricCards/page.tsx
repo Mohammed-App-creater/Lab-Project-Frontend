@@ -1,7 +1,8 @@
 
-import MetricCardsClient from "@/components/dashboard/dashboardCards";
-import MetricCardsLoading from "@/components/dashboard/MetricCardsLoading";
 import { Suspense } from 'react';
+import { MetricCards as MetricCard } from '@/components/dashboard/dashboardCards'
+
+
 
 export default function MetricCards() {
   return (
@@ -15,3 +16,4 @@ export default function MetricCards() {
 
 
 
+ 

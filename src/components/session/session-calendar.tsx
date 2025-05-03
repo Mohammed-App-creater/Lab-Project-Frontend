@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import  PageLoader  from "../global/login/pageLoader"
 
 export interface Session {
   id: string;
@@ -80,9 +81,9 @@ export function SessionCalendar({
             <CalendarIcon className="h-5 w-5 text-primary" />
           </div>
         </CardHeader>
-        <CardContent className="pb-6 pt-0">
+        <CardContent className="pb-6 pt-0 flex flex-col items-center justify-center">
           <div className="flex items-center justify-center h-64">
-            <div className="text-muted-foreground">Loading sessions...</div>
+            <PageLoader fullPage={false} />
           </div>
         </CardContent>
       </Card>

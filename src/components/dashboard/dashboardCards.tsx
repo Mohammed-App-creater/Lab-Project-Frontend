@@ -1,7 +1,8 @@
-"use client";
-import { useEffect, useState } from "react";
+import type React from "react";
+import { useQuery } from "@tanstack/react-query";
 import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb";
 import { Users, Layers, Calendar, BarChart2 } from "lucide-react";
+import MetricCardsLoading from "./MetricCardsLoading";
 
 interface MetricCardProps {
   title: string;
@@ -13,6 +14,14 @@ interface MetricCardProps {
   icon: React.ReactNode;
   lastUpdated: string;
 }
+
+
+type DataType = {
+  totalMembers: number;
+  totalDivisions: number;
+  attendanceRate: number;
+  upcomingSessions: number;
+};
 
 function MetricCard({
   title,
@@ -53,28 +62,34 @@ function MetricCard({
   );
 }
 
-export default function MetricCardsClient() {
-  const [metrics, setMetrics] = useState(null);
 
-  useEffect(() => {
-    const fetchMetrics = async () => {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_END_URL}api/dashboard/summary`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      setMetrics(data.data);
-    };
-    fetchMetrics();
-  }, []);
+// Do_Not_Tell_To_Anyone_Please
 
-  if (!metrics) return <div>Loading...</div>;
+const fetchSummary = async (): Promise<DataType> => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/dashboard/summary`,{
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (!res.ok) throw new Error("Failed to fetch summary data");
+  const json = await res.json();
+  return json.data;
+};
+
+export function MetricCards() {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["dashboard-summary"],
+    queryFn: fetchSummary,
+  });
+
+  if (isLoading) return <MetricCardsLoading />;
+
+  if (isError || !data) return <div>Error loading metrics</div>;
+
+  const { totalMembers, totalDivisions, attendanceRate, upcomingSessions } = data;
+
 
   const { totalDivisions, totalMembers, attendanceRate, upcomingSessions } = metrics;
 

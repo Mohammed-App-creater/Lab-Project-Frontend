@@ -1,17 +1,48 @@
+
+
 export type AttendanceStatus = "present" | "absent" | "excused"
 
+export type data = {
+  id: string;
+  firstName: string;
+  middleName: string | null;
+  lastName: string;
+  gender: "Male" | "Female" | "Other";
+  email: string;
+  phone_number: string;
+  telegramUserName: string | null;
+  bio: string | null;
+  berthDate: string | null;
+  profileImageUrl: string | null;
+  clubStatus: "Active" | "Inactive" | string; // Add other possible statuses if known
+  specialty: string | null;
+  cvUrl: string | null;
+  lastSeen: string;
+  roleId: string;
+  Role: {
+    id: string;
+    name: string;
+  };
+  universityInfo: {
+    currentYear: number;
+    universityId: string;
+    status: "onCampus" | "offCampus" | string; // Add other possible statuses if known
+    expectedGraduationYear: number;
+  };
+};
+
 export type Member = {
-  id: string
-  name: string
-  role: string
-  avatar: string
-  attendance?: AttendanceStatus
+  data: data[]
+  limit: string;
+  page: string;
+  total: string,
+  totalPages: string,
 }
 
 export type Group = {
   id: string
   name: string
-  members: Member[]
+  members: Member
 }
 
 export type Session = {
@@ -21,4 +52,15 @@ export type Session = {
   date: string
   status: "ended" | "planned"
   groups: Group[]
+  timeSlots: SessionTimeSlot[]
+  tags: string[]
+}
+
+export type SessionTimeSlot = {
+  id: string;
+  sessionId: string | null;
+  date: Date;
+  startTime: Date;
+  endTime: Date;
+  status: 'Ended' | 'Planned' | 'Ongoing' | 'Cancelled';
 }

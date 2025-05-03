@@ -1,229 +1,431 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import type { Session, AttendanceStatus } from "@/lib/types"
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import type { SessionTimeSlot } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import { Plus, Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import Link from "next/link"
-import { HeadsUp } from "./headsup.card"
+import PageLoader from  "@/components/global/login/pageLoader";
 
-type AttendanceTableProps = {
-  session: Session
-  groupId: string
-  onSave: () => void
+// Define the attendance record type
+
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  profileImageUrl: string | null;
+}
+interface AttendanceRecord {
+  id: string;
+  userId: string;
+  user: User;
+  sessionId: string;
+  eventId: string | null;
+  status: "UNMARKED" | "PRESENT" | "ABSENT";
+  timestamp: SessionTimeSlot;
+  headsUpId: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export default function AttendanceTable({ session, groupId, onSave }: AttendanceTableProps) {
-  // Find the selected group
-  const selectedGroup = session.groups.find((group) => group.id === groupId)
+// Fetch attendance data
+const fetchAttendance = async (
+  sessionId: string,
+  groupId: string
+): Promise<AttendanceRecord[]> => {
+  const response = await axios.get(
+    `http://localhost:3000/api/attendance/sessions/${sessionId}/groupId/${groupId}`
+  );
+  return response.data;
+};
 
-  const [groupMembers, setGroupMembers] = useState(selectedGroup ? selectedGroup.members : [])
+// Create session attendance if empty
+const createSessionAttendance = async (sessionId: string): Promise<void> => {
+  const response = await axios.post(
+    `http://localhost:3000/api/attendance/create-session-attendance/${sessionId}`
+  );
+  return response.data;
+};
+
+// Save attendance (dummy API)
+const saveAttendance = async (
+  attendanceData: AttendanceRecord[]
+): Promise<{ success: boolean }> => {
+  console.log("Saving attendance:", attendanceData);
+  return { success: true };
+};
+
+const Attendance = ({
+  sessionId,
+  groupId,
+}: {
+  sessionId: string;
+  groupId: string;
+}) => {
+  const queryClient = useQueryClient();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showHeadsUpPopup, setShowHeadsUpPopup] = useState<string | null>(null);
+  const [headsUpReason, setHeadsUpReason] = useState("");
+  const [showSaveToast, setShowSaveToast] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState<
+    "All" | "Present" | "Absent" | "Unmarked"
+  >("All");
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const recordsPerPage = 10;
+  const totalRecords = 60;
+
+
+  const [selectedHeadsUpType, setSelectedHeadsUpType] = useState<string | null>(null);
+
+  // Fetch attendance data using React Query
+  const { data: attendanceData, refetch, isLoading } = useQuery<AttendanceRecord[]>({
+    queryKey: ["attendance", sessionId, groupId],
+    queryFn: () => fetchAttendance(sessionId, groupId),
+    onSuccess: (data) => {
+      if (data.length === 0) {
+        createAttendanceMutation.mutate();
+      } else {
+        console.log("Attendance data fetched:", data);
+        setLocalAttendance(data);
+      }
+    },
+  });
+
+  // Local state to manage attendance updates
+  const [localAttendance, setLocalAttendance] = useState<AttendanceRecord[]>(
+    []
+  );
 
   useEffect(() => {
-    if (selectedGroup) {
-      setGroupMembers(selectedGroup.members)
-    } else {
-      setGroupMembers([])
-    }
-  }, [selectedGroup])
+    console.log("Attendance Data:", attendanceData);
+  }, [attendanceData]);
 
-  const [attendanceData, setAttendanceData] = useState<Record<string, AttendanceStatus>>(() => {
-    // Initialize with existing attendance data or default to "present"
-    if (selectedGroup) {
-      return selectedGroup.members.reduce(
-        (acc, member) => {
-          acc[member.id] = member.attendance || "present"
-          return acc
-        },
-        {} as Record<string, AttendanceStatus>,
-      )
-    } else {
-      return {}
-    }
-  })
+  // Mutation to create session attendance
+  const createAttendanceMutation = useMutation({
+    mutationFn: () => createSessionAttendance(sessionId),
+    onSuccess: () => {
+      refetch();
+    },
+  });
 
+  // Mutation to save attendance
+  const saveAttendanceMutation = useMutation({
+    mutationFn: saveAttendance,
+    onSuccess: () => {
+      setShowSaveToast(true);
+      setTimeout(() => setShowSaveToast(false), 2000);
+    },
+  });
+
+  // Update local state when attendance data changes
   useEffect(() => {
-    if (selectedGroup) {
-      setAttendanceData(
-        groupMembers.reduce(
-          (acc, member) => {
-            acc[member.id] = member.attendance || "present"
-            return acc
-          },
-          {} as Record<string, AttendanceStatus>,
-        ),
-      )
+    console.log("Attendance Data Updated:", attendanceData);
+    if (attendanceData && attendanceData.length > 0) {
+      setLocalAttendance(attendanceData);
     }
-  }, [groupMembers, selectedGroup])
+  }, [attendanceData]);
 
-  if (!selectedGroup) {
-    return <div>Group not found</div>
-  }
+  // Dummy member names mapping to user IDs
 
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
-  const totalPages = Math.ceil(groupMembers.length / itemsPerPage)
 
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const currentMembers = groupMembers.slice(startIndex, startIndex + itemsPerPage)
+  // Handle status change (Present/Absent)
+  const handleStatusChange = (id: string, status: "PRESENT" | "ABSENT") => {
+    const updatedAttendance = localAttendance.map((record) =>
+      record.id === id ? { ...record, status } : record
+    );
+    setLocalAttendance(updatedAttendance);
+  };
 
-  const handleAttendanceChange = (memberId: string, status: AttendanceStatus) => {
-    setAttendanceData((prev) => ({
-      ...prev,
-      [memberId]: status,
-    }))
-  }
+  // Handle Heads Up submission
+  const handleHeadsUpSubmit = (recordId: string) => {
+    const updatedAttendance = localAttendance.map((record) =>
+      record.id === recordId ? { ...record, headsUpId: "heads-up-123" } : record
+    );
+    setLocalAttendance(updatedAttendance);
+    setShowHeadsUpPopup(null);
+    setHeadsUpReason("");
+  };
 
-  const handleSave = async () => {
-    // In a real app, you would save the attendance data to the server here
-    console.log("Saving attendance data for group:", selectedGroup.name, attendanceData)
+  // Handle Save button click
+  const handleSave = () => {
+    saveAttendanceMutation.mutate(localAttendance);
+  };
 
-    // Mock API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
+  // Filter and search logic
+  const filteredData = localAttendance
+    .filter((record) => {
+      if (filterStatus === "All") return true;
+      return record.status === filterStatus.toUpperCase();
+    })
+    .filter((record) => {
+      return (
+        record.user.firstName
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        record.user.lastName
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      );
+    });
 
-    onSave()
-  }
+  // Update total records based on filtered data
+  const totalFilteredRecords = filteredData.length;
 
-  const [showModal, setShowModal] = useState(false)
+  // Pagination logic for filtered data
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * recordsPerPage,
+    currentPage * recordsPerPage
+  );
+  console.log("Paginated Data:", paginatedData);
+  const totalPages = Math.ceil(totalFilteredRecords / recordsPerPage);
+
+  // Reset page to 1 when filters or search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterStatus]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">{session.title}</h2>
-          <p className="text-muted-foreground">{selectedGroup.name} - Attendance</p>
-        </div>
-        <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700 text-white">
-          Save
-        </Button>
-      </div>
-
-      <div className="relative w-full max-w-sm">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input type="search" placeholder="Search members" className="w-full pl-8 bg-white" />
-      </div>
-
-      <div className="bg-white rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[250px]">Member Name</TableHead>
-              <TableHead className="text-center">Attendance</TableHead>
-              <TableHead className="text-center">Excused</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentMembers.map((member) => (
-              <TableRow key={member.id}>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Avatar>
-                      <AvatarImage src={member.avatar || "/placeholder.svg"} alt={member.name} />
-                      <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <span>{member.name}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex justify-center gap-2">
-                    <Button
-                      variant={attendanceData[member.id] === "present" ? "default" : "outline"}
-                      size="sm"
-                      className={`rounded-full ${
-                        attendanceData[member.id] === "present"
-                          ? "bg-green-500 hover:bg-green-600 text-white"
-                          : "text-green-500 border-green-200 hover:bg-green-50"
-                      }`}
-                      onClick={() => handleAttendanceChange(member.id, "present")}
-                    >
-                      Present
-                    </Button>
-                    <Button
-                      variant={attendanceData[member.id] === "absent" ? "default" : "outline"}
-                      size="sm"
-                      className={`rounded-full ${
-                        attendanceData[member.id] === "absent"
-                          ? "bg-red-500 hover:bg-red-600 text-white"
-                          : "text-red-500 border-red-200 hover:bg-red-50"
-                      }`}
-                      onClick={() => handleAttendanceChange(member.id, "absent")}
-                    >
-                      Absent
-                    </Button>
-                  </div>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Button
-                              onClick={() => setShowModal(true)}
-                              className="bg-blue-600 hover:bg-blue-700 text-white"
-                            >
-                              <Plus className="mr-2 h-4 w-4" /> Heads Up
-                            </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">
-            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, groupMembers.length)} out of{" "}
-            {groupMembers.length} records
+    <div className="p-4">
+      {/* Search and Filter */}
+      <div className="flex justify-between mb-4">
+        <input
+          type="text"
+          placeholder="Search"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border rounded p-2 w-1/3"
+        />
+        <div className="flex gap-2">
+          <button
+            onClick={handleSave}
+            className="bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            Save
+          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+              className="border px-4 py-2 rounded flex items-center gap-2"
+            >
+              Filter
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            {showFilterDropdown && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg z-10">
+                <button
+                  onClick={() => {
+                    setFilterStatus("All");
+                    setShowFilterDropdown(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => {
+                    setFilterStatus("Present");
+                    setShowFilterDropdown(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                >
+                  Present
+                </button>
+                <button
+                  onClick={() => {
+                    setFilterStatus("Absent");
+                    setShowFilterDropdown(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                >
+                  Absent
+                </button>
+                <button
+                  onClick={() => {
+                    setFilterStatus("Unmarked");
+                    setShowFilterDropdown(false);
+                  }}
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                >
+                  Unmarked
+                </button>
+              </div>
+            )}
           </div>
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    if (currentPage > 1) setCurrentPage(currentPage - 1)
-                  }}
-                />
-              </PaginationItem>
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <PaginationItem key={i}>
-                  <PaginationLink
-                    href="#"
-                    isActive={currentPage === i + 1}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      setCurrentPage(i + 1)
-                    }}
-                  >
-                    {i + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    if (currentPage < totalPages) setCurrentPage(currentPage + 1)
-                  }}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+        </div>
+      </div>
+
+      {/* Attendance Table */}
+      <div className="rounded">
+        <div className="grid grid-cols-3  p-4 font-semibold border-b">
+          <div>Member Name</div>
+          <div>Attendance</div>
+          <div className="flex justify-end pr-6" >Excused</div>
+        </div>
+        {paginatedData.map((record) => (
+          <div
+            key={record.id}
+            className="grid grid-cols-3 p-4 border-b items-end"
+          >
+            <div className="flex items-center gap-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={record.user.profileImageUrl ?? ""}
+                    alt={`${record.user.firstName} ${record.user.lastName}`}
+                  />
+                  <AvatarFallback>
+                    {record.user.firstName?.charAt(0) || "UN"}
+                  </AvatarFallback>
+                </Avatar>
+              <span>
+                {`${record.user.firstName} ${record.user.lastName}` ||
+                  "Unknown Member"}
+              </span>
+              {record.headsUpId && (
+                <span className="ml-2 text-blue-600">⚠️</span>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleStatusChange(record.id, "PRESENT")}
+                className={`px-4 py-1 rounded-4xl ${
+                  record.status === "PRESENT"
+                    ? "bg-[#3FC28A] text-white"
+                    : "dark:bg-gray-800 border border-gray-300"
+                }`}
+              >
+                Present
+              </button>
+              <button
+                onClick={() => handleStatusChange(record.id, "ABSENT")}
+                className={`px-4  rounded-4xl ${
+                  record.status === "ABSENT"
+                    ? "bg-red-500 text-white"
+                    : "dark:bg-gray-800 border border-gray-300"
+                }`}
+              >
+                Absent
+              </button>
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowHeadsUpPopup(record.id)}
+                className="bg-[#003087]  text-white px-4 py-2 rounded-lg"
+              >
+                Heads Up
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-between mt-4">
+        <div>
+          Showing{" "}
+          {Math.min(
+            (currentPage - 1) * recordsPerPage + 1,
+            totalFilteredRecords
+          )}{" "}
+          to {Math.min(currentPage * recordsPerPage, totalFilteredRecords)} out
+          of {totalFilteredRecords} records
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 border rounded disabled:opacity-50"
+          >
+            {"<"}
+          </button>
+          {[1, 2, 3, 4].map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`px-4 py-2 border rounded ${
+                currentPage === page ? "bg-blue-600 text-white" : ""
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 border rounded disabled:opacity-50"
+          >
+            {">"}
+          </button>
+        </div>
+      </div>
+
+      {isLoading ? (<PageLoader fullPage={false}  />) : (
+        <>
+      {showHeadsUpPopup && (
+        <div className="fixed inset-0 bg-[#00000089] bg-opacity-50 flex items-center  justify-center">
+          <div className=" flex flex-col gap-4  p-6 rounded-2xl bg-white dark:bg-gray-800 w-1/5">
+            <h2 className="text-lg dark:text-white font-bold mb-4">Heads Up</h2>
+            <div className="mb-4">
+              <select onChange={(e) => {setSelectedHeadsUpType(e.target.value)}}  className={`w-full border ${selectedHeadsUpType || selectedHeadsUpType === ""? "" : "text-gray-500" } rounded-lg p-3`} >
+                <option className="" value="" disabled selected>
+                  Select Type
+                </option>
+                <option value="SICK">SICK</option>
+                <option value="TRAVEL">TRAVEL</option>
+                <option value="PERSONAL">PERSONAL</option>
+                <option value="OTHER">OTHER</option>
+              </select>
+            </div>
+            <div className="mb-4">
+              <textarea
+                className="w-full border rounded-lg p-4"
+                rows={3}
+                placeholder="Enter reason for heads up"
+                value={headsUpReason}
+                onChange={(e) => setHeadsUpReason(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-2 w-full">
+              <button
+                onClick={() => setShowHeadsUpPopup(null)}
+                className="border border-gray-300 grow px-4 py-3 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleHeadsUpSubmit(showHeadsUpPopup)}
+                className="bg-[#003087] grow text-white px-4 py-3 rounded-lg"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )} </>)}
+
+      {/* Save Toast */}
+      {showSaveToast && (
+        <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded">
+          Attendance Saved Successfully!
         </div>
       )}
-       {showModal && <HeadsUp onClose={() => setShowModal(false)} />}
     </div>
+  );
+};
 
-    
-  )
-}
+export default Attendance;
