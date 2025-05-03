@@ -374,32 +374,52 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
                     showOutsideDays={false}
                     className="border-none shadow-none p-0"
                     classNames={{
+                      // Container for all months in the calendar
                       months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                      // Individual month container
                       month: "space-y-4 w-full",
-                      caption: "flex justify-center relative items-center h-10",
-                      caption_label: "text-xl font-semibold",
-                      nav: "space-x-1 flex items-center",
+                      // Month caption (title) container
+                      caption: "flex justify-center relative items-center h-12 mb-2",
+                      // Month caption text styling
+                      caption_label: "text-3xl font-extrabold text-black text-center w-full",
+                      // Navigation buttons container
+                      nav: "space-x-1 flex items-center absolute left-80 right-0 justify-between px-2",
+                      // Navigation button base styling
                       nav_button: cn(
-                        "h-9 w-9 bg-white hover:bg-gray-100 p-0 opacity-100 hover:opacity-100 rounded-full flex items-center justify-center"
+                        "h-10 w-10 bg-white border border-gray-200 shadow-sm hover:bg-[#00346b] hover:text-white p-0 opacity-100 hover:opacity-100 rounded-xl flex items-center justify-center transition-colors duration-200"
                       ),
-                      nav_button_previous: "absolute left-1",
-                      nav_button_next: "absolute right-1",
+                      // Previous month button
+                      nav_button_previous: "",
+                      // Next month button
+                      nav_button_next: "",
+                      // Calendar table container
                       table: "w-full border-collapse space-y-1",
+                      // Header row styling
                       head_row: "flex w-full",
-                      head_cell: "text-gray-500 rounded-md w-14 font-normal text-base",
+                      // Header cell styling (weekday names)
+                      head_cell: "text-gray-400 rounded-md w-14 font-semibold text-base text-center text-[15px]",
+                      // Calendar row styling
                       row: "flex w-full mt-2",
+                      // Individual cell styling
                       cell: cn(
                         "relative p-0 text-center text-base focus-within:relative focus-within:z-20 [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-gray-100/50",
                         "[&:has([aria-selected])]:bg-gray-100"
                       ),
+                      // Day button styling
                       day: cn(
-                        "h-14 w-14 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 rounded-full"
+                        "h-12 w-12 p-0 font-medium aria-selected:opacity-100 hover:bg-[#00346b] hover:text-white rounded-2xl transition-colors duration-200 text-lg text-black"
                       ),
+                      // End of range styling
                       day_range_end: "day-range-end",
-                      day_selected: "bg-[#00346b] text-white hover:bg-[#00346b] hover:text-white focus:bg-[#00346b] focus:text-white",
-                      day_today: "border border-[#00346b] text-[#00346b]",
+                      // Selected day styling
+                      day_selected: "bg-[#00346b] text-white hover:bg-[#00346b] hover:text-white focus:bg-[#00346b] focus:text-white rounded-2xl font-bold",
+                      // Today's date styling
+                      day_today: "bg-white border-2 border-[#00346b] text-[#00346b] font-bold rounded-2xl",
+                      // Days outside current month styling
                       day_outside: "day-outside text-gray-300 opacity-50 aria-selected:bg-gray-100/50 aria-selected:text-gray-300 aria-selected:opacity-30",
+                      // Disabled days styling
                       day_disabled: "text-gray-300 opacity-50",
+                      // Hidden days styling
                       day_hidden: "invisible",
                     }}
                   />
@@ -425,32 +445,52 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
                     showOutsideDays={false}
                     className="border-none shadow-none p-0"
                     classNames={{
+                      // Container for all months in the calendar
                       months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                      // Individual month container
                       month: "space-y-4 w-full",
-                      caption: "flex justify-center relative items-center h-10",
-                      caption_label: "text-xl font-semibold",
-                      nav: "space-x-1 flex items-center",
+                      // Month caption (title) container
+                      caption: "flex justify-center relative items-center h-12 mb-2",
+                      // Month caption text styling
+                      caption_label: "text-3xl font-extrabold text-black text-center w-full",
+                      // Navigation buttons container
+                      nav: "space-x-1 flex items-center absolute left-80 right-0 justify-between px-2",
+                      // Navigation button base styling
                       nav_button: cn(
-                        "h-9 w-9 bg-white hover:bg-gray-100 p-0 opacity-100 hover:opacity-100 rounded-full flex items-center justify-center"
+                        "h-10 w-10 bg-white border border-gray-200 shadow-sm hover:bg-[#00346b] hover:text-white p-0 opacity-100 hover:opacity-100 rounded-xl flex items-center justify-center transition-colors duration-200"
                       ),
-                      nav_button_previous: "absolute left-1",
-                      nav_button_next: "absolute right-1",
+                      // Previous month button
+                      nav_button_previous: "",
+                      // Next month button
+                      nav_button_next: "",
+                      // Calendar table container
                       table: "w-full border-collapse space-y-1",
+                      // Header row styling
                       head_row: "flex w-full",
-                      head_cell: "text-gray-500 rounded-md w-14 font-normal text-base",
+                      // Header cell styling (weekday names)
+                      head_cell: "text-gray-400 rounded-md w-14 font-semibold text-base text-center text-[15px]",
+                      // Calendar row styling
                       row: "flex w-full mt-2",
+                      // Individual cell styling
                       cell: cn(
                         "relative p-0 text-center text-base focus-within:relative focus-within:z-20 [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-gray-100/50",
                         "[&:has([aria-selected])]:bg-gray-100"
                       ),
+                      // Day button styling
                       day: cn(
-                        "h-14 w-14 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 rounded-full"
+                        "h-12 w-12 p-0 font-medium aria-selected:opacity-100 hover:bg-[#00346b] hover:text-white rounded-2xl transition-colors duration-200 text-lg text-black"
                       ),
+                      // End of range styling
                       day_range_end: "day-range-end",
-                      day_selected: "bg-[#00346b] text-white hover:bg-[#00346b] hover:text-white focus:bg-[#00346b] focus:text-white",
-                      day_today: "border border-[#00346b] text-[#00346b]",
+                      // Selected day styling
+                      day_selected: "bg-[#00346b] text-white hover:bg-[#00346b] hover:text-white focus:bg-[#00346b] focus:text-white rounded-2xl font-bold",
+                      // Today's date styling
+                      day_today: "bg-white border-2 border-[#00346b] text-[#00346b] font-bold rounded-2xl",
+                      // Days outside current month styling
                       day_outside: "day-outside text-gray-300 opacity-50 aria-selected:bg-gray-100/50 aria-selected:text-gray-300 aria-selected:opacity-30",
+                      // Disabled days styling
                       day_disabled: "text-gray-300 opacity-50",
+                      // Hidden days styling
                       day_hidden: "invisible",
                     }}
                   />
