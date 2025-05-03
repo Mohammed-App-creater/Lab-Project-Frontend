@@ -110,8 +110,8 @@ export function MetricCards() {
     },
     {
       title: "Attendance Rate",
-      value: `${attendanceRate}%`,
-      change: { value: 4, trend: "down" as "down" },
+      value: `${attendanceRate.toFixed(3)}%`,
+      change: { value: 4, trend: "down" as const },
       icon: <BarChart2 className="h-5 w-5 text-blue-600" />,
       lastUpdated: new Date().toLocaleDateString(),
     },
