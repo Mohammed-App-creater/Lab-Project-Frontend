@@ -70,50 +70,52 @@ export function EventsTableView({
   return (
     <div>
       <div className="rounded-lg border bg-white overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50 border-b">
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Date</th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Event Title</th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Event Type</th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Visibility</th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Status</th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentEvents.map((event) => (
-              <tr key={event.id} className="border-b">
-                <td className="py-3 px-4 text-sm">{event.date}</td>
-                <td className="py-3 px-4 text-sm font-medium">{event.title}</td>
-                <td className="py-3 px-4 text-sm">{event.type}</td>
-                <td className="py-3 px-4">
-                  <Badge variant="outline" className={`${getVisibilityBadgeClass(event.visibility)}`}>
-                    {event.visibility}
-                  </Badge>
-                </td>
-                <td className="py-3 px-4">
-                  <Badge variant="outline" className={`${getStatusBadgeClass(event.status)}`}>
-                    {event.status}
-                  </Badge>
-                </td>
-                <td className="py-3 px-4">
-                  <div className="flex items-center gap-2">
-                    <button className="text-gray-500 hover:text-gray-700" onClick={() => onEdit && onEdit(event.id)}>
-                      <Pencil className="h-4 w-4" />
-                    </button>
-                    <button
-                      className="text-gray-500 hover:text-gray-700"
-                      onClick={() => onDelete && onDelete(event.id)}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </button>
-                  </div>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[800px]">
+            <thead>
+              <tr className="bg-gray-50 border-b">
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Date</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Event Title</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Event Type</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Visibility</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Status</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {currentEvents.map((event) => (
+                <tr key={event.id} className="border-b">
+                  <td className="py-3 px-4 text-sm">{event.date}</td>
+                  <td className="py-3 px-4 text-sm font-medium">{event.title}</td>
+                  <td className="py-3 px-4 text-sm">{event.type}</td>
+                  <td className="py-3 px-4">
+                    <Badge variant="outline" className={`${getVisibilityBadgeClass(event.visibility)}`}>
+                      {event.visibility}
+                    </Badge>
+                  </td>
+                  <td className="py-3 px-4">
+                    <Badge variant="outline" className={`${getStatusBadgeClass(event.status)}`}>
+                      {event.status}
+                    </Badge>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center gap-2">
+                      <button className="text-gray-500 hover:text-gray-700" onClick={() => onEdit && onEdit(event.id)}>
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button
+                        className="text-gray-500 hover:text-gray-700"
+                        onClick={() => onDelete && onDelete(event.id)}
+                      >
+                        <Trash className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="mt-4 flex items-center justify-between">

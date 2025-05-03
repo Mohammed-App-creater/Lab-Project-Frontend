@@ -58,46 +58,48 @@ export function SessionsTableView({
   return (
     <div>
       <div className="rounded-lg border bg-white overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50 border-b">
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Date</th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Session Title</th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Division</th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Total Groups</th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Status</th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentSessions.map((session) => (
-              <tr key={session.id} className="border-b">
-                <td className="py-3 px-4 text-sm">{session.date}</td>
-                <td className="py-3 px-4 text-sm font-medium">{session.title}</td>
-                <td className="py-3 px-4 text-sm">{session.division}</td>
-                <td className="py-3 px-4 text-sm">{session.totalGroups}</td>
-                <td className="py-3 px-4">
-                  <Badge variant="outline" className={`${getStatusBadgeClass(session.status)}`}>
-                    {session.status}
-                  </Badge>
-                </td>
-                <td className="py-3 px-4">
-                  <div className="flex items-center gap-2">
-                    <button className="text-gray-500 hover:text-gray-700" onClick={() => onEdit && onEdit(session.id)}>
-                      <Pencil className="h-4 w-4" />
-                    </button>
-                    <button
-                      className="text-gray-500 hover:text-gray-700"
-                      onClick={() => onDelete && onDelete(session.id)}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </button>
-                  </div>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[800px]">
+            <thead>
+              <tr className="bg-gray-50 border-b">
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Date</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Session Title</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Division</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Total Groups</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Status</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {currentSessions.map((session) => (
+                <tr key={session.id} className="border-b">
+                  <td className="py-3 px-4 text-sm">{session.date}</td>
+                  <td className="py-3 px-4 text-sm font-medium">{session.title}</td>
+                  <td className="py-3 px-4 text-sm">{session.division}</td>
+                  <td className="py-3 px-4 text-sm">{session.totalGroups}</td>
+                  <td className="py-3 px-4">
+                    <Badge variant="outline" className={`${getStatusBadgeClass(session.status)}`}>
+                      {session.status}
+                    </Badge>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center gap-2">
+                      <button className="text-gray-500 hover:text-gray-700" onClick={() => onEdit && onEdit(session.id)}>
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                      <button
+                        className="text-gray-500 hover:text-gray-700"
+                        onClick={() => onDelete && onDelete(session.id)}
+                      >
+                        <Trash className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div className="mt-4 flex items-center justify-between">
