@@ -1,6 +1,7 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge"
+import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 
 export interface EventItem {
@@ -21,9 +22,10 @@ interface EventsListViewProps {
 
 // Countdown hook
 function useCountdown(targetDate: string) {
+  const {theme}=useTheme()
   const countDownDate = new Date(targetDate).getTime();
   const [countDown, setCountDown] = useState(countDownDate - new Date().getTime());
-
+  
   useEffect(() => {
     const interval = setInterval(() => {
       setCountDown(countDownDate - new Date().getTime());
@@ -72,7 +74,7 @@ export function EventsListView({ events }: EventsListViewProps) {
                   </Badge>
                   <h3 className="font-bold">{event.title}</h3>
                 </div>
-                <div className="text-sm text-black font-bold">{countdownDisplay}</div>
+                <div className="text-sm font-bold dark:text-white text-black">{countdownDisplay}</div>
               </div>
               <h3 className="mt-2 text-lg">{event.description}</h3>
               <p className="text-sm text-gray-400">{event.date}</p>

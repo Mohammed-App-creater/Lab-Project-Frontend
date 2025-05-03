@@ -45,11 +45,11 @@ export function SessionsTableView({
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case "Started":
-        return "bg-green-100 text-green-800 border-green-200"
+        return "bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-800"
       case "Ended":
-        return "bg-red-100 text-red-800 border-red-200"
+        return "bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-200 dark:border-red-800"
       case "Planned":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200"
+        return "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900 dark:text-yellow-200 dark:border-yellow-800"
       default:
         return ""
     }
@@ -57,26 +57,26 @@ export function SessionsTableView({
 
   return (
     <div>
-      <div className="rounded-lg border bg-white overflow-hidden">
+      <div className="rounded-lg border bg-white dark:bg-gray-800 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[800px]">
             <thead>
-              <tr className="bg-gray-50 border-b">
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Date</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Session Title</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Division</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Total Groups</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Status</th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500">Actions</th>
+              <tr className="bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600">
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-300">Date</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-300">Session Title</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-300">Division</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-300">Total Groups</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-300">Status</th>
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-300">Actions</th>
               </tr>
             </thead>
             <tbody>
               {currentSessions.map((session) => (
-                <tr key={session.id} className="border-b">
-                  <td className="py-3 px-4 text-sm">{session.date}</td>
-                  <td className="py-3 px-4 text-sm font-medium">{session.title}</td>
-                  <td className="py-3 px-4 text-sm">{session.division}</td>
-                  <td className="py-3 px-4 text-sm">{session.totalGroups}</td>
+                <tr key={session.id} className="border-b dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td className="py-3 px-4 text-sm dark:text-gray-200">{session.date}</td>
+                  <td className="py-3 px-4 text-sm font-medium dark:text-gray-200">{session.title}</td>
+                  <td className="py-3 px-4 text-sm dark:text-gray-200">{session.division}</td>
+                  <td className="py-3 px-4 text-sm dark:text-gray-200">{session.totalGroups}</td>
                   <td className="py-3 px-4">
                     <Badge variant="outline" className={`${getStatusBadgeClass(session.status)}`}>
                       {session.status}
@@ -84,11 +84,11 @@ export function SessionsTableView({
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
-                      <button className="text-gray-500 hover:text-gray-700" onClick={() => onEdit && onEdit(session.id)}>
+                      <button className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" onClick={() => onEdit && onEdit(session.id)}>
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
-                        className="text-gray-500 hover:text-gray-700"
+                        className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                         onClick={() => onDelete && onDelete(session.id)}
                       >
                         <Trash className="h-4 w-4" />
@@ -104,7 +104,7 @@ export function SessionsTableView({
 
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">Showing</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">Showing</span>
           <Select value={itemsPerPage} onValueChange={onItemsPerPageChange}>
             <SelectTrigger className="h-8 w-16">
               <SelectValue placeholder="10" />
@@ -116,14 +116,14 @@ export function SessionsTableView({
             </SelectContent>
           </Select>
         </div>
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-gray-500 dark:text-gray-400">
           Showing {startIndex + 1} to {Math.min(endIndex, totalSessions)} out of {totalSessions} records
         </div>
         <div className="flex items-center gap-1">
           <Button
             variant="outline"
             size="icon"
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 dark:border-gray-600 dark:hover:bg-gray-700"
             disabled={currentPage === 1}
             onClick={() => onPageChange(currentPage - 1)}
           >
@@ -134,7 +134,9 @@ export function SessionsTableView({
             <Button
               key={i + 1}
               variant="outline"
-              className={`h-8 w-8 p-0 ${currentPage === i + 1 ? "bg-blue-600 text-white" : ""}`}
+              className={`h-8 w-8 p-0 dark:border-gray-600 dark:hover:bg-gray-700 ${
+                currentPage === i + 1 ? "bg-blue-600 text-white dark:bg-blue-700" : ""
+              }`}
               onClick={() => onPageChange(i + 1)}
             >
               {i + 1}
@@ -144,7 +146,7 @@ export function SessionsTableView({
           <Button
             variant="outline"
             size="icon"
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 dark:border-gray-600 dark:hover:bg-gray-700"
             disabled={currentPage === totalPages}
             onClick={() => onPageChange(currentPage + 1)}
           >

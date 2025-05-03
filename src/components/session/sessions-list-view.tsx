@@ -49,7 +49,7 @@ export function SessionsListView({ sessions }: SessionsListViewProps) {
                 </Badge>
                 <h3 className="font-bold">{session.division}</h3>
               </div>
-              <div className="text-sm text-black font-bold">{session.timeRemaining || session.timeAgo}</div>
+              <div className="text-smd dark:text-white text-black font-bold">{session.timeRemaining || session.timeAgo}</div>
             </div>
             <h3 className="mt-2 text-lg">{session.title}</h3>
             <p className="text-sm text-gray-400">{session.date}</p>
