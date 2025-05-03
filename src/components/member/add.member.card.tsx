@@ -11,9 +11,12 @@ import { Card, CardContent } from "@/components/ui/card"
 
 
 const validationSchema = Yup.object({
+  division: Yup.string().required("Division is required"),
+  group: Yup.string().required("Group is required"),
   email: Yup.string().email("Invalid email address").required("Email is required"),
   password: Yup.string().required("Password is required"),
 })
+
 
 // { onCancel }: { onCancel: () => void }
 export default function AddNewMember({ onCancel }: { onCancel: () => void }) {
@@ -82,6 +85,7 @@ const formik = useFormik<FormValues>({
   },
 })
 
+
 useEffect(() => {
     setIsLoading(true);
     const fetchData = async () => {
@@ -120,39 +124,44 @@ useEffect(() => {
             <div>
               <Select
                 name="division"
-                // onValueChange={(value) => formik.setFieldValue("division", value)}
-                // value={formik.values.division}
+                onValueChange={(value) => formik.setFieldValue("division", value)}
+                value={formik.values.division}
               >
                 <SelectTrigger className="w-full py-7  bg-white">
                   <SelectValue placeholder="Select Division" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="engineering">Development</SelectItem>
-                  <SelectItem value="marketing">CBD</SelectItem>
-                  <SelectItem value="sales">Cyber</SelectItem>
-                  <SelectItem value="hr">CPD</SelectItem>
+                  <SelectItem value="development">Development</SelectItem>
+                  <SelectItem value="cbd">CBD</SelectItem>
+                  <SelectItem value="cyber">Cyber</SelectItem>
+                  <SelectItem value="cpd">CPD</SelectItem>
+                  <SelectItem value="design">Design</SelectItem>
                 </SelectContent>
               </Select>
-
+              {formik.touched.division && formik.errors.division && (
+                <p className="text-sm text-red-500 mt-1">{formik.errors.division}</p>
+              )}
             </div>
 
             {/* Group Select */}
             <div>
               <Select
                 name="group"
-                // onValueChange={(value) => formik.setFieldValue("group", value)}
-                // value={formik.values.group}
+                onValueChange={(value) => formik.setFieldValue("group", value)}
+                value={formik.values.group}
               >
                 <SelectTrigger className="w-full py-7 bg-white">
                   <SelectValue placeholder="Select Group" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="team-a">Group 1</SelectItem>
-                  <SelectItem value="team-b">Group 2</SelectItem>
-                  <SelectItem value="team-c">Group 3</SelectItem>
+                  <SelectItem value="group1">Group 1</SelectItem>
+                  <SelectItem value="group2">Group 2</SelectItem>
+                  <SelectItem value="group3">Group 3</SelectItem>
                 </SelectContent>
               </Select>
-
+              {formik.touched.group && formik.errors.group && (
+                <p className="text-sm text-red-500 mt-1">{formik.errors.group}</p>
+              )}
             </div>
 
             {/* Email Input */}
@@ -204,7 +213,7 @@ useEffect(() => {
 
             {/* Action Buttons */}
             <div className="flex justify-between pt-4">
-              <Button type="button" variant="outline" className="px-6" onClick={onCancel} >
+              <Button type="button" variant="outline" className="px-6" onClick={onCancel}>
                 Cancel
               </Button>
               <Button type="submit" className="bg-blue-800 hover:bg-blue-700 text-white px-6">
@@ -217,17 +226,3 @@ useEffect(() => {
     </div>
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -21,6 +21,7 @@ export default function EventCard({
   onAddToCalendar = () => console.log("Added to calendar"),
 }: EventCardProps) {
   return (
+
     <div className="mt-2.5 mb-4  w-full ">
       <div className="bg-[#0067FF99] rounded-xl p-6 flex justify-between relative overflow-hidden">
         <div className="flex flex-col px-4 gap-6 z-10">

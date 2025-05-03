@@ -5,6 +5,7 @@ import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb";
 import { Users, Layers, Calendar, BarChart2 } from "lucide-react";
 import MetricCardsLoading from "./MetricCardsLoading";
 
+
 interface MetricCardProps {
   title: string;
   value: string | number;
@@ -32,6 +33,7 @@ function MetricCard({
   lastUpdated,
 }: MetricCardProps) {
   return (
+
     <div className="rounded-lg border px-4 py-9 m-3 shadow-sm">
       <div className="flex items-center">
         {icon}
@@ -57,8 +59,8 @@ function MetricCard({
           )}
         </span>
       </div>
-      <hr />
-      <div className="mt-2 text-xs text-gray-400">Updated: {lastUpdated}</div>
+      <hr/>
+      <div className="mt-2 text-xs text-[#A2A1A8]">Update: {lastUpdated}</div>
     </div>
   );
 }

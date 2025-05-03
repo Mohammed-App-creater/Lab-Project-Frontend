@@ -31,7 +31,12 @@ export default function DarkLight() {
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light")
   }
-
+  const lightToggleTheme=()=>{
+    setTheme("light")
+  }
+  const darkToggleTheme=()=>{
+    setTheme("dark")
+  }
   return (
     <div className="pb-5  ">  
          <div className="flex items-center justify-center gap-2 ">

@@ -43,6 +43,7 @@ function Header() {
       <div className="flex items-center gap-4">
         <div className="relative ">
           <CiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground" />
+
           <Input
             type="search"
             placeholder="Search"
@@ -59,7 +60,7 @@ function Header() {
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="flex items-center h-[50px] rounded-md border-gray-200 hover:border-gray-300 transition-colors"
+              className="flex items-center h-[45px] rounded-md border-[#34495E33] hover:border-gray-300 transition-colors"
             >
               <Avatar className=" w-[40px] h-[40px] rounded-sm">
                 <AvatarImage src="profile.svg" alt={`${userData?.firstName ?? ''} ${userData?.lastName ?? ''}`} />
@@ -69,7 +70,7 @@ function Header() {
                 <span className="font-bold text-[16px]">{userData?.firstName}</span>
                 <span className="text-muted-foreground front-light text-xs">{userData?.role?.name ? userData.role.name : "Trainee"}</span>
               </div>
-              <IoChevronDownOutline className="w-4 h-4 text-muted-foreground" />
+              <IoChevronDownOutline className="w-4 h-4 text-[#16151C]" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">

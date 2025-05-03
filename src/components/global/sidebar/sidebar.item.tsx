@@ -11,15 +11,60 @@ import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 
 function SidebarItem() {
-  const pathname = usePathname();
+  const pathname = usePathname()
 
   const isActive = (path: string) => {
-    return pathname === path;
-  };
+    return pathname === path
+  }
+  const {theme}=useTheme();
+  console.log(theme);
+  const menuItems = [
+    {
+      path: "/dashboard",
+      icon: <MdOutlineDashboard className="w-5 h-5 mr-3 " />,
+      label: "Dashboard",
+    },
+    {
+      path: "/member",
+      icon: <FiUsers className="w-5 h-5 mr-3" />,
+      label: "All Members",
+    },
+    {
+      path: "/alldivision",
+      icon: <FiLayers className="w-5 h-5 mr-3" />,
+      label: "All Divisions",
+    },
+    {
+      path: "/attendance",
+      icon: <LuCalendarCheck className="w-5 h-5 mr-3" />,
+      label: "Attendance",
+    },
+    {
+      path: "/sessions",
+      icon: <LuClock10 className="w-5 h-5 mr-3" />,
+      label: "Sessions & Events",
+    },
+    {
+      path: "/resources",
+      icon: <IoFolderOutline className="w-5 h-5 mr-3" />,
+      label: "Resources",
+    },
+    {
+      path: "/profile",
+      icon: <HiOutlineUsers className="w-5 h-5 mr-3" />,
+      label: "Profile",
+    },
+    {
+      path: "/settings",
+      icon: <FiSettings className="w-5 h-5 mr-3" />,
+      label: "Settings",
+    },
+  ]
 
   return (
     <div>
       <div className="mb-8">
+
         <Link href="/" className="flex items-center">
           <div className="text-blue-700 font-bold text-xl flex items-center">
             <img className="w-7 h-10" src="Vector.svg" />
@@ -30,7 +75,6 @@ function SidebarItem() {
           </div>
         </Link>
       </div>
-
       <nav className="flex flex-col  gap-3 space-y-1">
         <Link
           href="/dashboard"
@@ -124,5 +168,6 @@ function SidebarItem() {
     </div>
   );
 }
+
 
 export default SidebarItem;

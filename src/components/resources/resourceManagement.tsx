@@ -1,77 +1,119 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import DivisionCard from "@/components/resources/divisionCard"
-import AddResourceModal from "@/components/resources/addResourceModal"
+import { useEffect, useState } from "react";
+import DivisionCard from "@/components/resources/divisionCard";
+import AddResourceModal from "@/components/resources/addResourceModal";
 
 export interface Resource {
-  name: string
-  url: string
+  name: string;
+  url: string;
 }
 
 export interface Division {
-  title: string
-  description: string
-  resources: Resource[]
+  title: string;
+  description: string;
+  resources: Resource[];
 }
 
 export default function ResourceManagement() {
-  const [showAddModal, setShowAddModal] = useState(false)
-  const [currentDivision, setCurrentDivision] = useState("")
-  const [newResourceName, setNewResourceName] = useState("")
-  const [newResourceUrl, setNewResourceUrl] = useState("")
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [currentDivision, setCurrentDivision] = useState("");
+  const [newResourceName, setNewResourceName] = useState("");
+  const [newResourceUrl, setNewResourceUrl] = useState("");
+  const [divisions, setDivisions] = useState<Division[]>([]);
 
-  const [divisions, setDivisions] = useState<Division[]>([
-    {
-      title: "CPD",
-      description: "Useful resources and progress sheet for the CPD division.",
-      resources: [
-        {
-          name: "Codeforces Community Course",
-          url: "https://codeforces.com/edu/course/3",
-        },
-        {
-          name: "Roadmap To Master Data Structure",
-          url: "https://workspace.google.com/products/sheets/",
-        },
-        {
-          name: "Progress Sheet",
-          url: "https://codeforces.com/edu/course/5",
-        },
-      ],
-    },
-    {
-      title: "Dev Division",
-      description: "Useful resources and progress sheet for the Dev division.",
-      resources: [],
-    },
-  ])
+  
+  useEffect(() => {
+    const fetchDivisions = async () => {
+      try {
+        const response = await fetch(
+          "https://csec-lab-portal-backend.onrender.com/api/division-resources/all-divisions-resource"
+        );
+        const data = await response.json();
+
+        const mapped: Division[] = data.map((div: any) => ({
+          title: div.name,
+          description: `Useful resources and progress sheet for the ${div.name} division.`,
+          resources: div.resourceLink.map((res: any) => ({
+            name: res.resourceLinkName,
+            url: res.resourceLinkUrl,
+          })),
+        }));
+
+        setDivisions(mapped);
+      } catch (err) {
+        console.error("Failed to fetch division data:", err);
+      }
+    };
+
+    fetchDivisions();
+  }, []);
 
   const handleAddResource = (division: string) => {
-    setCurrentDivision(division)
-    setShowAddModal(true)
-  }
+    setCurrentDivision(division);
+    setShowAddModal(true);
+  };
 
-  const handleSaveResource = () => {
-    if (!newResourceName || !newResourceUrl) return
+  const handleSaveResource = async () => {
+    if (!newResourceName || !newResourceUrl) return;
 
-    setDivisions(
-      divisions.map((div) => {
-        if (div.title === currentDivision) {
-          return {
-            ...div,
-            resources: [...div.resources, { name: newResourceName, url: newResourceUrl }],
-          }
+    try {
+      
+      const response = await fetch(
+        "https://csec-lab-portal-backend.onrender.com/api/division-resources/all-divisions-resource"
+      );
+      const backendData = await response.json();
+      const matchedDivision = backendData.find(
+        (div: any) => div.name === currentDivision
+      );
+
+      if (!matchedDivision) {
+        console.error("Division ID not found");
+        return;
+      }
+
+      const divisionId = matchedDivision.id;
+
+      const postRes = await fetch(
+        "https://csec-lab-portal-backend.onrender.com/api/division-resources",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            resourceLinkName: newResourceName,
+            resourceLinkUrl: newResourceUrl,
+            divisionId,
+          }),
         }
-        return div
-      }),
-    )
+      );
 
-    
-    setNewResourceName("")
-    setNewResourceUrl("")
-    setShowAddModal(false)
-  }
+      if (!postRes.ok) {
+        throw new Error("Failed to save resource to backend");
+      }
+
+      setDivisions((prev) =>
+        prev.map((div) =>
+          div.title === currentDivision
+            ? {
+                ...div,
+                resources: [
+                  ...div.resources,
+                  { name: newResourceName, url: newResourceUrl },
+                ],
+              }
+            : div
+        )
+      );
+
+      setNewResourceName("");
+      setNewResourceUrl("");
+      setShowAddModal(false);
+    } catch (err) {
+      console.error("Error saving resource:", err);
+    }
+  };
 
   return (
     <>
@@ -93,7 +135,8 @@ export default function ResourceManagement() {
         onResourceNameChange={setNewResourceName}
         onResourceUrlChange={setNewResourceUrl}
         onSave={handleSaveResource}
+
       />
     </>
-  )
+  );
 }

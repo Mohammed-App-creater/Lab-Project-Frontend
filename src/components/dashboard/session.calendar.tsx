@@ -127,6 +127,7 @@ export default function SessionCalendar() {
   if (loading) return <div className="p-4">Loading sessions...</div>;
 
   return (
+
     <div className="w-full max-w-md mx-auto rounded-lg overflow-hidden shadow-sm border">
       <div className="p-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Sessions</h2>
@@ -142,6 +143,7 @@ export default function SessionCalendar() {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
+
           <h3 className="font-bold">Upcoming Sessions</h3>
           <Button variant="outline" size="icon" className="h-8 w-8 bg-[#003087] text-white">
             <ChevronRight className="h-4 w-4" />
@@ -158,7 +160,7 @@ export default function SessionCalendar() {
           />
         </div>
       </div>
-
+   <hr/>
       <div className="px-4 pb-4">
         {sessions.length === 0 && (
           <div className="text-center text-gray-500 mt-4">No sessions available.</div>
@@ -166,6 +168,7 @@ export default function SessionCalendar() {
         {sessions.map((session, index) => (
           <div key={index} className="mt-4">
             <div className="flex items-center justify-between">
+
               <h4 className="text-sm font-medium text-gray-700">
                 {session.date}
               </h4>
@@ -176,7 +179,7 @@ export default function SessionCalendar() {
 
             {session.events.map((event, eventIndex) => (
               <div key={eventIndex} className="mt-3 flex">
-                <div className="w-12 text-sm font-medium">{event.time}</div>
+                <div className="w-12 font-bold">{event.time}</div>
                 <div className="ml-4 border-l-2 border-primary pl-4 flex-1">
                   <div className="text-xs text-gray-500">
                     {event.department}

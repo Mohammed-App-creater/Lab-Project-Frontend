@@ -29,9 +29,10 @@ export default function LoginPage() {
   };
 
   const loginValidationSchema = Yup.object({
-    email: Yup.string().email("Invalid email").required("Email is required"),
+    email: Yup.string().email("Invalid email address").required("Email is required"),
     password: Yup.string().required("Password is required"),
   });
+
 
   const loginFormik = useFormik<LoginValues>({
     initialValues: {
@@ -40,7 +41,7 @@ export default function LoginPage() {
       remember: false,
     },
     validationSchema: loginValidationSchema,
-    onSubmit: async (values, { setSubmitting, resetForm }) => {
+    onSubmit: async (values, { setSubmitting }) => {
       try {
         console.log("Submitting form with values:", values);
         setError("");
@@ -105,19 +106,14 @@ export default function LoginPage() {
  
  
   return (
+
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       {isPageLoading && <PageLoader />}
       <div className="w-full max-w-md space-y-8">
         <div className="space-y-6">
-          <div className="flex gap-7 items-center">
+          <div className="flex gap-7 items-center justify-center">
             <div className="relative flex">
-              <Image
-                src="/Vector.svg"
-                alt="Logo"
-                width={40}
-                height={40}
-                className="h-10 w-10"
-              />
+              <Image src="/Vector.svg" alt="Logo" width={40} height={40} className="h-10 w-10" />
               <Image
                 src="/Vector1.svg"
                 alt="Logo overlay"
@@ -128,7 +124,7 @@ export default function LoginPage() {
             </div>
             <h1 className="font-bold text-3xl text-[#110051]">CSEC ASTU</h1>
           </div>
-          <div>
+          <div className="text-center">
             <h1 className="text-2xl font-bold">Welcome 👋</h1>
             <p className="text-sm text-muted-foreground">Please login here</p>
           </div>
@@ -157,9 +153,7 @@ export default function LoginPage() {
               onBlur={loginFormik.handleBlur}
             />
             {loginFormik.touched.email && loginFormik.errors.email && (
-              <span className="text-sm text-red-500">
-                {loginFormik.errors.email}
-              </span>
+              <span className="text-sm text-red-500">{loginFormik.errors.email}</span>
             )}
           </div>
 
@@ -179,16 +173,14 @@ export default function LoginPage() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(true)}
+                onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
             {loginFormik.touched.password && loginFormik.errors.password && (
-              <span className="text-sm text-red-500">
-                {loginFormik.errors.password}
-              </span>
+              <span className="text-sm text-red-500">{loginFormik.errors.password}</span>
             )}
           </div>
 
@@ -206,8 +198,9 @@ export default function LoginPage() {
           <Button
             type="submit"
             className="w-full h-12 bg-[#003087] hover:bg-[#0a2472]/90"
+            disabled={loginFormik.isSubmitting}
           >
-            Login
+            {loginFormik.isSubmitting ? "Logging in..." : "Login"}
           </Button>
         </form>
       </div>

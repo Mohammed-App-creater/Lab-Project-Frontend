@@ -1,9 +1,12 @@
 "use client"
 
+
 // import AddNewMemberCard from "@/components/divisions/AddNewMemberCard"
 import AddNewMember from "@/components/member/add.member.card"
 import MemberTable from "@/components/member/member.table"
+
 import { useState } from "react"
+import MemberTable from "@/components/member/member.table"
 
 export default function MemberPage() {
 
@@ -21,5 +24,4 @@ export default function MemberPage() {
       {showForm &&<AddNewMember onCancel={() => setShowForm(false)} />}
     </div>
   )
-
 }

@@ -244,10 +244,49 @@ export default function MemberTable({
               Add Member
             </Button>
           )}
-          <Button variant="outline">
-            <Filter className="w-4 h-4 mr-2" />
-            Filter
-          </Button>
+          <div className="relative group">
+            <Button variant="outline">
+              <Filter className="w-4 h-4 mr-2" />
+              Filter
+            </Button>
+            <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-md p-4 z-10 hidden group-hover:block">
+              <div className="space-y-2">
+                <Select onValueChange={(value) => handleFilterChange("division", value)} value={filters.division}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Filter by Division" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Divisions</SelectItem>
+                    <SelectItem value="Development">Development</SelectItem>
+                    <SelectItem value="Design">Design</SelectItem>
+                    <SelectItem value="CPD">CPD</SelectItem>
+                    <SelectItem value="Cyber">Cyber</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select onValueChange={(value) => handleFilterChange("attendance", value)} value={filters.attendance}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Filter by Attendance" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Needs Attention">Needs Attention</SelectItem>
+                    <SelectItem value="Disabled">Disabled</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select onValueChange={(value) => handleFilterChange("status", value)} value={filters.status}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Filter by Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="@1 Campus">@1 Campus</SelectItem>
+                    <SelectItem value="withdrawn">Withdrawn</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -390,6 +429,7 @@ export default function MemberTable({
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
+
 
           {Array.from({ length: Math.min(paginationInfo.totalPages, 5) }, (_, i) => {
             let pageNum;
