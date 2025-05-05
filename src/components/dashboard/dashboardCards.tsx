@@ -1,6 +1,9 @@
+"use client";
+
 import type React from "react";
 import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb";
 import { Users, Layers, Calendar, BarChart2 } from "lucide-react";
+import { console } from "inspector";
 
 interface MetricCardProps {
   title: string;
@@ -28,7 +31,7 @@ function MetricCard({
   lastUpdated,
 }: MetricCardProps) {
   return (
-    <div className="rounded-lg border px-4 py-9 m-3 shadow-sm">
+    <div className="rounded-lg border w-[313px] px-4 py-9 shadow-sm">
       <div className="flex items-center">
         {icon}
         <div className="text-sm font-medium text-gray-500 pl-4">{title}</div>
@@ -38,7 +41,7 @@ function MetricCard({
         <span
           className={`ml-2 flex items-center text-xs font-medium ${
             change.trend === "up" ? "text-green-500" : "text-red-500"
-          }`} // ✅ Added space inside className
+          }`} 
         >
           {change.trend === "up" ? (
             <div className="flex items-center gap-1 w-[54px] rounded-[5px] p-[5px] mb-3 bg-[#30BE821A]">
@@ -59,21 +62,21 @@ function MetricCard({
   );
 }
 
-const fetchDivisions = async () => {
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACK_END_URL}api/dashboard/summary`
-    );
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error("Error fetching divisions:", error);
-    throw error; 
-  }
+const fetchDivisions = async (): Promise<dataType> => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/dashboard/summary`,{
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (!res.ok) throw new Error("Failed to fetch summary data");
+  const json = await res.json();
+  return json.data;
 };
+
+
+
 
 export async function MetricCards() {
   const { totalDivisions, totalMembers, attendanceRate, upcomingSessions }: dataType = await fetchDivisions(); 

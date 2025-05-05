@@ -10,7 +10,7 @@ export default function MemberPage() {
   const [showForm, setShowForm] = useState(false)
 
   return (
-    <div className="relative h-full ">
+    <div className="bg-red-100 w-fit flex ml-15 bg-red-100 justify-end h-full ">
       {/* Apply blur when modal is open */}
       <div className={`${showForm ? "blur-sm pointer-events-none select-none   " : ""} `}>
         <MemberTable

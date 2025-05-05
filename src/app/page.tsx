@@ -9,13 +9,13 @@ export default async function DashboardPage() {
   const sessions = await fetchSessions()
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="relative w-full max-w-sm">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="relative w-full sm:max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input type="search" placeholder="Search" className="w-full pl-8 bg-white" />
         </div>
-        <Button variant="outline" size="sm" className="ml-auto">
+        <Button variant="outline" size="sm" className="w-full sm:w-auto">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"

@@ -1,51 +1,55 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import { GoMoon } from "react-icons/go";
-import { Button } from '@/components/ui/button';
-import { FiSun } from 'react-icons/fi';
 
+import React, { useEffect, useState } from 'react';
+import { GoMoon } from "react-icons/go";
+import { FiSun } from 'react-icons/fi';
+import { Button } from '@/components/ui/button';
 
 export default function DarkLight() {
-  const [theme, setTheme] = useState<"light" | "dark">("light")
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem("theme")
+    const storedTheme = localStorage.getItem("theme");
     if (storedTheme) {
-      setTheme(storedTheme === "dark" ? "dark" : "light")
+      setTheme(storedTheme === "dark" ? "dark" : "light");
     } else {
-
-      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-      setTheme(prefersDark ? "dark" : "light")
+      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setTheme(prefersDark ? "dark" : "light");
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem("theme", theme)
+    localStorage.setItem("theme", theme);
     if (theme === "dark") {
-      document.documentElement.classList.add("dark")
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove("dark")
+      document.documentElement.classList.remove("dark");
     }
-  }, [theme])
-
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light")
-  }
+  }, [theme]);
 
   return (
-    <div className="pb-5  ">  
-         <div className="flex items-center justify-center gap-2 ">
-            <Button onClick={()=>{setTheme("light")}} variant="default" size="sm" className="bg-blue-900 hover:bg-blue-800 h-10 w-25 px-3">
-              <FiSun className="w-4 h-4 mr-2" />
-              Light
-            </Button>
-            <Button onClick={()=>{setTheme("dark")}} variant="ghost" size="sm" className="h-10 w-25 px-3 bg-[#A2A1A80D]">
-              <GoMoon className="w-4 h-6 mr-2" />
-              Dark
-            </Button>
-          </div>
-     </div>
-  )
+      <div className="flex flex-col md:flex-row items-center justify-center gap-2">
+        {/* Light Button */}
+        <Button
+          onClick={() => setTheme("light")}
+          variant="default"
+          size="icon"
+          className="bg-blue-900 hover:bg-blue-800 h-10 w-10 md:w-auto md:px-3"
+        >
+          <FiSun className="w-4 h-4" />
+          <span className="hidden md:inline ml-2">Light</span>
+        </Button>
+
+        {/* Dark Button */}
+        <Button
+          onClick={() => setTheme("dark")}
+          variant="ghost"
+          size="icon"
+          className="bg-[#A2A1A80D] h-10 w-10 md:w-auto md:px-3"
+        >
+          <GoMoon className="w-4 h-4" />
+          <span className="hidden md:inline ml-2">Dark</span>
+        </Button>
+      </div>
+  );
 }
-
-

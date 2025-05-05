@@ -1,3 +1,5 @@
+import type React from "react"
+
 export default function dashboardLayout({
   children,
   EventCard,
@@ -5,23 +7,24 @@ export default function dashboardLayout({
   AttendanceOverview,
   SessionCalendar,
 }: {
-  children: React.ReactNode;
-  EventCard: React.ReactNode;
-  MetricCards: React.ReactNode;
-  AttendanceOverview: React.ReactNode;
-  SessionCalendar: React.ReactNode;
+  children: React.ReactNode
+  EventCard: React.ReactNode
+  MetricCards: React.ReactNode
+  AttendanceOverview: React.ReactNode
+  SessionCalendar: React.ReactNode
 }) {
   return (
-    <div className="flex w-full justify-end ">
-      <div className=" w-2/3 pr-4">
+    <div className="flex flex-col pr-5 pl-2 lg:flex-row sm:ml-10 w-full gap-5 ">
+      {/* Left section (EventCard, MetricCards, Attendance) */}
+      <div className="pl-10 lg:pl-3 flex flex-col gap-4">
         {EventCard}
         {MetricCards}
         {AttendanceOverview}
       </div>
-      <div className="w-1/3 h-full flex flex-col gap-4">
-        {SessionCalendar }
-        {children}
-      </div>
+
+      {/* Right section (SessionCalendar, children) */}
+        {SessionCalendar}
+
     </div>
-  );
+  )
 }

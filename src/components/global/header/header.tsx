@@ -1,90 +1,99 @@
 "use client"
+
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
-import { CiSearch, CiLogout, CiUser } from "react-icons/ci";
-import { HiOutlineBell } from "react-icons/hi2";
-import { IoChevronDownOutline } from "react-icons/io5";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import Link from 'next/link';
-import { PublicUserDTO } from "@/type/user"
+import { CiSearch, CiLogout, CiUser } from "react-icons/ci"
+import { HiOutlineBell } from "react-icons/hi2"
+import { IoChevronDownOutline } from "react-icons/io5"
+import { Menu } from 'lucide-react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import Link from "next/link"
+import type { PublicUserDTO } from "@/type/user"
+import { useIsMobile } from "@/components/ui/use-mobile"
 
+interface HeaderProps {
+  onMenuClick?: () => void
+}
 
+function Header({ onMenuClick }: HeaderProps) {
+  const isMobile = useIsMobile()
+  const userData: PublicUserDTO | null = typeof window !== 'undefined' && localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user") as string)
+    : null
 
-function Header() {
-  const userData: PublicUserDTO | null = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user") as string) : null;
   const handleLogout = () => {
-   localStorage.removeItem("user")
-   localStorage.removeItem("token") 
+    localStorage.removeItem("user")
+    localStorage.removeItem("token")
   }
 
-  const Greeting = (): string =>{
+  const Greeting = (): string => {
     const currentHour = new Date().getHours()
-    if (currentHour < 12) {
-      return "Good Morning"
-    } else if (currentHour < 18) {
-      return "Good Afternoon"
-    } else {
-      return "Good Evening"
-    }
+    if (currentHour < 12) return "Good Morning"
+    if (currentHour < 18) return "Good Afternoon"
+    return "Good Evening"
   }
+
   return (
-    <header className="flex items-center justify-between py-4  w-full">
-      <div>
-        <h1 className="text-xl font-semibold">Hello {userData?.firstName}👋🏻</h1>
-        <p className="text-sm text-muted-foreground">{Greeting()}</p>
+    <header className="w-full flex flex-col md:flex-row  lg:ml-15 md:items-center md:justify-between gap-3 py-4 pr-10">
+      {/* Left - Menu button and Greeting */}
+      <div className="flex items-center gap-3">
+        {isMobile && (
+          <Button variant="ghost" size="icon" onClick={onMenuClick} className="md:hidden">
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle menu</span>
+          </Button>
+        )}
+        <div>
+          <h1 className="text-xl font-semibold">Hello {userData?.firstName} 👋🏻</h1>
+          <p className="text-sm text-muted-foreground">{Greeting()}</p>
+        </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="relative ">
-          <CiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search"
-            className="w-64 pl-15 pr-4 py-6 text-2xl rounded-sm  bg-slate-"
-          />
+      {/* Right - Controls */}
+      <div className="flex flex-col sm:flex-row items-stretch md:items-center gap-4 w-full md:w-auto">
+        {/* Search */}
+        <div className="relative w-full sm:w-auto md:w-64">
+          <CiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input type="search" placeholder="Search" className="w-full pl-10 pr-4 py-2 text-sm" />
         </div>
 
-        <Button variant="outline" size="icon" className="relative p-6">
-          <HiOutlineBell className="h-8 w-8" />
-          <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* Bell Icon */}
+          <Button variant="outline" size="icon" className="relative p-2">
+            <HiOutlineBell className="h-6 w-6" />
+            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
+          </Button>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              className="flex items-center h-[50px] rounded-md border-gray-200 hover:border-gray-300 transition-colors"
-            >
-              <Avatar className=" w-[40px] h-[40px] rounded-sm">
-                <AvatarImage src="profile.svg" alt={`${userData?.firstName ?? ''} ${userData?.lastName ?? ''}`} />
-                <AvatarFallback>HA</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col text-xs text-left">
-                <span className="font-bold text-[16px]">{userData?.firstName}</span>
-                <span className="text-muted-foreground front-light text-xs">{userData?.role?.name ? userData.role.name : "Trainee"}</span>
-              </div>
-              <IoChevronDownOutline className="w-4 h-4 text-muted-foreground" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <Link href="/member/profile">
-              <DropdownMenuItem>
-                <CiUser /> My Profile
-              </DropdownMenuItem>
-            </Link>
-            <Link onClick={handleLogout} href="/login" >
-              <DropdownMenuItem className="text-red-500">
-                <CiLogout className="text-red-500" /> Logout
-              </DropdownMenuItem>
-            </Link>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          {/* User Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2 h-[50px] px-3">
+                <Avatar className="w-8 h-8 rounded-sm">
+                  <AvatarImage src="profile.svg" alt={`${userData?.firstName ?? ""} ${userData?.lastName ?? ""}`} />
+                  <AvatarFallback>HA</AvatarFallback>
+                </Avatar>
+                <div className="hidden sm:flex flex-col text-left text-xs">
+                  <span className="font-semibold text-sm">{userData?.firstName}</span>
+                  <span className="text-muted-foreground">{userData?.role?.name ?? "Trainee"}</span>
+                </div>
+                <IoChevronDownOutline className="w-4 h-4 text-muted-foreground hidden sm:block" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <Link href="/member/profile">
+                <DropdownMenuItem>
+                  <CiUser className="mr-2" /> My Profile
+                </DropdownMenuItem>
+              </Link>
+              <Link href="/login" onClick={handleLogout}>
+                <DropdownMenuItem className="text-red-500">
+                  <CiLogout className="text-red-500 mr-2" /> Logout
+                </DropdownMenuItem>
+              </Link>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   )

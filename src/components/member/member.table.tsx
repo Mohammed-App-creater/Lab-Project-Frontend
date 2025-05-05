@@ -202,11 +202,11 @@ export default function MemberTable({
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p className="ml-50">Loading...</p>;
+  if (error) return <p className="ml-50">Error: {error}</p>;
 
   return (
-    <div className="space-y-4 inset-shadow-2xs shadow-xl border-1 border-[#34495E33] p-3 rounded-lg">
+    <div className="bg-green-100 lg:ml-auto w-[50%] md:w-[80%] lg:w-[100%] space-y-4    border-1 border-[#34495E33] p-3 rounded-lg">
       <div className="flex items-center justify-between">
         <div className="relative w-64">
           <Input
