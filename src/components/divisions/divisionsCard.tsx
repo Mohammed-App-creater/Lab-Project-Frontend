@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Search, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddNewDivisionUI } from "./AddNewDivision";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import PageLoader from "../global/login/pageLoader";
 
 type DivisionGroupsDto = {
   groups: DivisionGroupDto[];
@@ -33,31 +35,38 @@ type GroupDto = {
   memberCount: number;
 };
 
+const fetchDivision = async () => {
+  try {
+    const divisions = await fetch(
+      "http://localhost:3000/api/division/all-divisions-and-groups"
+    );
+    if (!divisions) {
+      throw new Error("No Division found");
+    }
+    const dates = await divisions.json();
+    return dates as DivisionGroupsDto[];
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export default function Divisions() {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [divisions, setDivisions] = useState<DivisionGroupsDto[]>([]);
 
-  useEffect(() => {
-    console.log("fetching started ...");
-    const fetchDivision = async () => {
-      try {
-        const divisions = await fetch(
-          "http://localhost:3000/api/division/all-divisions-and-groups"
-        );
-        if (!divisions) {
-          throw new Error("No Division found");
-        }
-        const dates = await divisions.json();
-        setDivisions(dates);
-        await console.log(dates);
-      } catch (error) {
-        console.log(error);
+  const { error, isLoading } = useQuery({
+    queryKey: ["division"],
+    queryFn: async () => {
+      const response = await fetchDivision();
+      if (!response) {
+        throw new Error("No Division found");
       }
-    };
+      setDivisions(response);
+      return response;
+    },
+  });
 
-    fetchDivision();
-  }, []);
 
   const handleViewAll = (divisionId: string) => {
     router.push(`/alldivision/${divisionId}`);
@@ -66,6 +75,10 @@ export default function Divisions() {
   const handleToGroup = (divisionId: string, groupId: string) => {
     router.push(`/alldivision/${divisionId}/${groupId}`);
   };
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
     <div className=" p-3 mb-10 rounded-lg border-[1.5px] border-[#A2A1A833]">
@@ -82,6 +95,8 @@ export default function Divisions() {
             <Plus className="mr-2 h-4 w-4" /> Add Division
           </Button>
         </div>
+
+        {isLoading && <PageLoader fullPage={false} />}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {divisions.map((division) => (

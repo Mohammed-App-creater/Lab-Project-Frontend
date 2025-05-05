@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from 'next/link';
-import { PublicUserDTO } from "@/type/user"
+import { PublicUserDTO } from "@/types/user"
 import Breadcrumb from "./Breadcrumb";
 
 
