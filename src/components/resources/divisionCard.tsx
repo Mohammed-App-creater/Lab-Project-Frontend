@@ -21,8 +21,8 @@ export default function DivisionCard({ title, description, resources, onAddResou
     <div className="mb-8">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2">
         <div>
-          <h2 className="text-xl font-semibold">{title}</h2>
-          <p className="text-gray-500 text-sm">{description}</p>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h2>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">{description}</p>
         </div>
         {showAddButton && (
           <Button 
@@ -36,13 +36,16 @@ export default function DivisionCard({ title, description, resources, onAddResou
         )}
       </div>
 
-      <div className="border rounded-lg bg-white shadow-sm">
+      <div className="border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
         <div 
-          className="p-4 flex justify-between items-center cursor-pointer border-b"
+          className="p-4 flex justify-between items-center cursor-pointer border-b dark:border-gray-700"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <h3 className="font-medium">Resources({resources.length})</h3>
-          {isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+          <h3 className="font-medium text-gray-900 dark:text-white">Resources({resources.length})</h3>
+          {isOpen ? 
+            <ChevronUp className="h-5 w-5 text-gray-500 dark:text-gray-400" /> : 
+            <ChevronDown className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+          }
         </div>
 
         {isOpen && (
@@ -52,7 +55,7 @@ export default function DivisionCard({ title, description, resources, onAddResou
                 <ResourceCard key={index} name={resource.name} url={resource.url} />
               ))
             ) : (
-              <div className="py-3 px-4 text-gray-500">No resources added yet.</div>
+              <div className="py-3 px-4 text-gray-500 dark:text-gray-400">No resources added yet.</div>
             )}
           </div>
         )}

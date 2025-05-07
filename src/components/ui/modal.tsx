@@ -40,12 +40,18 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div ref={modalRef} className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg" style={{ maxWidth: "400px" }}>
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold">{title}</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4">
+      <div 
+        ref={modalRef} 
+        className="w-[95%] sm:w-[90%] md:w-[80%] lg:w-[70%] xl:w-[60%] rounded-lg bg-white dark:bg-gray-800 p-4 sm:p-6 shadow-lg dark:shadow-gray-900/20"
+        style={{ maxWidth: "600px" }}
+      >
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">{title}</h2>
         </div>
-        {children}
+        <div className="text-gray-700 dark:text-gray-300">
+          {children}
+        </div>
       </div>
     </div>
   )
