@@ -359,6 +359,12 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
     }
   }
 
+  const handleCancel = () => {
+    onOpenChange(false)
+    setFormData(initialFormData) // Reset form after submit
+    setLoading(false)
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="p-0 overflow-hidden max-w-xl rounded-xl">
@@ -450,46 +456,56 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
               </div>
             </div>
             <div className="flex gap-2">
-              <Popover open={showStartCalendar} onOpenChange={setShowStartCalendar}>
-                <PopoverTrigger asChild>
-                  <Input
-                    value={formData.startMonth ? format(new Date(formData.startMonth), 'MMMM') : ''}
-                    placeholder={formData.startMonth ? '' : 'Start Month'}
-                    readOnly
-                    className="cursor-pointer bg-white border-gray-200 hover:border-[#00346b] transition-colors duration-200"
-                  />
-                </PopoverTrigger>
-                <PopoverContent align="start" className="w-[320px] p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xl">
-                  <CustomCalendar
-                    selected={formData.startMonth ? new Date(formData.startMonth) : null}
-                    onSelect={date => {
-                      setFormData(prev => ({ ...prev, startMonth: date.toISOString() }))
-                      setShowStartCalendar(false)
-                    }}
-                    initialMonth={formData.startMonth ? new Date(formData.startMonth) : undefined}
-                  />
-                </PopoverContent>
-              </Popover>
-              <Popover open={showEndCalendar} onOpenChange={setShowEndCalendar}>
-                <PopoverTrigger asChild>
-                  <Input
-                    value={formData.endTMonth ? format(new Date(formData.endTMonth), 'MMMM') : ''}
-                    placeholder={formData.endTMonth ? '' : 'End Month'}
-                    readOnly
-                    className="cursor-pointer bg-white border-gray-200 hover:border-[#00346b] transition-colors duration-200"
-                  />
-                </PopoverTrigger>
-                <PopoverContent align="start" className="w-[320px] p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xl">
-                  <CustomCalendar
-                    selected={formData.endTMonth ? new Date(formData.endTMonth) : null}
-                    onSelect={date => {
-                      setFormData(prev => ({ ...prev, endTMonth: date.toISOString() }))
-                      setShowEndCalendar(false)
-                    }}
-                    initialMonth={formData.endTMonth ? new Date(formData.endTMonth) : undefined}
-                  />
-                </PopoverContent>
-              </Popover>
+              {/* Start Month Label and Picker */}
+              <div className="flex flex-col gap-1">
+                <label htmlFor="start-month-input" className="text-sm font-medium text-gray-700 dark:text-gray-200">Start Month</label>
+                <Popover open={showStartCalendar} onOpenChange={setShowStartCalendar}>
+                  <PopoverTrigger asChild>
+                    <Input
+                      id="start-month-input"
+                      value={formData.startMonth ? format(new Date(formData.startMonth), 'MMMM') : ''}
+                      placeholder={formData.startMonth ? '' : 'Start Month'}
+                      readOnly
+                      className="cursor-pointer w-22 bg-white border-gray-200 hover:border-[#00346b] transition-colors duration-200"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent align="start" className="w-[320px] p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xl">
+                    <CustomCalendar
+                      selected={formData.startMonth ? new Date(formData.startMonth) : null}
+                      onSelect={date => {
+                        setFormData(prev => ({ ...prev, startMonth: date.toISOString() }))
+                        setShowStartCalendar(false)
+                      }}
+                      initialMonth={formData.startMonth ? new Date(formData.startMonth) : undefined}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              {/* End Month Label and Picker */}
+              <div className="flex flex-col gap-1">
+                <label htmlFor="end-month-input" className="text-sm font-medium text-gray-700 dark:text-gray-200">End Month</label>
+                <Popover open={showEndCalendar} onOpenChange={setShowEndCalendar}>
+                  <PopoverTrigger asChild>
+                    <Input
+                      id="end-month-input"
+                      value={formData.endTMonth ? format(new Date(formData.endTMonth), 'MMMM') : ''}
+                      placeholder={formData.endTMonth ? '' : 'End Month'}
+                      readOnly
+                      className="cursor-pointer w-22 bg-white border-gray-200 hover:border-[#00346b] transition-colors duration-200"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent align="start" className="w-[320px] p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xl">
+                    <CustomCalendar
+                      selected={formData.endTMonth ? new Date(formData.endTMonth) : null}
+                      onSelect={date => {
+                        setFormData(prev => ({ ...prev, endTMonth: date.toISOString() }))
+                        setShowEndCalendar(false)
+                      }}
+                      initialMonth={formData.endTMonth ? new Date(formData.endTMonth) : undefined}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
           </div>
           {/* Time slot rows */}
@@ -524,7 +540,7 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
             <Button onClick={addTimeSlot} className="bg-[#00346b] text-white">Add</Button>
           </div>
           <div className="flex justify-end gap-2 mt-6">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+            <Button variant="outline" onClick={() =>handleCancel()}> 
               Cancel
             </Button>
             <Button className="bg-[#00346b] text-white" onClick={handleSubmit} disabled={loading}>
