@@ -40,9 +40,82 @@ export interface SessionFormData {
   }
 }
 
+// Custom Calendar component for grid layout and dark mode
+function CustomCalendar({ selected, onSelect, initialMonth }: { selected: Date | null, onSelect: (date: Date) => void, initialMonth?: Date }) {
+  const [currentMonth, setCurrentMonth] = useState(initialMonth ? initialMonth.getMonth() : new Date().getMonth())
+  const [currentYear, setCurrentYear] = useState(initialMonth ? initialMonth.getFullYear() : new Date().getFullYear())
+
+  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
+  const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay()
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1)
+
+  const prevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11)
+      setCurrentYear(y => y - 1)
+    } else {
+      setCurrentMonth(m => m - 1)
+    }
+  }
+  const nextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0)
+      setCurrentYear(y => y + 1)
+    } else {
+      setCurrentMonth(m => m + 1)
+    }
+  }
+
+  return (
+    <div className="w-full">
+      <div className="flex items-center justify-between p-2 border-b dark:border-gray-700">
+        <button onClick={prevMonth} className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+        <span className="font-medium text-gray-900 dark:text-gray-100">
+          {new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long', year: 'numeric' })}
+        </span>
+        <button onClick={nextMonth} className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700">
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      </div>
+      <div className="grid grid-cols-7 gap-1 p-2">
+        {weekdays.map((day) => (
+          <div key={day} className="text-center text-xs text-gray-500 dark:text-gray-400 py-1">
+            {day}
+          </div>
+        ))}
+        {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+          <div key={`empty-${i}`} className="text-center py-1 text-sm" />
+        ))}
+        {days.map((day) => {
+          const currentDate = new Date(currentYear, currentMonth, day)
+          const isSelected = selected && currentDate.toDateString() === selected.toDateString()
+          const isToday = new Date().toDateString() === currentDate.toDateString()
+          return (
+            <div
+              key={day}
+              className={cn(
+                "text-center py-1 text-sm cursor-pointer rounded-md transition-colors",
+                isSelected && "bg-blue-600 text-white dark:bg-blue-400 dark:text-gray-900",
+                isToday && !isSelected && "bg-gray-100 dark:bg-gray-700 text-blue-700 dark:text-blue-300",
+                !isSelected && !isToday && "hover:bg-blue-100 dark:hover:bg-blue-800 hover:text-blue-700 dark:hover:text-blue-200"
+              )}
+              onClick={() => onSelect(currentDate)}
+            >
+              {day}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCreated }: CreateSessionDialogProps) {
   const [divisions, setDivisions] = useState<Array<{ id: string; name: string }>>([])
-  const [formData, setFormData] = useState<SessionFormData>({
+  const initialFormData: SessionFormData = {
     title: "",
     description: "",
     startMonth: "",
@@ -55,7 +128,8 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
       groupIds: [],
       timeSlots: []
     }
-  })
+  }
+  const [formData, setFormData] = useState<SessionFormData>(initialFormData)
   const [groups, setGroups] = useState<Array<{ id: string; name: string }>>([])
   const [newTimeSlot, setNewTimeSlot] = useState<TimeSlot>({
     date: "",
@@ -66,6 +140,7 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
   const [showEndCalendar, setShowEndCalendar] = useState(false)
   const startCalendarRef = useRef<HTMLDivElement>(null)
   const endCalendarRef = useRef<HTMLDivElement>(null)
+  const [loading, setLoading] = useState(false)
 
   // Fetch groups when division changes
   const fetchGroups = async (divisionId: string) => {
@@ -191,18 +266,22 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
   // Submit handler (backend compatible)
   const handleSubmit = async () => {
     try {
+      setLoading(true)
       if (!formData.title || !formData.description || !formData.startMonth || !formData.endTMonth || !formData.location || !formData.divisionId) {
         toast.error("Please fill in all required fields")
+        setLoading(false)
         return
       }
 
       if (formData.timeSlotAndGroup.timeSlots.length === 0) {
         toast.error("Please add at least one time slot")
+        setLoading(false)
         return
       }
 
       if (formData.timeSlotAndGroup.groupIds.length === 0) {
         toast.error("Please select a group")
+        setLoading(false)
         return
       }
 
@@ -260,6 +339,7 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
           console.error("Error response (text):", errorMsg);
         }
         toast.error(errorMsg)
+        setLoading(false)
         return;
       }
 
@@ -270,9 +350,12 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
       onSubmit?.(formData)
       onSessionCreated?.()
       onOpenChange(false)
+      setFormData(initialFormData) // Reset form after submit
+      setLoading(false)
     } catch (error) {
       console.error("Error creating session:", error)
       toast.error(error instanceof Error ? error.message : 'Failed to create session')
+      setLoading(false)
     }
   }
 
@@ -370,142 +453,40 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
               <Popover open={showStartCalendar} onOpenChange={setShowStartCalendar}>
                 <PopoverTrigger asChild>
                   <Input
-                    placeholder="Start Month"
                     value={formData.startMonth ? format(new Date(formData.startMonth), 'MMMM') : ''}
+                    placeholder={formData.startMonth ? '' : 'Start Month'}
                     readOnly
-                    className="cursor-pointer"
+                    className="cursor-pointer bg-white border-gray-200 hover:border-[#00346b] transition-colors duration-200"
                   />
                 </PopoverTrigger>
-                <PopoverContent align="start" className="w-[400px] p-3 bg-white rounded-xl border border-gray-100 shadow-lg">
-                  <Calendar
-                    mode="single"
-                    selected={formData.startMonth ? new Date(formData.startMonth) : undefined}
-                    onSelect={handleStartDateSelect}
-                    initialFocus
-                    fromMonth={new Date(new Date().getFullYear(), 0, 1)}
-                    toMonth={new Date(new Date().getFullYear(), 11, 31)}
-                    showOutsideDays={false}
-                    className="border-none shadow-none p-0"
-                    classNames={{
-                      // Container for all months in the calendar
-                      months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                      // Individual month container
-                      month: "space-y-4 w-full",
-                      // Month caption (title) container
-                      caption: "flex justify-center relative items-center h-12 mb-2",
-                      // Month caption text styling
-                      caption_label: "text-3xl font-extrabold text-black text-center w-full",
-                      // Navigation buttons container
-                      nav: "space-x-1 flex items-center absolute left-80 right-0 justify-between px-2",
-                      // Navigation button base styling
-                      nav_button: cn(
-                        "h-10 w-10 bg-white border border-gray-200 shadow-sm hover:bg-[#00346b] hover:text-white p-0 opacity-100 hover:opacity-100 rounded-xl flex items-center justify-center transition-colors duration-200"
-                      ),
-                      // Previous month button
-                      nav_button_previous: "",
-                      // Next month button
-                      nav_button_next: "",
-                      // Calendar table container
-                      table: "w-full border-collapse space-y-1",
-                      // Header row styling
-                      head_row: "flex w-full",
-                      // Header cell styling (weekday names)
-                      head_cell: "text-gray-400 rounded-md w-14 font-semibold text-base text-center text-[15px]",
-                      // Calendar row styling
-                      row: "flex w-full mt-2",
-                      // Individual cell styling
-                      cell: cn(
-                        "relative p-0 text-center text-base focus-within:relative focus-within:z-20 [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-gray-100/50",
-                        "[&:has([aria-selected])]:bg-gray-100"
-                      ),
-                      // Day button styling
-                      day: cn(
-                        "h-12 w-12 p-0 font-medium aria-selected:opacity-100 hover:bg-[#00346b] hover:text-white rounded-2xl transition-colors duration-200 text-lg text-black"
-                      ),
-                      // End of range styling
-                      day_range_end: "day-range-end",
-                      // Selected day styling
-                      day_selected: "bg-[#00346b] text-white hover:bg-[#00346b] hover:text-white focus:bg-[#00346b] focus:text-white rounded-2xl font-bold",
-                      // Today's date styling
-                      day_today: "bg-white border-2 border-[#00346b] text-[#00346b] font-bold rounded-2xl",
-                      // Days outside current month styling
-                      day_outside: "day-outside text-gray-300 opacity-50 aria-selected:bg-gray-100/50 aria-selected:text-gray-300 aria-selected:opacity-30",
-                      // Disabled days styling
-                      day_disabled: "text-gray-300 opacity-50",
-                      // Hidden days styling
-                      day_hidden: "invisible",
+                <PopoverContent align="start" className="w-[320px] p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xl">
+                  <CustomCalendar
+                    selected={formData.startMonth ? new Date(formData.startMonth) : null}
+                    onSelect={date => {
+                      setFormData(prev => ({ ...prev, startMonth: date.toISOString() }))
+                      setShowStartCalendar(false)
                     }}
+                    initialMonth={formData.startMonth ? new Date(formData.startMonth) : undefined}
                   />
                 </PopoverContent>
               </Popover>
               <Popover open={showEndCalendar} onOpenChange={setShowEndCalendar}>
                 <PopoverTrigger asChild>
                   <Input
-                    placeholder="End Month"
                     value={formData.endTMonth ? format(new Date(formData.endTMonth), 'MMMM') : ''}
+                    placeholder={formData.endTMonth ? '' : 'End Month'}
                     readOnly
-                    className="cursor-pointer"
+                    className="cursor-pointer bg-white border-gray-200 hover:border-[#00346b] transition-colors duration-200"
                   />
                 </PopoverTrigger>
-                <PopoverContent align="start" className="w-[400px] p-3 bg-white rounded-xl border border-gray-100 shadow-lg">
-                  <Calendar
-                    mode="single"
-                    selected={formData.endTMonth ? new Date(formData.endTMonth) : undefined}
-                    onSelect={handleEndDateSelect}
-                    initialFocus
-                    fromMonth={new Date(new Date().getFullYear(), 0, 1)}
-                    toMonth={new Date(new Date().getFullYear(), 11, 31)}
-                    showOutsideDays={false}
-                    className="border-none shadow-none p-0"
-                    classNames={{
-                      // Container for all months in the calendar
-                      months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                      // Individual month container
-                      month: "space-y-4 w-full",
-                      // Month caption (title) container
-                      caption: "flex justify-center relative items-center h-12 mb-2",
-                      // Month caption text styling
-                      caption_label: "text-3xl font-extrabold text-black text-center w-full",
-                      // Navigation buttons container
-                      nav: "space-x-1 flex items-center absolute left-80 right-0 justify-between px-2",
-                      // Navigation button base styling
-                      nav_button: cn(
-                        "h-10 w-10 bg-white border border-gray-200 shadow-sm hover:bg-[#00346b] hover:text-white p-0 opacity-100 hover:opacity-100 rounded-xl flex items-center justify-center transition-colors duration-200"
-                      ),
-                      // Previous month button
-                      nav_button_previous: "",
-                      // Next month button
-                      nav_button_next: "",
-                      // Calendar table container
-                      table: "w-full border-collapse space-y-1",
-                      // Header row styling
-                      head_row: "flex w-full",
-                      // Header cell styling (weekday names)
-                      head_cell: "text-gray-400 rounded-md w-14 font-semibold text-base text-center text-[15px]",
-                      // Calendar row styling
-                      row: "flex w-full mt-2",
-                      // Individual cell styling
-                      cell: cn(
-                        "relative p-0 text-center text-base focus-within:relative focus-within:z-20 [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-gray-100/50",
-                        "[&:has([aria-selected])]:bg-gray-100"
-                      ),
-                      // Day button styling
-                      day: cn(
-                        "h-12 w-12 p-0 font-medium aria-selected:opacity-100 hover:bg-[#00346b] hover:text-white rounded-2xl transition-colors duration-200 text-lg text-black"
-                      ),
-                      // End of range styling
-                      day_range_end: "day-range-end",
-                      // Selected day styling
-                      day_selected: "bg-[#00346b] text-white hover:bg-[#00346b] hover:text-white focus:bg-[#00346b] focus:text-white rounded-2xl font-bold",
-                      // Today's date styling
-                      day_today: "bg-white border-2 border-[#00346b] text-[#00346b] font-bold rounded-2xl",
-                      // Days outside current month styling
-                      day_outside: "day-outside text-gray-300 opacity-50 aria-selected:bg-gray-100/50 aria-selected:text-gray-300 aria-selected:opacity-30",
-                      // Disabled days styling
-                      day_disabled: "text-gray-300 opacity-50",
-                      // Hidden days styling
-                      day_hidden: "invisible",
+                <PopoverContent align="start" className="w-[320px] p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xl">
+                  <CustomCalendar
+                    selected={formData.endTMonth ? new Date(formData.endTMonth) : null}
+                    onSelect={date => {
+                      setFormData(prev => ({ ...prev, endTMonth: date.toISOString() }))
+                      setShowEndCalendar(false)
                     }}
+                    initialMonth={formData.endTMonth ? new Date(formData.endTMonth) : undefined}
                   />
                 </PopoverContent>
               </Popover>
@@ -546,7 +527,9 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button className="bg-[#00346b] text-white" onClick={handleSubmit}>Create</Button>
+            <Button className="bg-[#00346b] text-white" onClick={handleSubmit} disabled={loading}>
+              {loading ? 'Creating...' : 'Create'}
+            </Button>
           </div>
         </div>
       </DialogContent>
