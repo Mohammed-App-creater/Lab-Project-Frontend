@@ -8,7 +8,7 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface SidebarCardProps {
-  isOpen: boolean
+  isOpen: boolean;
 }
 
 function SidebarCard() {
@@ -46,3 +46,4 @@ function SidebarCard() {
   );
 }
 
+export default SidebarCard;
