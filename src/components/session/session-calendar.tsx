@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import  PageLoader  from "../global/login/pageLoader"
+import PageLoader from "../global/login/pageLoader"
 
 export interface Session {
   id: string;
@@ -111,7 +111,7 @@ export function SessionCalendar({
   return (
     <Card
       className={cn(
-        "w-full max-w-md relative mx-auto max-h-13/12 overflow-auto hide-scrollbar  ",
+        "w-full max-w-full sm:max-w-md relative mx-auto max-h-13/12 overflow-auto hide-scrollbar",
         className
       )}
     >
@@ -121,8 +121,8 @@ export function SessionCalendar({
           <CalendarIcon className="h-5 w-5 text-primary" />
         </div>
       </CardHeader>
-      <CardContent className="pb-6 pt-0 ">
-        <div className="space-y-4">
+      <CardContent className="pb-6 pt-0 w-full">
+        <div className="space-y-4 w-full">
           {/* Calendar header with navigation */}
           <div className="flex items-center justify-between">
             <Button
@@ -149,7 +149,7 @@ export function SessionCalendar({
           </div>
 
           {/* Calendar grid */}
-          <div>
+          <div className="overflow-x-auto">
             {/* Day headers */}
             <div className="grid grid-cols-7 text-center mb-2">
               {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day, index) => (
@@ -189,7 +189,7 @@ export function SessionCalendar({
           </div>
 
           {/* Session details */}
-          <div className="mt-8 space-y-6">
+          <div className="mt-8 space-y-6 w-full">
             {visibleSessions.length > 0 ? (
               visibleSessions.map((dayData) => (
                 <div key={dayData.date} className="space-y-4 border-none">
@@ -228,8 +228,8 @@ export function SessionCalendar({
 
                   {dayData.date !==
                     visibleSessions[visibleSessions.length - 1].date && (
-                    <div className="mb-2"></div>
-                  )}
+                      <div className="mb-2"></div>
+                    )}
                 </div>
               ))
             ) : (

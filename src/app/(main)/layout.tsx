@@ -16,12 +16,12 @@ export default function MainLayout({
     <ProtectedRoute>
       <ThemeProvider attribute="class">
         <div className="min-h-screen flex justify-center">
-          <div className="min-h-screen w-full  flex pr-8 ">
+          <div className="min-h-screen w-full flex pr-8 ">
             <div className=" w-1/5  ">
               <SidebarCard />
             </div>
 
-            <div className=" w-full     ">
+            <div className=" w-full ">
               <div className="flex flex-col justify-start items- w-full h-screen">
                 <div className="w-full mb-5 ">
                   <Header />

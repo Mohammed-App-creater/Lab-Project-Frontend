@@ -31,8 +31,8 @@ export function SessionsTable({ sessions, onEdit, onDelete }: SessionsTableProps
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
+    <div className="rounded-md border overflow-x-auto">
+      <Table className="min-w-[800px] w-full">
         <TableHeader>
           <TableRow>
             <TableHead>Date</TableHead>

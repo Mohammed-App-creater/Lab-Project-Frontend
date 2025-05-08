@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import type { SessionTimeSlot } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import PageLoader from  "@/components/global/login/pageLoader";
+import PageLoader from "@/components/global/login/pageLoader";
 
 // Define the attendance record type
 
@@ -188,15 +188,15 @@ const Attendance = ({
   return (
     <div className="p-4">
       {/* Search and Filter */}
-      <div className="flex justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-2 mb-4">
         <input
           type="text"
           placeholder="Search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="border rounded p-2 w-1/3"
+          className="border rounded p-2 w-full sm:w-1/3"
         />
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-2 sm:mt-0">
           <button
             onClick={handleSave}
             className="bg-blue-600 text-white px-4 py-2 rounded"
@@ -269,18 +269,19 @@ const Attendance = ({
       </div>
 
       {/* Attendance Table */}
-      <div className="rounded">
-        <div className="grid grid-cols-3  p-4 font-semibold border-b">
-          <div>Member Name</div>
-          <div>Attendance</div>
-          <div className="flex justify-end pr-6" >Excused</div>
-        </div>
-        {paginatedData.map((record) => (
-          <div
-            key={record.id}
-            className="grid grid-cols-3 p-4 border-b items-end"
-          >
-            <div className="flex items-center gap-2">
+      <div className="overflow-x-auto rounded-lg border bg-white">
+        <div className="min-w-[700px]">
+          <div className="grid grid-cols-2 sm:grid-cols-3 p-4 font-semibold border-b">
+            <div>Member Name</div>
+            <div>Attendance</div>
+            <div className="flex justify-end pr-6 hidden sm:block">Excused</div>
+          </div>
+          {paginatedData.map((record) => (
+            <div
+              key={record.id}
+              className="grid grid-cols-2 sm:grid-cols-3 p-4 border-b items-end"
+            >
+              <div className="flex items-center gap-2">
                 <Avatar className="h-8 w-8">
                   <AvatarImage
                     src={record.user.profileImageUrl ?? ""}
@@ -290,46 +291,44 @@ const Attendance = ({
                     {record.user.firstName?.charAt(0) || "UN"}
                   </AvatarFallback>
                 </Avatar>
-              <span>
-                {`${record.user.firstName} ${record.user.lastName}` ||
-                  "Unknown Member"}
-              </span>
-              {record.headsUpId && (
-                <span className="ml-2 text-blue-600">⚠️</span>
-              )}
+                <span>
+                  {`${record.user.firstName} ${record.user.lastName}` || "Unknown Member"}
+                </span>
+                {record.headsUpId && (
+                  <span className="ml-2 text-blue-600">⚠️</span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleStatusChange(record.id, "PRESENT")}
+                  className={`px-4 py-1 rounded-4xl ${record.status === "PRESENT"
+                      ? "bg-[#3FC28A] text-white"
+                      : "dark:bg-gray-800 border border-gray-300"
+                    }`}
+                >
+                  Present
+                </button>
+                <button
+                  onClick={() => handleStatusChange(record.id, "ABSENT")}
+                  className={`px-4 rounded-4xl ${record.status === "ABSENT"
+                      ? "bg-red-500 text-white"
+                      : "dark:bg-gray-800 border border-gray-300"
+                    }`}
+                >
+                  Absent
+                </button>
+              </div>
+              <div className="flex justify-end hidden sm:flex">
+                <button
+                  onClick={() => setShowHeadsUpPopup(record.id)}
+                  className="bg-[#003087] text-white px-4 py-2 rounded-lg"
+                >
+                  Heads Up
+                </button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleStatusChange(record.id, "PRESENT")}
-                className={`px-4 py-1 rounded-4xl ${
-                  record.status === "PRESENT"
-                    ? "bg-[#3FC28A] text-white"
-                    : "dark:bg-gray-800 border border-gray-300"
-                }`}
-              >
-                Present
-              </button>
-              <button
-                onClick={() => handleStatusChange(record.id, "ABSENT")}
-                className={`px-4  rounded-4xl ${
-                  record.status === "ABSENT"
-                    ? "bg-red-500 text-white"
-                    : "dark:bg-gray-800 border border-gray-300"
-                }`}
-              >
-                Absent
-              </button>
-            </div>
-            <div className="flex justify-end">
-              <button
-                onClick={() => setShowHeadsUpPopup(record.id)}
-                className="bg-[#003087]  text-white px-4 py-2 rounded-lg"
-              >
-                Heads Up
-              </button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Pagination */}
@@ -355,9 +354,8 @@ const Attendance = ({
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`px-4 py-2 border rounded ${
-                currentPage === page ? "bg-blue-600 text-white" : ""
-              }`}
+              className={`px-4 py-2 border rounded ${currentPage === page ? "bg-blue-600 text-white" : ""
+                }`}
             >
               {page}
             </button>
@@ -374,49 +372,49 @@ const Attendance = ({
         </div>
       </div>
 
-      {isLoading ? (<PageLoader fullPage={false}  />) : (
+      {isLoading ? (<PageLoader fullPage={false} />) : (
         <>
-      {showHeadsUpPopup && (
-        <div className="fixed inset-0 bg-[#00000089] bg-opacity-50 flex items-center  justify-center">
-          <div className=" flex flex-col gap-4  p-6 rounded-2xl bg-white dark:bg-gray-800 w-1/5">
-            <h2 className="text-lg dark:text-white font-bold mb-4">Heads Up</h2>
-            <div className="mb-4">
-              <select onChange={(e) => {setSelectedHeadsUpType(e.target.value)}}  className={`w-full border ${selectedHeadsUpType || selectedHeadsUpType === ""? "" : "text-gray-500" } rounded-lg p-3`} >
-                <option className="" value="" disabled selected>
-                  Select Type
-                </option>
-                <option value="SICK">SICK</option>
-                <option value="TRAVEL">TRAVEL</option>
-                <option value="PERSONAL">PERSONAL</option>
-                <option value="OTHER">OTHER</option>
-              </select>
+          {showHeadsUpPopup && (
+            <div className="fixed inset-0 bg-[#00000089] bg-opacity-50 flex items-center  justify-center">
+              <div className=" flex flex-col gap-4  p-6 rounded-2xl bg-white dark:bg-gray-800 w-1/5">
+                <h2 className="text-lg dark:text-white font-bold mb-4">Heads Up</h2>
+                <div className="mb-4">
+                  <select onChange={(e) => { setSelectedHeadsUpType(e.target.value) }} className={`w-full border ${selectedHeadsUpType || selectedHeadsUpType === "" ? "" : "text-gray-500"} rounded-lg p-3`} >
+                    <option className="" value="" disabled selected>
+                      Select Type
+                    </option>
+                    <option value="SICK">SICK</option>
+                    <option value="TRAVEL">TRAVEL</option>
+                    <option value="PERSONAL">PERSONAL</option>
+                    <option value="OTHER">OTHER</option>
+                  </select>
+                </div>
+                <div className="mb-4">
+                  <textarea
+                    className="w-full border rounded-lg p-4"
+                    rows={3}
+                    placeholder="Enter reason for heads up"
+                    value={headsUpReason}
+                    onChange={(e) => setHeadsUpReason(e.target.value)}
+                  />
+                </div>
+                <div className="flex gap-2 w-full">
+                  <button
+                    onClick={() => setShowHeadsUpPopup(null)}
+                    className="border border-gray-300 grow px-4 py-3 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleHeadsUpSubmit(showHeadsUpPopup)}
+                    className="bg-[#003087] grow text-white px-4 py-3 rounded-lg"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="mb-4">
-              <textarea
-                className="w-full border rounded-lg p-4"
-                rows={3}
-                placeholder="Enter reason for heads up"
-                value={headsUpReason}
-                onChange={(e) => setHeadsUpReason(e.target.value)}
-              />
-            </div>
-            <div className="flex gap-2 w-full">
-              <button
-                onClick={() => setShowHeadsUpPopup(null)}
-                className="border border-gray-300 grow px-4 py-3 rounded-lg"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleHeadsUpSubmit(showHeadsUpPopup)}
-                className="bg-[#003087] grow text-white px-4 py-3 rounded-lg"
-              >
-                Add
-              </button>
-            </div>
-          </div>
-        </div>
-      )} </>)}
+          )} </>)}
 
       {/* Save Toast */}
       {showSaveToast && (

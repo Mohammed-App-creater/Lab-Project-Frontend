@@ -6,10 +6,19 @@ import ResourceManagement from "@/components/resources/resourceManagement";
 
 export default function Page() {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex min-h-screen">
+      {/* <div className="w-[250px] hidden md:block ">
+        <SidebarCard />
+      </div> */}
+
+      {/* <div className="flex flex-col ">
+        <div className="px-3 py-3">
+          <Header />
+        </div> */}
+
       <div className="flex-1 overflow-y-auto">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-[#A2A1A833] dark:border-gray-700 p-4 sm:p-6 lg:p-8 shadow-sm dark:shadow-gray-900/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="bg-white rounded-lg shadow-sm border border-[#A2A1A833]">
             <ResourceManagement />
           </div>
         </div>

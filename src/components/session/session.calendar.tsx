@@ -30,7 +30,7 @@ export default function SessionCalendar() {
   ]
 
   return (
-    <div className="w-full max-w-md mx-auto  rounded-lg overflow-hidden border">
+    <div className="w-full max-w-full sm:max-w-md mx-auto rounded-lg overflow-hidden border">
       <div className="p-4 flex items-center justify-between">
         <h2 className="text-lg font-bold">Session</h2>
         <Database className="h-9 w-9 text-slate-500 bg-[#7152F31A] p-2 rounded-sm" />
@@ -47,31 +47,32 @@ export default function SessionCalendar() {
           </Button>
         </div>
 
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={(newDate) => newDate && setDate(newDate)}
-          month={month}
-          onMonthChange={setMonth}
-          // className="rounded-md bord"
-          classNames={{
-            day_selected:
-              "rounded-lg bg-[#003087] text-primary-foreground hover:bg-[#003087] hover:text-[#FFFFFF] focus:bg-[#003087] focus:text-[#FFFFFF]",
-            day_today: "bg-accent text-accent-foreground",
-            day: cn("h-9 w-9 p-0 font-normal aria-selected:opacity-100 "),
-            day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
-            day_hidden: "invisible",
-            head_cell: "text-[#16151C] rounded-md w-9 font-normal text-[0.8rem]",
-            cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-            table: "border-collapse space-y-1",
-          }}
-        />
+        <div className="overflow-x-auto">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={(newDate) => newDate && setDate(newDate)}
+            month={month}
+            onMonthChange={setMonth}
+            classNames={{
+              day_selected:
+                "rounded-lg bg-[#003087] text-primary-foreground hover:bg-[#003087] hover:text-[#FFFFFF] focus:bg-[#003087] focus:text-[#FFFFFF]",
+              day_today: "bg-accent text-accent-foreground",
+              day: cn("h-9 w-9 p-0 font-normal aria-selected:opacity-100 "),
+              day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+              day_hidden: "invisible",
+              head_cell: "text-[#16151C] rounded-md w-9 font-normal text-[0.8rem]",
+              cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+              table: "border-collapse space-y-1",
+            }}
+          />
+        </div>
       </div>
-   <hr/>
-      <div className="px-4 pb-4">
+      <hr />
+      <div className="px-4 pb-4 w-full">
         {sessions.map((session, index) => (
-          <div key={index} className="mt-4">
-            <div className="flex items-center justify-between">
+          <div key={index} className="mt-4 w-full max-w-full">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full">
               <h4 className="text-sm font-normal text-[#16151C]">{session.date}</h4>
               <Button variant="ghost" size="icon" className="h-8 w-8">
                 <MoreVertical className="h-6 w-6" />
@@ -79,7 +80,7 @@ export default function SessionCalendar() {
             </div>
 
             {session.events.map((event, eventIndex) => (
-              <div key={eventIndex} className="mt-3 flex">
+              <div key={eventIndex} className="mt-3 flex w-full">
                 <div className="w-12 font-bold">{event.time}</div>
                 <div className="ml-4 border-l-2 border-primary pl-4 flex-1">
                   <div className="text-xs ">{event.department}</div>

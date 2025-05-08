@@ -121,11 +121,11 @@ export function CreateEventDialog({ open, onOpenChange, onSubmit, onEventCreated
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 overflow-hidden max-w-md">
-        <div className="p-6">
-          <h2 className="text-lg font-semibold mb-6">Add New Event</h2>
+      <DialogContent className="p-0 overflow-hidden w-full max-w-full sm:max-w-md">
+        <div className="p-4 sm:p-6 w-full max-w-full">
+          <h2 className="text-lg font-semibold mb-4 sm:mb-6">Add New Event</h2>
 
-          <div className="space-y-4">
+          <div className="space-y-4 w-full max-w-full">
             <Input
               placeholder="Event Title"
               value={formData.title}
@@ -205,7 +205,7 @@ export function CreateEventDialog({ open, onOpenChange, onSubmit, onEventCreated
                 </Popover>
               </div>
 
-              <div className="w-1/2 pl-2">
+              <div className="w-full sm:w-1/2 sm:pl-2 mt-2 sm:mt-0">
                 <div className="space-y-2">
                   <h3 className="text-sm font-medium">Select Visibility</h3>
                   <RadioGroup
@@ -226,7 +226,7 @@ export function CreateEventDialog({ open, onOpenChange, onSubmit, onEventCreated
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
               <Input
                 placeholder="Start Time"
                 type="time"
@@ -243,8 +243,8 @@ export function CreateEventDialog({ open, onOpenChange, onSubmit, onEventCreated
           </div>
         </div>
 
-        <div className="flex justify-between p-4 border-t">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
+        <div className="flex flex-col sm:flex-row justify-between p-4 border-t gap-2 w-full">
+          <Button variant="ghost" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
             Cancel
           </Button>
           <Button 
