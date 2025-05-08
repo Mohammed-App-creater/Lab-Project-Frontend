@@ -4,9 +4,14 @@ import { Search, Plus, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Card, CardContent } from "../ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { AddGroupDialog } from "./AddNewGroup";
+import { useState } from "react";
+import PageLoader from "../global/login/pageLoader";
 
+// Types
 export type AllGroupMemberDTO = {
   groupName: string;
   groupId: string;
@@ -56,56 +61,48 @@ export type UserDTO = {
   };
 };
 
-export function DivisionProfileUI() {
-  const router = useRouter();
-  const [data, setData] = useState<DivisionGroupMemberDto | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchGroupData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACK_END_URL}api/division/groups-and-members`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              // Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify({
-              divisionId: "cd5c8e05-533f-4b76-9769-4d1638530104",
-            }),
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data: Response = await response.json();
-        setData(data.data);
-        console.log("Fetched data:", data.data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An unknown error occurred");
-        console.error("Error fetching data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchGroupData();
-  }, []);
-
-  useEffect(() => {
-    if (data) {
-      console.log("Fetched data from useState:", data);
-    }
+// 👇 React Query Fetch Function
+const fetchGroupData = async (divisionId: string): Promise<DivisionGroupMemberDto> => {
+  if (!divisionId) {
+    throw new Error("Division ID is required");
   }
-  , [data]);
-  
-  if (loading) {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BACK_END_URL}api/division/groups-and-members`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        divisionId,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data: Response = await response.json();
+  return data.data;
+};
+
+export const GroupComponent = ({divisionId}: {divisionId: string}) => {
+  const router = useRouter();
+  const [showAddGroupDialog, setShowAddGroupDialog] = useState(false);
+
+
+  const { data, error, isLoading, isFetching } = useQuery({
+    queryKey: ["divisionGroups"],
+    queryFn: () => fetchGroupData(divisionId),
+  });
+
+  const handleCancel = () => {
+    setShowAddGroupDialog(false);
+  }
+
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
@@ -113,39 +110,49 @@ export function DivisionProfileUI() {
     );
   }
 
-
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-red-500">Error: {error}</div>
+        <div className="text-red-500">Error: {(error as Error).message}</div>
       </div>
     );
   }
 
-  if (!data || !data.groupsAndMembers || data.groupsAndMembers.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div>No groups found</div>
-      </div>
-    );
-  }
 
   const handleToGroup = (divisionId: string, groupId: string) => {
     router.push(`/alldivision/${divisionId}/${groupId}`);
   };
 
   return (
-    <div className="p-6">
+    <Card className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <Input placeholder="Search" className="w-64 pl-10" />
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700 rounded-md">
+        <Button onClick={() => setShowAddGroupDialog(true)} className="bg-blue-600 hover:bg-blue-700 rounded-md">
           <Plus className="mr-2 h-4 w-4" />
           Add Group
         </Button>
       </div>
+
+      {showAddGroupDialog && <AddGroupDialog onCancel={handleCancel} divisionId={divisionId} />}
+
+      {isLoading && ( <PageLoader fullPage={false} /> )}
+      
+
+      {error && (
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-red-500">Error: {(error as Error).message}</div>
+        </div>
+      )}
+
+      {data.groupsAndMembers.length === 0 && (
+        <div className="flex items-center justify-center space-y-14">
+          <div className="text-gray-500">No groups found</div>
+          </div>
+          )}
+          
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {data.groupsAndMembers.map((group) => (
@@ -158,42 +165,49 @@ export function DivisionProfileUI() {
                 </p>
               </div>
               <Button
-                  variant="link"
-                  onClick={() => {
-                    handleToGroup(data.id, group.groupId);
-                  }}
-                  className="text-blue-600 p-0 h-auto"
-                >
-                  View All
-                </Button>
+                variant="link"
+                onClick={() => handleToGroup(data.id, group.groupId)}
+                className="text-blue-600 p-0 h-auto"
+              >
+                View All
+              </Button>
             </div>
             <div className="mt-2">
               {group.members.data.map((member) => (
-                <div
+                <CardContent
                   key={member.id}
-                  className="flex items-center justify-between border-t px-4 py-3 hover:bg-gray-50"
+                  className="flex items-center justify-between px-5 py-4 border-t hover:bg-gray-100 transition-colors"
                 >
-                  <div className="flex items-center gap-3">
-                    <Avatar>
-                      <AvatarImage src={member.profileImageUrl || "/placeholder.svg"} />
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage
+                        src={member.profileImageUrl || "/placeholder.svg"}
+                      />
                       <AvatarFallback>
-                        {member.firstName?.charAt(0) + member.lastName?.charAt(0)}
+                        {member.firstName?.charAt(0)}
+                        {member.lastName?.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
-                    <div>
-                      <h3 className="font-medium">
+                    <div className="flex flex-col">
+                      <h3 className="font-semibold text-gray-900">
                         {member.firstName} {member.lastName}
                       </h3>
-                      <p className="text-sm text-gray-500">{member.Role.name}</p>
+                      <p className="text-sm text-gray-500">
+                        {member.Role.name}
+                      </p>
                     </div>
                   </div>
                   <ChevronRight className="h-5 w-5 text-gray-400" />
-                </div>
+                </CardContent>
               ))}
             </div>
           </div>
         ))}
       </div>
-    </div>
+      {isFetching && ( <PageLoader fullPage={false} /> )} 
+    </Card>
   );
-}
+};
+
+ 
+

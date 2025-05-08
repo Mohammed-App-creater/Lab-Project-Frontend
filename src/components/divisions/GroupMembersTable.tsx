@@ -17,7 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import api from "@/lib/axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -31,8 +32,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import AddNewMember from "../member/add.member.card";
+import { useQuery } from "@tanstack/react-query";
+import PageLoader from "../global/login/pageLoader";
 
-interface Member {
+interface user {
   id: string;
   firstName: string | null;
   middleName: string | null;
@@ -61,124 +64,76 @@ interface Member {
   };
 }
 
-type PaginatedResponse = {
-  data: Member[];
+interface PaginatedResponse {
+  groupId: string;
+  groupName: string;
+  members: member;
+}
+
+type member = {
+  data: user[];
   total: number;
   page: number;
   limit: number;
   totalPages: number;
 };
 
-export function GroupMembersTableUI() {
-  const [members, setMembers] = useState<Member[]>([]);
-  const [filteredMembers, setFilteredMembers] = useState<Member[]>([]);
-  const [paginationInfo, setPaginationInfo] = useState({
-    total: 0,
-    page: 1,
-    limit: 10,
-    totalPages: 0,
+const fetchMembers = async (
+  groupId: string,
+  page: number,
+  limit: number
+): Promise<PaginatedResponse> => {
+  const response = await api.get(
+    `api/group/group-member/${groupId}?page=${page}&limit=${limit}`
+  );
+  return response.data as PaginatedResponse;
+};
+
+export function GroupMembersTableUI({ groupId }: { groupId: string }) {
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [addNewMember, setAddNewMember] = useState(false);
+
+  const { data, isLoading, isError, isFetching } = useQuery({
+    queryKey: ["group-members", groupId, page, limit],
+    queryFn: () => fetchMembers(groupId, page, limit),
+    staleTime: 5000, // Keeps data fresh for 5 seconds
   });
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [addNewMember, setAddNewMember] = useState<boolean>(false);
 
-  const handleItemsPerPageChange = async (value: string) => {
-    const newLimit = Number(value);
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/all-users?limit=${newLimit}&page=1`
-      );
-      if (!res.ok) throw new Error("Failed to fetch members");
-      const data: PaginatedResponse = await res.json();
-      setMembers(data.data);
-      setFilteredMembers(data.data);
-      setPaginationInfo({
-        total: data.total,
-        page: 1,
-        limit: newLimit,
-        totalPages: data.totalPages,
-      });
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
+  const members = data?.members.data ?? [];
+  const filteredMembers = searchTerm
+    ? members.filter((member) =>
+        [member.firstName, member.lastName, member.email, member.id].some(
+          (field) => field?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      )
+    : members;
+
+  const paginationInfo = {
+    total: data?.members.total || 0,
+    page: data?.members.page || page,
+    limit: data?.members.limit || limit,
+    totalPages: data?.members.totalPages || 1,
   };
-
-
-  useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/all-users?limit=${paginationInfo.limit}&page=${paginationInfo.page}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch members");
-        const data: PaginatedResponse = await res.json();
-        setMembers(data.data);
-        setFilteredMembers(data.data);
-        setPaginationInfo({
-          total: data.total,
-          page: data.page,
-          limit: data.limit,
-          totalPages: data.totalPages,
-        });
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMembers();
-  }, [paginationInfo.limit, paginationInfo.page]);
-
-  useEffect(() => {
-    if (searchTerm.trim() === "") {
-      setFilteredMembers(members);
-    } else {
-      const lower = searchTerm.toLowerCase();
-      const filtered = members.filter(
-        (member) =>
-          (member.firstName?.toLowerCase().includes(lower) ?? false) ||
-          (member.lastName?.toLowerCase().includes(lower) ?? false) ||
-          (member.email?.toLowerCase().includes(lower) ?? false) ||
-          member.id.toLowerCase().includes(lower)
-      );
-      setFilteredMembers(filtered);
-    }
-  }, [searchTerm, members]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
-  const handlePageChange = async (pageNumber: number) => {
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/all-users?limit=${paginationInfo.limit}&page=${pageNumber}`
-      );
-      if (!res.ok) throw new Error("Failed to fetch members");
-      const data: PaginatedResponse = await res.json();
-      setMembers(data.data);
-      setFilteredMembers(data.data);
-      setPaginationInfo({
-        total: data.total,
-        page: data.page,
-        limit: data.limit,
-        totalPages: data.totalPages,
-      });
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
+  const handleItemsPerPageChange = (value: string) => {
+    setLimit(Number(value));
+    setPage(1); // reset page when limit changes
+  };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= paginationInfo.totalPages) {
+      setPage(newPage);
     }
   };
 
-  const getAttendanceBadgeColor = (attendance: string) => {
-    switch (attendance) {
+  const getAttendanceBadgeColor = (status: string) => {
+    switch (status) {
       case "Active":
         return "bg-green-100 text-green-800";
       case "Inactive":
@@ -190,31 +145,11 @@ export function GroupMembersTableUI() {
     }
   };
 
-  // const getStatusBadgeColor = (status: string) => {
-  //   switch (status) {
-  //     case "On Campus":
-  //       return "bg-green-100 text-green-800";
-  //     case "Off Campus":
-  //       return "bg-red-100 text-red-800";
-  //     case "Withdrawn":
-  //       return "bg-blue-100 text-blue-800";
-  //     default:
-  //       return "bg-gray-100 text-gray-800";
-  //   }
-  // };
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
-  
+  if (isError) return <p>Error loading members</p>;
 
   return (
     <div className="p-3 rounded-lg border">
-      {addNewMember && (
-      <AddNewMember
-        onCancel={() => setAddNewMember(false)}
-      />
-      )}
+      {addNewMember && <AddNewMember onCancel={() => setAddNewMember(false)} />}
       {/* Top Bar */}
       <div className="mb-6 flex items-center justify-between">
         <div className="relative">
@@ -259,7 +194,15 @@ export function GroupMembersTableUI() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredMembers.length > 0 ? (
+            {isLoading || isFetching ? (
+              // Show loader while loading
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-24">
+                  <PageLoader fullPage={false} />
+                </TableCell>
+              </TableRow>
+            ) : filteredMembers.length > 0 ? (
+              // Show members
               filteredMembers.map((member) => (
                 <TableRow key={member.id}>
                   <TableCell>
@@ -304,8 +247,9 @@ export function GroupMembersTableUI() {
                 </TableRow>
               ))
             ) : (
+              // No members found
               <TableRow>
-                <TableCell colSpan={6} className="text-center">
+                <TableCell colSpan={6} className="text-center py-24">
                   No members found.
                 </TableCell>
               </TableRow>
@@ -348,47 +292,54 @@ export function GroupMembersTableUI() {
             variant="outline"
             size="icon"
             className="h-8 w-8"
-            onClick={() => handlePageChange(Math.max(1, paginationInfo.page - 1))}
+            onClick={() =>
+              handlePageChange(Math.max(1, paginationInfo.page - 1))
+            }
             disabled={paginationInfo.page === 1}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
 
-          {Array.from({ length: Math.min(paginationInfo.totalPages, 5) }, (_, i) => {
-            let pageNum;
-            if (paginationInfo.totalPages <= 5) {
-              pageNum = i + 1;
-            } else if (paginationInfo.page <= 3) {
-              pageNum = i + 1;
-            } else if (paginationInfo.page >= paginationInfo.totalPages - 2) {
-              pageNum = paginationInfo.totalPages - 4 + i;
-            } else {
-              pageNum = paginationInfo.page - 2 + i;
-            }
+          {Array.from(
+            { length: Math.min(paginationInfo.totalPages, 5) },
+            (_, i) => {
+              let pageNum;
+              if (paginationInfo.totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (paginationInfo.page <= 3) {
+                pageNum = i + 1;
+              } else if (paginationInfo.page >= paginationInfo.totalPages - 2) {
+                pageNum = paginationInfo.totalPages - 4 + i;
+              } else {
+                pageNum = paginationInfo.page - 2 + i;
+              }
 
-            return (
-              <Button
-                key={pageNum}
-                variant="outline"
-                size="sm"
-                className={`h-8 w-8 ${
-                  paginationInfo.page === pageNum
-                    ? "bg-primary text-primary-foreground"
-                    : ""
-                }`}
-                onClick={() => handlePageChange(pageNum)}
-              >
-                {pageNum}
-              </Button>
-            );
-          })}
+              return (
+                <Button
+                  key={pageNum}
+                  variant="outline"
+                  size="sm"
+                  className={`h-8 w-8 ${
+                    paginationInfo.page === pageNum
+                      ? "bg-primary text-primary-foreground"
+                      : ""
+                  }`}
+                  onClick={() => handlePageChange(pageNum)}
+                >
+                  {pageNum}
+                </Button>
+              );
+            }
+          )}
 
           <Button
             variant="outline"
             size="icon"
             className="h-8 w-8"
             onClick={() =>
-              handlePageChange(Math.min(paginationInfo.totalPages, paginationInfo.page + 1))
+              handlePageChange(
+                Math.min(paginationInfo.totalPages, paginationInfo.page + 1)
+              )
             }
             disabled={paginationInfo.page === paginationInfo.totalPages}
           >

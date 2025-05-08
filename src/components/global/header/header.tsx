@@ -25,8 +25,11 @@ function Header({ onMenuClick }: HeaderProps) {
   const handleLogout = () => {
     localStorage.removeItem("user")
     localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    localStorage.removeItem("token")
   }
 
+  const Greeting = (): string => {
   const Greeting = (): string => {
     const currentHour = new Date().getHours()
     if (currentHour < 12) return "Good Morning"

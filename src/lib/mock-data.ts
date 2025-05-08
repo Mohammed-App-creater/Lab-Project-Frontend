@@ -1,4 +1,4 @@
-import type { Role, Rule, MemberRecord, TeamMember } from "./types"
+import type { Rule, MemberRecord, TeamMember, Role } from "./types"
 
 
 export const mockTeamMembers: TeamMember[] = [

@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import PageLoader from "../global/login/pageLoader"
 
 export interface Session {
   id: string;
@@ -80,9 +81,9 @@ export function SessionCalendar({
             <CalendarIcon className="h-5 w-5 text-primary" />
           </div>
         </CardHeader>
-        <CardContent className="pb-6 pt-0">
+        <CardContent className="pb-6 pt-0 flex flex-col items-center justify-center">
           <div className="flex items-center justify-center h-64">
-            <div className="text-muted-foreground">Loading sessions...</div>
+            <PageLoader fullPage={false} />
           </div>
         </CardContent>
       </Card>
@@ -121,8 +122,8 @@ export function SessionCalendar({
           <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
         </div>
       </CardHeader>
-      <CardContent className="pb-6 pt-0 px-4 sm:px-6">
-        <div className="space-y-4">
+      <CardContent className="pb-6 pt-0 px-4 sm:px-6  w-full">
+        <div className="space-y-4  w-full">
           {/* Calendar header with navigation */}
           <div className="flex items-center justify-between">
             <Button
@@ -149,7 +150,7 @@ export function SessionCalendar({
           </div>
 
           {/* Calendar grid */}
-          <div>
+          <div className="overflow-x-auto">
             {/* Day headers */}
             <div className="grid grid-cols-7 text-center mb-2">
               {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day, index) => (
@@ -189,7 +190,7 @@ export function SessionCalendar({
           </div>
 
           {/* Session details */}
-          <div className="mt-6 sm:mt-8 space-y-4 sm:space-y-6">
+          <div className="mt-6 sm:mt-8 space-y-4 sm:space-y-6 w-full">
             {visibleSessions.length > 0 ? (
               visibleSessions.map((dayData) => (
                 <div key={dayData.date} className="space-y-3 sm:space-y-4 border-none">
@@ -228,8 +229,8 @@ export function SessionCalendar({
 
                   {dayData.date !==
                     visibleSessions[visibleSessions.length - 1].date && (
-                    <div className="mb-2"></div>
-                  )}
+                      <div className="mb-2"></div>
+                    )}
                 </div>
               ))
             ) : (

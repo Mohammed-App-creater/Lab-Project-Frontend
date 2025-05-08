@@ -1,158 +1,243 @@
+"use client";
 
-"use client"
+import { useState } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import PageLoader from "../global/login/pageLoader";
+import api from "@/lib/axios";
 
-import { useState, useEffect } from "react"
-import { useFormik } from "formik"
-import * as Yup from "yup"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent } from "@/components/ui/card"
+type Division = {
+  id: string;
+  name: string;
+};
 
+type Groups = {
+  id: string;
+  name: string;
+  groups: Group[];
+};
 
-const validationSchema = Yup.object({
-  email: Yup.string().email("Invalid email address").required("Email is required"),
-  password: Yup.string().required("Password is required"),
-})
-
-// { onCancel }: { onCancel: () => void }
-export default function AddNewMember({ onCancel }: { onCancel: () => void }) {
-  const [password, setpassword] = useState("")
-  const [division, setDivision] = useState("")
-  const [group, setGroup] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-
-  // Generate a random password
-  const generatePassword = () => {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*"
-    let password = ""
-    for (let i = 0; i < 12; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length))
-    }
-    setpassword(password)
-    formik.setFieldValue("password", password)
-  }
-
+type Group = {
+  id: string;
+  name: string;
+  discription: string;
+};
 
 type FormValues = {
   email: string;
   password: string;
-  DivisionId: string;
+  divisionId: string;
   groupId: string;
   gender: string;
 };
 
-  // Initialize Formik
-const formik = useFormik<FormValues>({
-  initialValues: {
-    email: "",
-    password: "",
-    DivisionId: "cd5c8e05-533f-4b76-9769-4d1638530104",
-    groupId: "d4a18c91-5197-4c71-902f-fbc8f3366f0b",
-    gender: "Male",
-  },
-  validationSchema,
-  onSubmit: async (values, { resetForm, setSubmitting }) => {
-    try {
-      console.log("Submitting form with values:", values)
-      setSubmitting(true)
-      // Send the form data to the server
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
+export default function AddNewMember({ onCancel }: { onCancel: () => void }) {
+  const [password, setPassword] = useState("");
+
+  // Formik setup
+  const formik = useFormik<FormValues>({
+    initialValues: {
+      email: "",
+      password: "",
+      divisionId: "",
+      groupId: "",
+      gender: "Male",
+    },
+    validationSchema: Yup.object({
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      password: Yup.string().required("Password is required"),
+      divisionId: Yup.string().required("Division is required"),
+      groupId: Yup.string().required("Group is required"),
+    }),
+    onSubmit: (values) => {
+      registerMutation.mutate(values);
+    },
+  });
+
+  // Fetch divisions
+  const {
+    data: divisions,
+    isLoading: isLoadingDivisions,
+    isError: isErrorDivisions,
+  } = useQuery<Division[]>({
+    queryKey: ["divisions"],
+    queryFn: async () => {
+      const response = await api.get("api/division/divisions");
+      return response.data;
+    },
+    staleTime: 60 * 1000,
+  });
+
+  // Fetch groups based on selected division
+  const {
+    data: groups,
+    isLoading: isLoadingGroups,
+    isError: isErrorGroups,
+  } = useQuery<Groups>({
+    queryKey: ["groups", formik.values.divisionId], // Include divisionId in query key
+    queryFn: async () => {
+      if (!formik.values.divisionId) return [];
+      const response = await api.post("api/division/groups", {
+        divisionId: formik.values.divisionId,
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to register");
-      }
-
-      const data: { message: string } = await response.json();
-      console.log("Success:", data.message);
-
-      resetForm();
-      onCancel(); // Close the modal after successful submission
-    } catch (error: any) {
-      console.error("Error:", error.message);
-    } finally {
-      setSubmitting(false);
-    }
-  },
-})
-
-useEffect(() => {
-    setIsLoading(true);
-    const fetchData = async () => {
-      try {
-        const [divResponse, groupResponse] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/division`),
-          fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/group`),
-        ]);
-
-        if (!divResponse.ok || !groupResponse.ok) {
-          throw new Error("Failed to fetch divisions");
+      console.log("Groups response:", response.data); // Debugging line
+      return response.data;
+    },
+    enabled: !!formik.values.divisionId, // Only enable when division is selected
+    staleTime: 60 * 1000,
+  });
+  // Register mutation
+  const registerMutation = useMutation({
+    mutationFn: async (values: FormValues) => {
+      const response = await api.post("api/user/register", values, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         }
-        const DivisionData = await divResponse.json();
-        const GroupData = await groupResponse.json();
-        console.log("Fetched divisions:", DivisionData);
-        console.log("Fetched groups:", GroupData);
-        setDivision(DivisionData);
-        setGroup(GroupData);
-      } catch (error) {
-        console.error("Error fetching divisions:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      formik.resetForm();
+      onCancel();
+    },
+    onError: (error: import("axios").AxiosError) => {
+      console.error("Error:", error.message);
+    },
+  });
 
+  // Generate password
+  const generatePassword = () => {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+    let password = "";
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setPassword(password);
+    formik.setFieldValue("password", password);
+  };
+
+  // Handle division change
+  const handleDivisionChange = (value: string) => {
+    formik.setFieldValue("divisionId", value);
+    formik.setFieldValue("groupId", ""); // Reset group when division changes
+  };
+
+  // Show loading state only for specific components
+  if (isErrorDivisions || isErrorGroups) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <Card className="w-full max-w-sm shadow-lg">
+          <CardContent className="p-6 text-center">
+            <h2 className="text-xl font-bold mb-4">Error Loading Data</h2>
+            <p className="text-red-500 mb-4">
+              Failed to load required data. Please try again.
+            </p>
+            <Button onClick={() => window.location.reload()} className="mt-4">
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="fixed inset-0  bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <Card className="w-full max-w-sm shadow-lg">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2">
+      <Card className="w-full sm:max-w-lg mx-auto shadow-lg">
         <CardContent className="">
-          <h2 className="text-xl  font-bold mb-6">Add New Member</h2>
+          <h2 className="text-xl font-bold mb-6">Add New Member</h2>
           <form onSubmit={formik.handleSubmit} className="space-y-4">
             {/* Division Select */}
             <div>
               <Select
-                name="division"
-                // onValueChange={(value) => formik.setFieldValue("division", value)}
-                // value={formik.values.division}
+                name="divisionId"
+                onValueChange={handleDivisionChange}
+                value={formik.values.divisionId}
               >
-                <SelectTrigger className="w-full py-7  bg-white">
+                <SelectTrigger className="w-full py-7 bg-white">
                   <SelectValue placeholder="Select Division" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="engineering">Development</SelectItem>
-                  <SelectItem value="marketing">CBD</SelectItem>
-                  <SelectItem value="sales">Cyber</SelectItem>
-                  <SelectItem value="hr">CPD</SelectItem>
+                  {isLoadingDivisions ? (
+                    <div className="flex justify-center py-4">
+                      <PageLoader fullPage={false} />
+                    </div>
+                  ) : (
+                    divisions?.map((division) => (
+                      <SelectItem key={division.id} value={division.id}>
+                        {division.name}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
-
+              {formik.touched.divisionId && formik.errors.divisionId && (
+                <p className="text-sm text-red-500 mt-1">
+                  {formik.errors.divisionId}
+                </p>
+              )}
             </div>
 
             {/* Group Select */}
             <div>
               <Select
-                name="group"
-                // onValueChange={(value) => formik.setFieldValue("group", value)}
-                // value={formik.values.group}
+                name="groupId"
+                onValueChange={(value) =>
+                  formik.setFieldValue("groupId", value)
+                }
+                value={formik.values.groupId}
+                disabled={!formik.values.divisionId || isLoadingGroups}
               >
                 <SelectTrigger className="w-full py-7 bg-white">
-                  <SelectValue placeholder="Select Group" />
+                  <SelectValue
+                    placeholder={
+                      !formik.values.divisionId
+                        ? "Select division first"
+                        : isLoadingGroups
+                          ? "Loading groups..."
+                          : groups?.groups.length === 0
+                            ? "No groups available"
+                            : "Select Group"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="team-a">Group 1</SelectItem>
-                  <SelectItem value="team-b">Group 2</SelectItem>
-                  <SelectItem value="team-c">Group 3</SelectItem>
+                  {isLoadingGroups ? (
+                    <div className="flex justify-center py-4">
+                      <PageLoader fullPage={false} />
+                    </div>
+                  ) : (groups?.groups ?? []).length > 0 ? (
+                    (groups?.groups ?? []).map((group) => (
+                      <SelectItem key={group.id} value={group.id}>
+                        {group.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <div className="text-center py-2 text-sm text-gray-500">
+                      No groups found for this division
+                    </div>
+                  )}
                 </SelectContent>
               </Select>
-
+              {formik.touched.groupId && formik.errors.groupId && (
+                <p className="text-sm text-red-500 mt-1">
+                  {formik.errors.groupId}
+                </p>
+              )}
             </div>
 
             {/* Email Input */}
@@ -164,10 +249,12 @@ useEffect(() => {
                 value={formik.values.email}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="bg-white"
+                className="bg-white py-7"
               />
               {formik.touched.email && formik.errors.email && (
-                <p className="text-sm text-red-500 mt-1">{formik.errors.email}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {formik.errors.email}
+                </p>
               )}
             </div>
 
@@ -179,9 +266,13 @@ useEffect(() => {
                 placeholder="Random Password"
                 value={password}
                 readOnly
-                className="bg-white flex-1"
+                className="bg-white flex-1 py-6"
               />
-              <Button type="button" onClick={generatePassword} className="bg-blue-800 hover:bg-blue-700 text-white">
+              <Button
+                type="button"
+                onClick={generatePassword}
+                className="bg-blue-800 hover:bg-blue-700 py-6 text-white"
+              >
                 Generate
               </Button>
             </div>
@@ -195,39 +286,37 @@ useEffect(() => {
                 value={formik.values.password}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="bg-white"
+                className="bg-white py-6"
               />
               {formik.touched.password && formik.errors.password && (
-                <p className="text-sm text-red-500 mt-1">{formik.errors.password}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {formik.errors.password}
+                </p>
               )}
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-between pt-4">
-              <Button type="button" variant="outline" className="px-6" onClick={onCancel} >
+            <div className="flex justify-between gap-4 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="px-6 py-6 flex-1"
+                onClick={onCancel}
+                disabled={registerMutation.isPending}
+              >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-blue-800 hover:bg-blue-700 text-white px-6">
-                Invite
+              <Button
+                type="submit"
+                className="bg-blue-800 hover:bg-blue-700 text-white flex-1 px-6 py-6"
+                disabled={registerMutation.isPending || !formik.isValid}
+              >
+                {registerMutation.isPending ? "Inviting..." : "Invite"}
               </Button>
             </div>
           </form>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

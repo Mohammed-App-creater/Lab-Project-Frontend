@@ -1,12 +1,27 @@
-import ResourceManagement from '@/components/resources/resourceManagement'
-import React from 'react'
+"use client";
 
-function page() {
+
+import ResourceManagement from "@/components/resources/resourceManagement";
+
+export default function Page() {
   return (
-    <div>
-      <ResourceManagement />
-    </div>
-  )
-}
+    <div className="flex min-h-screen">
+      {/* <div className="w-[250px] hidden md:block ">
+        <SidebarCard />
+      </div> */}
 
-export default page
+      {/* <div className="flex flex-col ">
+        <div className="px-3 py-3">
+          <Header />
+        </div> */}
+
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="bg-white rounded-lg shadow-sm border border-[#A2A1A833]">
+            <ResourceManagement />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

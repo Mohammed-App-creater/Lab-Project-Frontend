@@ -1,13 +1,12 @@
 import type { Session } from "./types"
 
+
+
+
+
 export async function fetchSessions(): Promise<Session[]> {
   // In a real app, this would be a fetch call to your API
   // For this example, we'll return mock data
-
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 500))
-  const attendanceData = await fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/attendance/get-all-attendance`)
-  await console.log(" Attendance: ",attendanceData)
   
 
   return [

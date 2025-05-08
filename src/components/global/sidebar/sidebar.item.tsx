@@ -6,7 +6,14 @@ import { MdOutlineAdminPanelSettings, MdOutlineDashboard } from 'react-icons/md'
 import { LuCalendarCheck, LuClock10 } from "react-icons/lu";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { IoFolderOutline } from "react-icons/io5";
-import { usePathname } from 'next/navigation';
+import { GoMoon } from "react-icons/go";
+import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
+import { HiAdjustments } from "react-icons/hi";
+
+interface SidebarItemProps {
+  onClose?: () => void;
+}
 import DarkLight from './dark.light';
 import { cn } from "@/lib/utils";
 import {
@@ -16,7 +23,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-function SidebarItem() {
+function SidebarItem({ onClose }: SidebarItemProps) {
   const pathname = usePathname();
 
   const isActive = (path: string) => pathname === path;
@@ -69,6 +76,12 @@ function SidebarItem() {
     },
   ];
 
+  const handleClick = () => {
+    if (onClose) {
+      onClose();
+    }
+  };
+
   return (
     <div className='flex flex-col justify-between h-full'>
       {/* Logo Section */}
@@ -115,5 +128,6 @@ function SidebarItem() {
     </div>
   );
 }
-
 export default SidebarItem;
+
+

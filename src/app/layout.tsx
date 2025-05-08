@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Lexend } from "next/font/google";
 import "./globals.css";
 import { Suspense } from "react";
+import { ReactQueryProvider } from "@/lib/react-query-provider";
 import { LoadingSpinner } from "@/components/global/login/loading";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,9 +38,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${lexend.variable} antialiased min-h-screen`}
       >
-        <Suspense fallback={<LoadingSpinner fullPage={true} />}>
+        <ReactQueryProvider>
+          <Suspense fallback={<LoadingSpinner fullPage={true} />}>
           {children}
         </Suspense>
+        <Toaster richColors position="top-right" />
+        </ReactQueryProvider>
       </body>
     </html>
   );

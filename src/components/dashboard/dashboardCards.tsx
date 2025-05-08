@@ -17,7 +17,8 @@ interface MetricCardProps {
   lastUpdated: string;
 }
 
-type dataType = {
+
+type DataType = {
   totalMembers: number;
   totalDivisions: number;
   attendanceRate: number;
@@ -169,15 +170,8 @@ export default function MetricCards() {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
-      {metrics.map((metric) => (
-        <MetricCard
-          key={metric.title}
-          title={metric.title}
-          value={metric.value}
-          change={metric.change}
-          icon={metric.icon}
-          lastUpdated={metric.lastUpdated}
-        />
+      {metricsArr.map((metric) => (
+        <MetricCard key={metric.title} {...metric} />
       ))}
     </div>
   );

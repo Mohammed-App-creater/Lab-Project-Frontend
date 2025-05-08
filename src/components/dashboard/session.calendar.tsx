@@ -52,6 +52,9 @@ interface Event {
 interface MappedSession {
   date: string
   events: Event[]
+export interface SessionData {
+  date: string;
+  events: Event[];
 }
 
 export default function SessionCalendar() {
@@ -83,8 +86,12 @@ export default function SessionCalendar() {
       }
     }
 
-    fetchSessions()
-  }, [])
+    if (!initialData) {
+      fetchSessions();
+    } else {
+      setLoading(false);
+    }
+  }, [initialData]);
 
   function mapSessions(data: APIResponse["data"]): MappedSession[] {
     const groupedByDate: { [date: string]: Event[] } = {}
@@ -124,6 +131,8 @@ export default function SessionCalendar() {
     }))
   }
 
+  if (initialLoading || loading) return <div className="p-4">Loading sessions...</div>;
+  if (initialError) return <div className="p-4">Error loading sessions: {initialError}</div>;
   if (loading) return <div className="p-4">Loading sessions...</div>
 
   return (
@@ -150,9 +159,10 @@ export default function SessionCalendar() {
           <Image
             src="/fully-functionl-calanderq.png"
             alt="Calendar"
-            width={100}
-            height={100}
-            className="h-full w-full object-cover rounded-lg"
+            width={500}
+            height={300}
+            className="h-auto w-full object-cover rounded-lg"
+            style={{ maxWidth: '100%', height: 'auto' }}
           />
         </div>
       </div>

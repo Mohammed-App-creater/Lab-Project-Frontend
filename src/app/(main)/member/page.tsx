@@ -6,6 +6,7 @@ import MemberTable from "@/components/member/member.table"
 import { useState } from "react"
 
 export default function MemberPage() {
+
   const [showForm, setShowForm] = useState(false)
 
   return (
@@ -13,13 +14,11 @@ export default function MemberPage() {
       {/* Apply blur when modal is open */}
       <div className={`${showForm ? "blur-sm pointer-events-none select-none" : ""}`}>
         <MemberTable
-          userRole="admin"
-          onAddMember={() => setShowForm(true)}
-        />
+          onAddMember={() => setShowForm(true)} userRole={"admin"}        />
       </div>
 
       {/* Modal Form */}
-      {showForm && <AddNewMember onCancel={() => setShowForm(false)} />}
+      {showForm &&<AddNewMember onCancel={() => setShowForm(false)} />}
     </div>
   )
 }

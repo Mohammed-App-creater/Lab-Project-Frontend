@@ -1,5 +1,3 @@
-import type React from "react"
-
 export default function dashboardLayout({
   children,
   EventCard,
@@ -7,11 +5,11 @@ export default function dashboardLayout({
   AttendanceOverview,
   SessionCalendar,
 }: {
-  children: React.ReactNode
-  EventCard: React.ReactNode
-  MetricCards: React.ReactNode
-  AttendanceOverview: React.ReactNode
-  SessionCalendar: React.ReactNode
+  children: React.ReactNode;
+  EventCard: React.ReactNode;
+  MetricCards: React.ReactNode;
+  AttendanceOverview: React.ReactNode;
+  SessionCalendar: React.ReactNode;
 }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">

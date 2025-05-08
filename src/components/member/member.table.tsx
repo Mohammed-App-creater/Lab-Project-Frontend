@@ -28,6 +28,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import PageLoader from "../global/login/pageLoader";
 
 type Member = {
   id: string;
@@ -206,7 +207,7 @@ export default function MemberTable({
     }
   };
 
-  if (loading) return <p className="ml-50">Loading...</p>;
+  if (loading) return PageLoader({ fullPage: false });
   if (error) return <p className="ml-50">Error: {error}</p>;
 
   return (
@@ -255,19 +256,21 @@ export default function MemberTable({
         </div>
       </div>
 
-      {/* Table Container */}
-      <div className="overflow-x-auto">
-        <Table>
+      <div className="border rounded-md overflow-x-auto">
+        <Table className="min-w-[1000px] w-full">
           <TableHeader>
             <TableRow>
               <TableHead className="w-[200px]">Member Name</TableHead>
               <TableHead>Member ID</TableHead>
-              {userRole === "admin" && <TableHead>Division</TableHead>}
+              {/* Hide Division on mobile */}
+              {userRole === "admin" && <TableHead className="hidden md:table-cell">Division</TableHead>}
               <TableHead>Attendance</TableHead>
-              <TableHead>Year</TableHead>
+              {/* Hide Year on small screens */}
+              <TableHead className="hidden sm:table-cell">Year</TableHead>
               <TableHead>Status</TableHead>
+              {/* Hide Action on mobile */}
               {(userRole === "admin" || userRole === "manager") && (
-                <TableHead className="text-right">Action</TableHead>
+                <TableHead className="text-right hidden sm:table-cell">Action</TableHead>
               )}
             </TableRow>
           </TableHeader>
@@ -280,9 +283,7 @@ export default function MemberTable({
                       <Avatar>
                         <AvatarImage
                           src={member.profileImageUrl || "/placeholder.svg"}
-                          alt={`${member.firstName || ""} ${
-                            member.lastName || ""
-                          }`}
+                          alt={`${member.firstName || ""} ${member.lastName || ""}`}
                         />
                         <AvatarFallback>
                           {member.firstName ? member.firstName.charAt(0) : "?"}
@@ -307,7 +308,7 @@ export default function MemberTable({
                       {member.clubStatus || "Inactive"}
                     </Badge>
                   </TableCell>
-                  <TableCell>{member.universityInfo?.currentYear || "N/A"}</TableCell>
+                  <TableCell  className="hidden sm:table-cell">{member.universityInfo?.currentYear || "N/A"}</TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
@@ -318,8 +319,9 @@ export default function MemberTable({
                       {member.universityInfo?.status || "Off Campus"}
                     </Badge>
                   </TableCell>
+                  {/* Hide Action on mobile */}
                   {(userRole === "admin" || userRole === "manager") && (
-                    <TableCell className="text-right">
+                    <TableCell className="text-right hidden sm:table-cell">
                       <div className="flex justify-end gap-2">
                         <Button size="icon" variant="ghost">
                           <Pencil className="w-4 h-4" />
@@ -339,8 +341,8 @@ export default function MemberTable({
                     userRole === "admin"
                       ? 7
                       : userRole === "manager" || userRole === "viewer"
-                      ? 6
-                      : 5
+                        ? 6
+                        : 5
                   }
                   className="text-center py-8"
                 >
@@ -372,12 +374,11 @@ export default function MemberTable({
             </SelectContent>
           </Select>
           <span className="text-sm text-gray-500">
-            {`${
-              (paginationInfo.page - 1) * paginationInfo.limit + 1
-            } to ${Math.min(
-              paginationInfo.page * paginationInfo.limit,
-              paginationInfo.total
-            )} out of ${paginationInfo.total} records`}
+            {`${(paginationInfo.page - 1) * paginationInfo.limit + 1
+              } to ${Math.min(
+                paginationInfo.page * paginationInfo.limit,
+                paginationInfo.total
+              )} out of ${paginationInfo.total} records`}
           </span>
         </div>
 
@@ -409,11 +410,10 @@ export default function MemberTable({
                 key={pageNum}
                 variant="outline"
                 size="sm"
-                className={`h-8 w-8 ${
-                  paginationInfo.page === pageNum
+                className={`h-8 w-8 ${paginationInfo.page === pageNum
                     ? "bg-primary text-primary-foreground"
                     : ""
-                }`}
+                  }`}
                 onClick={() => handlePageChange(pageNum)}
               >
                 {pageNum}

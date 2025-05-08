@@ -1,12 +1,15 @@
-import { DivisionProfileUI } from '@/components/divisions/divisionsProfile'
-import React from 'react'
+"use client";
 
-function page() {
+import { GroupComponent } from "@/components/divisions/divisionsProfile";
+import { use } from "react";
+
+function Page({ params }: { params: Promise<{ division: string }> }) {
+  const { division} = use(params);
   return (
     <div>
-      <DivisionProfileUI />
+      <GroupComponent divisionId={division} />
     </div>
-  )
+  );
 }
 
-export default page
+export default Page;
