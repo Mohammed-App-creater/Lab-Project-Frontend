@@ -52,7 +52,7 @@ export default function SessionCard({
               <p>Attendance</p>
             </Button>
           </div>
-          <h3 className="text-lg font-semibold">{session.title}</h3>
+          <h3 className="text-base sm:text-lg font-semibold">{session.title}</h3>
           <p className="text-sm text-muted-foreground">{session.description}</p>
           <p className="text-xs text-muted-foreground mt-1">
             {formatDate(session.date)}

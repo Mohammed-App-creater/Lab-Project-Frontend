@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import SidebarItem from "./sidebar.item";
 import { Card } from "@/components/ui/card";
@@ -5,6 +6,10 @@ import DarkLight from "./dark.light";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+interface SidebarCardProps {
+  isOpen: boolean;
+}
 
 function SidebarCard() {
   const [isOpen, setIsOpen] = useState(false);
@@ -40,4 +45,5 @@ function SidebarCard() {
     </>
   );
 }
+
 export default SidebarCard;

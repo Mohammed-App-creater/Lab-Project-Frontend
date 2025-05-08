@@ -1,7 +1,6 @@
 "use client";
 
-import Header from "@/components/global/header/header";
-import SidebarCard from "@/components/global/sidebar/sidebar.card";
+
 import ResourceManagement from "@/components/resources/resourceManagement";
 
 export default function Page() {

@@ -59,7 +59,7 @@
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { CalendarPlus } from "lucide-react"
+import { CalendarPlus } from 'lucide-react'
 
 interface EventCardProps {
   title?: string
@@ -77,32 +77,44 @@ export default function EventCard({
   onAddToCalendar = () => console.log("Added to calendar"),
 }: EventCardProps) {
   return (
-    <div className="mb-4 w-full">
-      <div className="bg-[#0067FF99] rounded-xl p-4 sm:p-6 flex flex-col sm:flex-row justify-between relative overflow-hidden">
-        <div className="flex flex-col px-4 gap-4 sm:gap-6 z-10">
-          <h3 className="font-bold text-xl sm:text-2xl ">{title}</h3>
-          <p className="w-full sm:w-11/12 text-lg sm:text-xl text-wrap ">{description}</p>
+    <div className="w-full overflow-hidden">
+      <div className="relative rounded-xl bg-[#0067FF99] p-6">
+        {/* Content Section */}
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex-1 space-y-3">
+            <h3 className="text-xl font-bold md:text-2xl">{title}</h3>
+            <p className="text-base text-muted-foreground">{description}</p>
 
-          <Button variant="default" className="bg-blue-900 w-full sm:w-[178px] h-[40px] sm:h-[48px] py-2 sm:py-5 text-sm hover:bg-blue-800 text-white" onClick={onAddToCalendar}>
-            <CalendarPlus className="mr-2" />
-            Add to calendar
-          </Button>
-        </div>
-
-        {showMembers && (
-          <div className="absolute top-4 sm:top-8 right-4 sm:right-5 z-20">
-            <Badge className="bg-[#F45B69] hover:bg-red-600 py-1 px-4 text-sm font-light text-white">{membersLabel}</Badge>
+            <Button
+            
+              variant="default"
+              className="w-full md:w-auto"
+              onClick={onAddToCalendar}
+            >
+              <CalendarPlus className="mr-2 h-4 w-4" />
+              Add to calendar
+            </Button>
           </div>
-        )}
 
-        <div className="absolute right-[-10px] sm:right-[-5px] bottom-[-10px] sm:bottom-[-15px] z-0 overflow-hidden mr-22 mb-10">
-          <Image
-            src="amico.svg"
-            alt="Calendar illustration"
-            width={160}
-            height={160}
-            className="object-contain"
-          />
+          {/* Badge */}
+          {showMembers && (
+            <div className="self-start md:self-auto">
+              <Badge className="bg-primary hover:bg-primary/90">
+                {membersLabel}
+              </Badge>
+            </div>
+          )}
+
+          {/* Image */}
+          <div className="relative mt-4 flex justify-center md:mt-0 md:justify-end">
+            <Image
+              src="amico.svg"
+              alt="Calendar illustration"
+              width={120}
+              height={120}
+              className="h-auto w-auto object-contain md:h-[180px] md:w-[180px]"
+            />
+          </div>
         </div>
       </div>
     </div>
