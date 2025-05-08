@@ -50,6 +50,10 @@ type Member = {
     name: string;
   };
   roleId: string;
+  universityInfo?: {
+    currentYear: string;
+    status: string;
+  };
 };
 
 type PaginatedResponse = {
@@ -206,9 +210,10 @@ export default function MemberTable({
   if (error) return <p className="ml-50">Error: {error}</p>;
 
   return (
-    <div className="bg-green-100 lg:ml-auto w-[50%] md:w-[80%] lg:w-[100%] space-y-4    border-1 border-[#34495E33] p-3 rounded-lg">
-      <div className="flex items-center justify-between">
-        <div className="relative w-64">
+    <div className="w-full space-y-4 border rounded-lg p-4">
+      {/* Search and Actions */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="relative w-full sm:w-64">
           <Input
             placeholder="Search by name, email, or ID"
             className="pl-8"
@@ -233,24 +238,25 @@ export default function MemberTable({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           {(userRole === "admin" || userRole === "manager") && (
             <Button
-              className="bg-[#003087] hover:bg-[#002f87e7]"
+              className="bg-[#003087] hover:bg-[#002f87e7] w-full sm:w-auto"
               onClick={onAddMember}
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Member
             </Button>
           )}
-          <Button variant="outline">
+          <Button variant="outline" className="w-full sm:w-auto">
             <Filter className="w-4 h-4 mr-2" />
             Filter
           </Button>
         </div>
       </div>
 
-      <div className="border rounded-md">
+      {/* Table Container */}
+      <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -282,49 +288,45 @@ export default function MemberTable({
                           {member.firstName ? member.firstName.charAt(0) : "?"}
                         </AvatarFallback>
                       </Avatar>
-                      <span>{`${member.firstName || ""} ${
+                      <span className="truncate">{`${member.firstName || ""} ${
                         member.lastName || ""
                       }`}</span>
                     </div>
                   </TableCell>
-                  <TableCell>{member.id}</TableCell>
+                  <TableCell className="truncate">{member.id}</TableCell>
                   {userRole === "admin" && (
-                    <TableCell>{member.specialty || "N/A"}</TableCell>
+                    <TableCell className="truncate">{member.specialty || "N/A"}</TableCell>
                   )}
                   <TableCell>
                     <Badge
                       variant="outline"
-                      className={`${getAttendanceBadgeColor(
+                      className={getAttendanceBadgeColor(
                         member.clubStatus || "Inactive"
-                      )}`}
+                      )}
                     >
                       {member.clubStatus || "Inactive"}
                     </Badge>
                   </TableCell>
-                  <TableCell>{"N/A"}</TableCell>
+                  <TableCell>{member.universityInfo?.currentYear || "N/A"}</TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
-                      className={`${getStatusBadgeColor("On Campus")}`}
+                      className={getStatusBadgeColor(
+                        member.universityInfo?.status || "offCampus"
+                      )}
                     >
-                      {"On Campus"}
+                      {member.universityInfo?.status || "Off Campus"}
                     </Badge>
                   </TableCell>
                   {(userRole === "admin" || userRole === "manager") && (
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Pencil className="h-4 w-4" />
+                        <Button size="icon" variant="ghost">
+                          <Pencil className="w-4 h-4" />
                         </Button>
-                        {userRole === "admin" && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
+                        <Button size="icon" variant="ghost">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
                     </TableCell>
                   )}
@@ -350,8 +352,8 @@ export default function MemberTable({
         </Table>
       </div>
 
-      {/* Pagination controls remain the same */}
-      <div className="flex items-center justify-between">
+      {/* Pagination */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-500">Showing</span>
           <Select

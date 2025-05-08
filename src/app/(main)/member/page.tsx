@@ -5,14 +5,13 @@ import AddNewMember from "@/components/member/add.member.card"
 import MemberTable from "@/components/member/member.table"
 import { useState } from "react"
 
-
 export default function MemberPage() {
   const [showForm, setShowForm] = useState(false)
 
   return (
-    <div className="bg-red-100 w-fit flex ml-15 bg-red-100 justify-end h-full ">
+    <div className="w-full min-h-screen p-4 md:p-6">
       {/* Apply blur when modal is open */}
-      <div className={`${showForm ? "blur-sm pointer-events-none select-none   " : ""} `}>
+      <div className={`${showForm ? "blur-sm pointer-events-none select-none" : ""}`}>
         <MemberTable
           userRole="admin"
           onAddMember={() => setShowForm(true)}
@@ -23,5 +22,4 @@ export default function MemberPage() {
       {showForm && <AddNewMember onCancel={() => setShowForm(false)} />}
     </div>
   )
-
 }

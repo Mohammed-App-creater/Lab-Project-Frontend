@@ -1,15 +1,7 @@
-import { MetricCards as MetricCard } from '@/components/dashboard/dashboardCards'
-import MetricCardsLoading from "@/components/dashboard/MetricCardsLoading";
-import { Suspense } from 'react';
+import MetricCards from '@/components/dashboard/dashboardCards'
 
-export default function MetricCards() {
-  return (
-    <>
-      <Suspense fallback={<MetricCardsLoading />}>
-        <MetricCard />
-      </Suspense>
-    </>
-  );
+export default function MetricCardsPage() {
+  return <MetricCards />;
 }
 
 

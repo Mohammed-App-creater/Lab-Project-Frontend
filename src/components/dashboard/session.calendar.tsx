@@ -127,24 +127,26 @@ export default function SessionCalendar() {
   if (loading) return <div className="p-4">Loading sessions...</div>
 
   return (
-    <div className="w-1/4 h-full  p-5 rounded-lg overflow-hidden shadow-sm border">
-      <div className="p-3 sm:p-4 flex items-center justify-between">
-        <h2 className="text-base sm:text-lg font-semibold">Sessions</h2>
-        <Database className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500" />
+    <div className="h-full rounded-lg border bg-card shadow-sm">
+      <div className="p-4 border-b">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Sessions</h2>
+          <Database className="h-5 w-5 text-muted-foreground" />
+        </div>
       </div>
 
-      <div className="p-3 sm:p-4">
-        <div className="flex items-center justify-between mb-3 sm:mb-4">
-          <Button variant="outline" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 bg-[#003087] text-white">
-            <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <Button variant="outline" size="icon" className="h-8 w-8">
+            <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h3 className="text-sm sm:text-base font-bold">Upcoming Sessions</h3>
-          <Button variant="outline" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 bg-[#003087] text-white">
-            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+          <h3 className="text-base font-semibold">Upcoming Sessions</h3>
+          <Button variant="outline" size="icon" className="h-8 w-8">
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
 
-        <div>
+        <div className="mb-4">
           <Image
             src="/fully-functionl-calanderq.png"
             alt="Calendar"
@@ -155,28 +157,35 @@ export default function SessionCalendar() {
         </div>
       </div>
 
-      <div className="px-3 sm:px-4 pb-3 sm:pb-4">
-        {sessions.length === 0 && <div className="text-center text-gray-500 mt-3 sm:mt-4">No sessions available.</div>}
-        {sessions.map((session, index) => (
-          <div key={index} className="mt-3 sm:mt-4">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs sm:text-sm font-medium text-gray-700">{session.date}</h4>
-              <Button variant="ghost" size="icon" className="h-6 w-6 sm:h-8 sm:w-8">
-                <MoreVertical className="h-3 w-3 sm:h-4 sm:w-4" />
-              </Button>
-            </div>
+      <div className="px-4 pb-4">
+        {sessions.length === 0 ? (
+          <div className="text-center text-muted-foreground py-4">No sessions available.</div>
+        ) : (
+          <div className="space-y-4">
+            {sessions.map((session, index) => (
+              <div key={index} className="rounded-lg border p-3 hover:bg-muted/50 transition-colors">
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-medium">{session.date}</h4>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </div>
 
-            {session.events.map((event, eventIndex) => (
-              <div key={eventIndex} className="mt-2 sm:mt-3 flex">
-                <div className="w-10 sm:w-12 text-xs sm:text-sm font-medium">{event.time}</div>
-                <div className="ml-2 sm:ml-4 border-l-2 border-primary pl-2 sm:pl-4 flex-1">
-                  <div className="text-xs text-gray-500">{event.department}</div>
-                  <div className="text-xs sm:text-sm font-medium">{event.title}</div>
+                <div className="space-y-2">
+                  {session.events.map((event, eventIndex) => (
+                    <div key={eventIndex} className="flex">
+                      <div className="w-12 text-sm font-medium">{event.time}</div>
+                      <div className="ml-3 border-l-2 border-primary pl-3 flex-1">
+                        <div className="text-xs text-muted-foreground">{event.department}</div>
+                        <div className="text-sm font-medium">{event.title}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
           </div>
-        ))}
+        )}
       </div>
     </div>
   )

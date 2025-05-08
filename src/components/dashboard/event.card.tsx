@@ -21,45 +21,46 @@ export default function EventCard({
   onAddToCalendar = () => console.log("Added to calendar"),
 }: EventCardProps) {
   return (
-    <div className=" w-[100%] overflow-hidden  xl:mr-6">
-  <div className="bg-[#0067FF99] rounded-xl p-4 sm:p-6 flex flex-col md:flex-row md:items-center md:justify-between relative overflow-hidden gap-4">
-    
-    {/* Content Section */}
-    <div className="flex flex-col gap-3 sm:gap-6 w-full md:w-3/4 z-10">
-      <h3 className="font-bold text-xl sm:text-2xl">{title}</h3>
-      <p className="text-base sm:text-lg">{description}</p>
+    <div className="w-full overflow-hidden">
+      <div className="relative rounded-xl bg-[#0067FF99] p-6">
+        {/* Content Section */}
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex-1 space-y-3">
+            <h3 className="text-xl font-bold md:text-2xl">{title}</h3>
+            <p className="text-base text-muted-foreground">{description}</p>
 
-      <Button
-        variant="default"
-        className="bg-blue-900 py-3 px-4 text-sm sm:text-base hover:bg-blue-800 text-white w-full sm:w-fit"
-        onClick={onAddToCalendar}
-      >
-        <CalendarPlus className="mr-2" />
-        Add to calendar
-      </Button>
-    </div>
+            <Button
+            
+              variant="default"
+              className="w-full md:w-auto"
+              onClick={onAddToCalendar}
+            >
+              <CalendarPlus className="mr-2 h-4 w-4" />
+              Add to calendar
+            </Button>
+          </div>
 
-    {/* Badge */}
-    {showMembers && (
-      <div className="self-start md:self-auto z-20">
-        <Badge className="bg-[#F45B69] hover:bg-red-600 py-1 px-3 text-xs sm:text-sm font-light text-white">
-          {membersLabel}
-        </Badge>
+          {/* Badge */}
+          {showMembers && (
+            <div className="self-start md:self-auto">
+              <Badge className="bg-primary hover:bg-primary/90">
+                {membersLabel}
+              </Badge>
+            </div>
+          )}
+
+          {/* Image */}
+          <div className="relative mt-4 flex justify-center md:mt-0 md:justify-end">
+            <Image
+              src="amico.svg"
+              alt="Calendar illustration"
+              width={120}
+              height={120}
+              className="h-auto w-auto object-contain md:h-[180px] md:w-[180px]"
+            />
+          </div>
+        </div>
       </div>
-    )}
-
-    {/* Image */}
-    <div className="relative flex justify-center md:justify-end w-full md:w-auto mt-4 md:mt-0">
-      <Image
-        src="amico.svg"
-        alt="Calendar illustration"
-        width={120}
-        height={120}
-        className="object-contain md:w-[180px] md:h-[180px]"
-      />
     </div>
-  </div>
-</div>
-
   )
 }

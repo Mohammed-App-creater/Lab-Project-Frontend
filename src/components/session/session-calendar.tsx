@@ -110,39 +110,40 @@ export function SessionCalendar({
   return (
     <Card
       className={cn(
-        "w-full max-w-md relative mx-auto max-h-13/12 overflow-auto hide-scrollbar  ",
+        "w-full relative mx-auto overflow-auto hide-scrollbar",
+        "max-w-[95vw] sm:max-w-[600px] md:max-w-[700px] lg:max-w-[800px]",
         className
       )}
     >
-      <CardHeader className="flex flex-row items-center space-y-0 pb-4">
-        <CardTitle className="text-xl">Session</CardTitle>
+      <CardHeader className="flex flex-row items-center space-y-0 pb-4 px-4 sm:px-6">
+        <CardTitle className="text-lg sm:text-xl">Session</CardTitle>
         <div className="ml-auto rounded-full bg-primary/10 p-2">
-          <CalendarIcon className="h-5 w-5 text-primary" />
+          <CalendarIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
         </div>
       </CardHeader>
-      <CardContent className="pb-6 pt-0 ">
+      <CardContent className="pb-6 pt-0 px-4 sm:px-6">
         <div className="space-y-4">
           {/* Calendar header with navigation */}
           <div className="flex items-center justify-between">
             <Button
               variant="outline"
               size="icon"
-              className="h-10 w-10 bg-[#003087] text-primary-foreground"
+              className="h-8 w-8 sm:h-10 sm:w-10 bg-[#003087] text-primary-foreground"
               onClick={goToPreviousMonth}
             >
-              <FaArrowLeftLong className="h-4 w-4" />
+              <FaArrowLeftLong className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="sr-only">Previous month</span>
             </Button>
-            <div className="text-xl font-medium">
+            <div className="text-base sm:text-xl font-medium">
               {format(currentDate, "MMMM, yyyy")}
             </div>
             <Button
               variant="outline"
               size="icon"
-              className="h-10 w-10 bg-[#003087] text-primary-foreground"
+              className="h-8 w-8 sm:h-10 sm:w-10 bg-[#003087] text-primary-foreground"
               onClick={goToNextMonth}
             >
-              <FaArrowRightLong className="h-4 w-4" />
+              <FaArrowRightLong className="h-3 w-3 sm:h-4 sm:w-4" />
               <span className="sr-only">Next month</span>
             </Button>
           </div>
@@ -152,17 +153,17 @@ export function SessionCalendar({
             {/* Day headers */}
             <div className="grid grid-cols-7 text-center mb-2">
               {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day, index) => (
-                <div key={index} className="text-sm font-medium py-2">
+                <div key={index} className="text-xs sm:text-sm font-medium py-1 sm:py-2">
                   {day}
                 </div>
               ))}
             </div>
 
             {/* Calendar days */}
-            <div className="grid grid-cols-7 gap-1 text-center">
+            <div className="grid grid-cols-7 gap-0.5 sm:gap-1 text-center">
               {/* Empty cells for days before the start of the month */}
               {Array.from({ length: startingDayOffset }).map((_, index) => (
-                <div key={`empty-${index}`} className="h-10 p-2" />
+                <div key={`empty-${index}`} className="h-8 sm:h-10 p-1 sm:p-2" />
               ))}
 
               {/* Actual days of the month */}
@@ -174,7 +175,7 @@ export function SessionCalendar({
                   <div
                     key={day.toString()}
                     className={cn(
-                      "h-10 w-10 mx-auto flex items-center justify-center rounded-full",
+                      "h-8 w-8 sm:h-10 sm:w-10 mx-auto flex items-center justify-center rounded-full text-xs sm:text-sm",
                       hasSession
                         ? "bg-[#003087] text-primary-foreground"
                         : "text-foreground"
@@ -188,21 +189,21 @@ export function SessionCalendar({
           </div>
 
           {/* Session details */}
-          <div className="mt-8 space-y-6">
+          <div className="mt-6 sm:mt-8 space-y-4 sm:space-y-6">
             {visibleSessions.length > 0 ? (
               visibleSessions.map((dayData) => (
-                <div key={dayData.date} className="space-y-4 border-none">
+                <div key={dayData.date} className="space-y-3 sm:space-y-4 border-none">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium">
+                    <h3 className="text-base sm:text-lg font-medium">
                       {format(new Date(dayData.date), "EEEE, dd MMMM yyyy")}
                     </h3>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <MoreVertical className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8">
+                      <MoreVertical className="h-3 w-3 sm:h-4 sm:w-4" />
                       <span className="sr-only">More options</span>
                     </Button>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     {dayData.sessions.map((session) => {
                       const category =
                         session.divisionName || session.tags?.[0] || "General";
@@ -211,14 +212,14 @@ export function SessionCalendar({
                         : "All day";
 
                       return (
-                        <div key={session.id} className="flex">
-                          <div className="w-16 font-medium">{time}</div>
-                          <div className="w-1  bg-gradient-to-b from-[#003087] to-[#002f8700] mx-3 rounded-t-2xl"></div>
+                        <div key={session.id} className="flex items-start">
+                          <div className="w-14 sm:w-16 text-xs sm:text-sm font-medium pt-0.5">{time}</div>
+                          <div className="w-1 bg-gradient-to-b from-[#003087] to-[#002f8700] mx-2 sm:mx-3 rounded-t-2xl"></div>
                           <div className="flex-1">
-                            <div className="text-muted-foreground">
+                            <div className="text-xs sm:text-sm text-muted-foreground">
                               {category}
                             </div>
-                            <div className="font-medium">{session.title}</div>
+                            <div className="text-sm sm:text-base font-medium">{session.title}</div>
                           </div>
                         </div>
                       );
@@ -232,8 +233,8 @@ export function SessionCalendar({
                 </div>
               ))
             ) : (
-              <div className="flex items-center justify-center h-32">
-                <div className="text-muted-foreground">
+              <div className="flex items-center justify-center h-24 sm:h-32">
+                <div className="text-sm sm:text-base text-muted-foreground">
                   No sessions for this month
                 </div>
               </div>

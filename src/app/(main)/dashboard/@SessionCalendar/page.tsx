@@ -44,8 +44,6 @@ export default function SessionsPage() {
 
 
   return (
-    <div className="container h-screen w-[35%] ml-3">
       <SessionCalendar data={sessionData} isLoading={loading} error={error} />
-    </div>
   );
 }
