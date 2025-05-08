@@ -64,3 +64,37 @@ export type SessionTimeSlot = {
   endTime: Date;
   status: 'Ended' | 'Planned' | 'Ongoing' | 'Cancelled';
 }
+
+export interface Role {
+  id: number
+  name: string
+  status: "Active" | "Inactive"
+  permissions: string[]
+}
+
+export interface Rule {
+  id: number
+  name: string
+  description: string
+  threshold: number
+}
+
+export interface MemberRecord {
+  id: number
+  name: string
+  avatar: string
+  memberId: string
+  division: string
+  attendance: "Active" | "Needs Attention"
+  year: string
+  status: "On Campus" | "Off Campus" | "Withdrawn"
+  initials: string
+}
+export interface TeamMember {
+  id: number
+  name: string
+  avatar: string
+  division: string
+  role: string
+  initials: string
+}

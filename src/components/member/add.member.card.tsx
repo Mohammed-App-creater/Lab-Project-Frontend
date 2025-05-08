@@ -104,9 +104,9 @@ export default function AddNewMember({ onCancel }: { onCancel: () => void }) {
     mutationFn: async (values: FormValues) => {
       const response = await api.post("api/user/register", values, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`, 
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         }
-    });
+      });
       return response.data;
     },
     onSuccess: () => {
@@ -156,8 +156,8 @@ export default function AddNewMember({ onCancel }: { onCancel: () => void }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <Card className="w-full max-w-sm shadow-lg">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2">
+      <Card className="w-full sm:max-w-lg mx-auto shadow-lg">
         <CardContent className="">
           <h2 className="text-xl font-bold mb-6">Add New Member</h2>
           <form onSubmit={formik.handleSubmit} className="space-y-4">
@@ -208,10 +208,10 @@ export default function AddNewMember({ onCancel }: { onCancel: () => void }) {
                       !formik.values.divisionId
                         ? "Select division first"
                         : isLoadingGroups
-                        ? "Loading groups..."
-                        : groups?.groups.length === 0
-                        ? "No groups available"
-                        : "Select Group"
+                          ? "Loading groups..."
+                          : groups?.groups.length === 0
+                            ? "No groups available"
+                            : "Select Group"
                     }
                   />
                 </SelectTrigger>

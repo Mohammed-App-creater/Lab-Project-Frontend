@@ -107,7 +107,7 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
         }
       } catch (error) {
         console.error('Error fetching divisions:', error)
-      
+
       }
     }
 
@@ -278,10 +278,10 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 overflow-hidden max-w-xl rounded-xl">
-        <div className="p-8">
-          <h2 className="text-lg font-semibold mb-6">Add New Session</h2>
-          <div className="grid grid-cols-2 gap-4 mb-4">
+      <DialogContent className="p-0 overflow-hidden w-full max-w-full sm:max-w-xl rounded-xl">
+        <div className="p-4 sm:p-8 w-full max-w-full">
+          <h2 className="text-lg font-semibold mb-4 sm:mb-6">Add New Session</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 w-full">
             <Input
               placeholder="Session Title"
               value={formData.title}
@@ -513,7 +513,7 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
           </div>
           {/* Time slot rows */}
           {formData.timeSlotAndGroup.timeSlots.map((slot, idx) => (
-            <div key={idx} className="grid grid-cols-4 gap-4 items-center mb-2">
+            <div key={idx} className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 items-center mb-2 w-full">
               <Input value={slot.date} readOnly className="bg-gray-50" />
               <Input value={slot.startTime} readOnly className="bg-gray-50" />
               <Input value={slot.endTime} readOnly className="bg-gray-50" />
@@ -521,7 +521,7 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
             </div>
           ))}
           {/* Add time slot row */}
-          <div className="grid grid-cols-4 gap-4 items-end mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 items-end mb-4 w-full">
             <Input
               type="date"
               value={newTimeSlot.date}
@@ -542,11 +542,11 @@ export function CreateSessionDialog({ open, onOpenChange, onSubmit, onSessionCre
             />
             <Button onClick={addTimeSlot} className="bg-[#00346b] text-white">Add</Button>
           </div>
-          <div className="flex justify-end gap-2 mt-6">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <div className="flex flex-col sm:flex-row justify-end gap-2 mt-4 sm:mt-6 w-full">
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
               Cancel
             </Button>
-            <Button className="bg-[#00346b] text-white" onClick={handleSubmit}>Create</Button>
+            <Button className="bg-[#00346b] text-white w-full sm:w-auto" onClick={handleSubmit}>Create</Button>
           </div>
         </div>
       </DialogContent>

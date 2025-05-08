@@ -27,9 +27,9 @@ interface EventsTableViewProps {
   totalEvents: number
 }
 
-export function EventsTableView({ 
-  events, 
-  onEdit, 
+export function EventsTableView({
+  events,
+  onEdit,
   onDelete,
   itemsPerPage,
   onItemsPerPageChange,
@@ -118,7 +118,7 @@ export function EventsTableView({
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-between">
+      <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-500 dark:text-gray-400">Showing</span>
           <Select value={itemsPerPage} onValueChange={onItemsPerPageChange}>
@@ -150,9 +150,8 @@ export function EventsTableView({
             <Button
               key={i + 1}
               variant="outline"
-              className={`h-8 w-8 p-0 dark:border-gray-600 dark:hover:bg-gray-700 ${
-                currentPage === i + 1 ? "bg-blue-600 text-white dark:bg-blue-700" : ""
-              }`}
+              className={`h-8 w-8 p-0 dark:border-gray-600 dark:hover:bg-gray-700 ${currentPage === i + 1 ? "bg-blue-600 text-white dark:bg-blue-700" : ""
+                }`}
               onClick={() => onPageChange(i + 1)}
             >
               {i + 1}
