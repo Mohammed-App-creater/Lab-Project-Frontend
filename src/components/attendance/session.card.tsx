@@ -32,15 +32,15 @@ export default function SessionCard({
           <div className="flex justify-between items-start mb-2">
             <div className="flex flex-row-reverse gap-5 items-center">
               <h1 className="text-lg font-bold ">
-                {session.tags.flatMap((tag) => split(tag, " ")).join(" ")}
+                {session.tags?.flatMap((tag) => split(tag, " ")).join(" ")}
               </h1>
               <Badge
                 variant="outline"
                 className={`${
-                  statusColor[session.timeSlots[0].status]
+                  statusColor[session.timeSlots?.[0]?.status || "Planned"]
                 } border-0 rounded-md px-2 py-1 text-xs font-medium`}
               >
-                {session.timeSlots[0].status}
+                {session.timeSlots?.[0]?.status || "Planned"}
               </Badge>
             </div>
             <Button
@@ -52,7 +52,7 @@ export default function SessionCard({
               <p>Attendance</p>
             </Button>
           </div>
-          <h3 className="text-lg font-semibold">{session.title}</h3>
+          <h3 className="text-base sm:text-lg font-semibold">{session.title}</h3>
           <p className="text-sm text-muted-foreground">{session.description}</p>
           <p className="text-xs text-muted-foreground mt-1">
             {formatDate(session.date)}

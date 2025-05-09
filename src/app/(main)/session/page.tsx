@@ -88,7 +88,7 @@ export default function SessionsEventsPage() {
         throw new Error('Failed to fetch events')
       }
       const data = await response.json()
-      
+
       const transformedEvents = data.map((event: any) => ({
         id: event.id,
         date: new Date(event.startDate).toLocaleDateString('en-US', {
@@ -102,9 +102,9 @@ export default function SessionsEventsPage() {
         visibility: event.visibility,
         status: event.status
       }))
-      
+
       setEvents(transformedEvents)
-      
+
       if (data.length === itemsPerPage) {
         setTotalPages(currentPage + 1)
       } else {
@@ -126,7 +126,7 @@ export default function SessionsEventsPage() {
         throw new Error('Failed to fetch sessions')
       }
       const data = await response.json()
-      
+
       const transformedSessions = data.map((session: any) => ({
         id: session.id,
         status: session.timeSlots?.[0]?.status || "Planned",
@@ -146,9 +146,9 @@ export default function SessionsEventsPage() {
         timeRemaining: session.timeSlots?.[0]?.status === "Planned" ? "Upcoming" : undefined,
         timeAgo: session.timeSlots?.[0]?.status === "Ended" ? "Completed" : undefined
       }))
-      
+
       setSessions(transformedSessions)
-      
+
       const totalCount = data.length
       const calculatedTotalPages = Math.ceil(totalCount / itemsPerPage)
       setTotalPages(calculatedTotalPages)
@@ -227,17 +227,17 @@ export default function SessionsEventsPage() {
   }
 
   return (
-    <div className="container mx-auto py-6">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Sessions & Events</h1>
-        <div className="flex items-center gap-2">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 w-full max-w-full">
+      <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+        <h1 className="text-xl sm:text-2xl font-bold">Sessions & Events</h1>
+        <div className="flex flex-wrap items-center gap-2">
           <Button variant="default" className="bg-blue-700 flex gap-2 hover:bg-blue-800" onClick={handleCreateClick}>
             <PlusCircleIcon className="h-4 w-4" />
-            Create {activeTab === "sessions" ? "Session" : "Event"}
+            <span className="hidden xs:inline">Create {activeTab === "sessions" ? "Session" : "Event"}</span>
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-2">
+              <Button variant="outline" className="ml-0 sm:ml-2">
                 {activeTab === "sessions" ? "Session" : "Event"} <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -249,10 +249,8 @@ export default function SessionsEventsPage() {
         </div>
       </div>
 
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex  overflow-hidden">
-
-        <div className="flex gap-3">
+      <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
+        <div className="flex gap-2">
           <Button
             variant="ghost"
             className={viewMode === "list" ? "bg-blue-700 px-2 py-1 flex gap-2 text-white hover:bg-blue-800" : ""}
@@ -260,7 +258,7 @@ export default function SessionsEventsPage() {
             size="sm"
           >
             <LayoutList className="h-4 w-4" />
-            <p>List</p>
+            <span className="hidden xs:inline">List</span>
           </Button>
           <Button
             variant="ghost"
@@ -268,16 +266,88 @@ export default function SessionsEventsPage() {
             onClick={() => setViewMode("table")}
             size="sm"
           >
-            <TableIcon className="h-4 w-4" /> 
-            <p>Table</p>
+            <TableIcon className="h-4 w-4" />
+            <span className="hidden xs:inline">Table</span>
           </Button>
         </div>
-        </div>
-        
       </div>
 
-      {activeTab === "sessions" ? (
-        viewMode === "list" ? (
+      <div className="w-full overflow-x-auto">
+        {activeTab === "sessions" ? (
+          viewMode === "list" ? (
+            <>
+              {loading ? (
+                <div className="flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+                </div>
+              ) : error ? (
+                <div className="text-red-500 text-center p-4">{error}</div>
+              ) : (
+                <>
+                  <SessionsListView sessions={sessions} />
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-500">Showing</span>
+                      <Select value={itemsPerPage.toString()} onValueChange={handleItemsPerPageChange}>
+                        <SelectTrigger className="h-8 w-16">
+                          <SelectValue placeholder="10" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="10">10</SelectItem>
+                          <SelectItem value="20">20</SelectItem>
+                          <SelectItem value="50">50</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalSessions)} to {Math.min(currentPage * itemsPerPage, totalSessions)} of {totalSessions} sessions
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1 || loading}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <span className="text-sm">
+                        Page {currentPage} of {totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages || loading}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </>
+          ) : (
+            <SessionsTableView
+              sessions={sessions.map(session => ({
+                id: session.id,
+                date: session.date,
+                title: session.title,
+                division: session.division,
+                totalGroups: session.groups.length,
+                status: session.status
+              }))}
+              onEdit={handleEditSession}
+              onDelete={handleDeleteSession}
+              itemsPerPage={itemsPerPage.toString()}
+              onItemsPerPageChange={handleItemsPerPageChange}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              totalPages={totalPages}
+              totalSessions={totalSessions}
+            />
+          )
+        ) : viewMode === "list" ? (
           <>
             {loading ? (
               <div className="flex justify-center items-center h-64">
@@ -287,23 +357,20 @@ export default function SessionsEventsPage() {
               <div className="text-red-500 text-center p-4">{error}</div>
             ) : (
               <>
-                <SessionsListView sessions={sessions} />
+                <EventsListView events={events.map(event => ({
+                  id: event.id,
+                  status: event.status,
+                  title: event.title,
+                  description: '',
+                  date: event.date,
+                  visibility: event.visibility,
+                  venue: 'TBD',
+                  timeRemaining: event.status === 'Planned' ? 'Upcoming' : undefined,
+                  timeAgo: event.status === 'Ended' ? 'Completed' : undefined
+                }))} />
                 <div className="mt-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-500">Showing</span>
-                    <Select value={itemsPerPage.toString()} onValueChange={handleItemsPerPageChange}>
-                      <SelectTrigger className="h-8 w-16">
-                        <SelectValue placeholder="10" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="10">10</SelectItem>
-                        <SelectItem value="20">20</SelectItem>
-                        <SelectItem value="50">50</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalSessions)} to {Math.min(currentPage * itemsPerPage, totalSessions)} of {totalSessions} sessions
+                  <div className="text-sm text-gray-600">
+                    Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, totalEvents)} of {totalEvents} events
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
@@ -331,98 +398,29 @@ export default function SessionsEventsPage() {
             )}
           </>
         ) : (
-          <SessionsTableView 
-            sessions={sessions.map(session => ({
-              id: session.id,
-              date: session.date,
-              title: session.title,
-              division: session.division,
-              totalGroups: session.groups.length,
-              status: session.status
-            }))} 
-            onEdit={handleEditSession} 
-            onDelete={handleDeleteSession}
-            itemsPerPage={itemsPerPage.toString()}
-            onItemsPerPageChange={handleItemsPerPageChange}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            totalPages={totalPages}
-            totalSessions={totalSessions}
-          />
-        )
-      ) : viewMode === "list" ? (
-        <>
-          {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-            </div>
-          ) : error ? (
-            <div className="text-red-500 text-center p-4">{error}</div>
-          ) : (
-            <>
-              <EventsListView events={events.map(event => ({
-                id: event.id,
-                status: event.status,
-                title: event.title,
-                description: '',
-                date: event.date,
-                visibility: event.visibility,
-                venue: 'TBD',
-                timeRemaining: event.status === 'Planned' ? 'Upcoming' : undefined,
-                timeAgo: event.status === 'Ended' ? 'Completed' : undefined
-              }))} />
-              <div className="mt-4 flex items-center justify-between">
-                <div className="text-sm text-gray-600">
-                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, totalEvents)} of {totalEvents} events
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1 || loading}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <span className="text-sm">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages || loading}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
+          <>
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
               </div>
-            </>
-          )}
-        </>
-      ) : (
-        <>
-          {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-            </div>
-          ) : error ? (
-            <div className="text-red-500 text-center p-4">{error}</div>
-          ) : (
-            <EventsTableView 
-              events={events} 
-              onEdit={handleEditEvent} 
-              onDelete={handleDeleteEvent}
-              itemsPerPage={itemsPerPage.toString()}
-              onItemsPerPageChange={handleItemsPerPageChange}
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
-              totalPages={totalPages}
-              totalEvents={totalEvents}
-            />
-          )}
-        </>
-      )}
+            ) : error ? (
+              <div className="text-red-500 text-center p-4">{error}</div>
+            ) : (
+              <EventsTableView
+                events={events}
+                onEdit={handleEditEvent}
+                onDelete={handleDeleteEvent}
+                itemsPerPage={itemsPerPage.toString()}
+                onItemsPerPageChange={handleItemsPerPageChange}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+                totalPages={totalPages}
+                totalEvents={totalEvents}
+              />
+            )}
+          </>
+        )}
+      </div>
 
       <CreateSessionDialog
         open={createSessionOpen}
@@ -431,9 +429,9 @@ export default function SessionsEventsPage() {
         onSessionCreated={handleSessionCreated}
       />
 
-      <CreateEventDialog 
-        open={createEventOpen} 
-        onOpenChange={setCreateEventOpen} 
+      <CreateEventDialog
+        open={createEventOpen}
+        onOpenChange={setCreateEventOpen}
         onSubmit={handleCreateEvent}
         onEventCreated={handleEventCreated}
       />

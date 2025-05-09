@@ -12,16 +12,18 @@ export default function dashboardLayout({
   SessionCalendar: React.ReactNode;
 }) {
   return (
-    <div className="flex w-full justify-end ">
-      <div className=" w-2/3 pr-4">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 p-4">
+      {/* Left section - Main content */}
+      <div className="lg:col-span-3 space-y-4">
         {EventCard}
         {MetricCards}
         {AttendanceOverview}
       </div>
-      <div className="w-1/3 h-full flex flex-col gap-4">
-        {SessionCalendar }
-        {children}
+
+      {/* Right section - Calendar */}
+      <div className="lg:col-span-1">
+        {SessionCalendar}
       </div>
     </div>
-  );
+  )
 }

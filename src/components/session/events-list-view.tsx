@@ -22,10 +22,10 @@ interface EventsListViewProps {
 
 // Countdown hook
 function useCountdown(targetDate: string) {
-  const {theme}=useTheme()
+  const { theme } = useTheme()
   const countDownDate = new Date(targetDate).getTime();
   const [countDown, setCountDown] = useState(countDownDate - new Date().getTime());
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCountDown(countDownDate - new Date().getTime());
@@ -54,7 +54,7 @@ export function EventsListView({ events }: EventsListViewProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-full">
       {events.map((event) => {
         // Use countdown only for planned events
         let countdownDisplay = event.timeRemaining || event.timeAgo;
@@ -65,7 +65,7 @@ export function EventsListView({ events }: EventsListViewProps) {
             : `${days}d ${hours}h ${minutes}m left`;
         }
         return (
-          <div key={event.id} className="rounded-lg border shadow-sm overflow-hidden">
+          <div key={event.id} className="rounded-lg border shadow-sm overflow-hidden w-full max-w-full">
             <div className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
