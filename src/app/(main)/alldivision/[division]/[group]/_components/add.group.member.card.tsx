@@ -1,178 +1,107 @@
+"use client";
 
-"use client"
-
-import { useState, useEffect } from "react"
-import { useFormik } from "formik"
-import * as Yup from "yup"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent } from "@/components/ui/card"
-import axios from "axios"
-import api from "@/lib/axios"
-
-
-const validationSchema = Yup.object({
-  email: Yup.string().email("Invalid email address").required("Email is required"),
-  password: Yup.string().required("Password is required"),
-})
- 
-
-async function fetchDivisions() {
-  const response = await api.get("api/division/divisions", {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  })
-}
-
-async function fetchGroups() {
-  const response = await api.get("api/group/groups", {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  })
-}
-
-export default function AddNewMember({ onCancel }: { onCancel: () => void }) {
-  const [password, setpassword] = useState("")
-  const [division, setDivision] = useState("")
-  const [group, setGroup] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-
-  // Generate a random password
-  const generatePassword = () => {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*"
-    let password = ""
-    for (let i = 0; i < 12; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length))
-    }
-    setpassword(password)
-    formik.setFieldValue("password", password)
-  }
-
+import { useState } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "@/lib/axios";
+import { toast } from "sonner";
 
 type FormValues = {
   email: string;
   password: string;
-  DivisionId: string;
+  divisionId: string;
   groupId: string;
   gender: string;
 };
 
-  // Initialize Formik
-const formik = useFormik<FormValues>({
-  initialValues: {
-    email: "",
-    password: "",
-    DivisionId: "cd5c8e05-533f-4b76-9769-4d1638530104",
-    groupId: "d4a18c91-5197-4c71-902f-fbc8f3366f0b",
-    gender: "Male",
-  },
-  validationSchema,
-  onSubmit: async (values, { resetForm, setSubmitting }) => {
-    try {
-      console.log("Submitting form with values:", values)
-      setSubmitting(true)
-      // Send the form data to the server
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/register`, {
-        method: "POST",
+export default function AddNewMember({ 
+  onCancel, 
+  divisionId, 
+  groupId,
+  page = 1,
+  limit = 10,
+}: { 
+  onCancel: () => void;
+  divisionId: string;
+  groupId: string;
+  page?: number;
+  limit?: number;
+}) {
+  const queryClient = useQueryClient();
+  const [password, setPassword] = useState("");
+
+  // Formik setup
+  const formik = useFormik<FormValues>({
+    initialValues: {
+      email: "",
+      password: "",
+      divisionId: divisionId,
+      groupId: groupId,
+      gender: "Male",
+    },
+    validationSchema: Yup.object({
+      email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
+      password: Yup.string().required("Password is required"),
+    }),
+    onSubmit: (values) => {
+      registerMutation.mutate(values);
+    },
+  });
+
+  // Register mutation
+  const registerMutation = useMutation({
+    mutationFn: async (values: FormValues) => {
+      const response = await api.post("api/user/register", values, {
         headers: {
           "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to register");
-      }
-
-      const data: { message: string } = await response.json();
-      console.log("Success:", data.message);
-
-      resetForm();
-      onCancel(); // Close the modal after successful submission
-    } catch (error: any) {
-      console.error("Error:", error.message);
-    } finally {
-      setSubmitting(false);
-    }
-  },
-})
-
-useEffect(() => {
-    setIsLoading(true);
-    const fetchData = async () => {
-      try {
-        const [divResponse, groupResponse] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/division`),
-          fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/group`),
-        ]);
-
-        if (!divResponse.ok || !groupResponse.ok) {
-          throw new Error("Failed to fetch divisions");
+          Authorization: `Bearer ${localStorage.getItem('token')}`, 
         }
-        const DivisionData = await divResponse.json();
-        const GroupData = await groupResponse.json();
-        console.log("Fetched divisions:", DivisionData);
-        console.log("Fetched groups:", GroupData);
-        setDivision(DivisionData);
-        setGroup(GroupData);
-      } catch (error) {
-        console.error("Error fetching divisions:", error);
-      } finally {
-        setIsLoading(false);
+      });
+      if (response.config.method?.toLowerCase() === "options") {
+        return null; // Skip preflight
       }
-    };
-    fetchData();
-  }, []);
+      return response.data;
+    },
+    onSuccess: () => {
+      formik.resetForm();
+      toast.success("Member invited successfully!");
+      queryClient.refetchQueries({ queryKey: ["group-members", groupId, page, limit] });
+      onCancel();
+    },
+    onError: (error: import("axios").AxiosError) => {
+      if (error.response) {
+        const errorMessage = (error.response?.data as { message?: string })?.message || "Failed to invite member";
+        toast.error(errorMessage);
+      } else {
+        toast.error("Network error. Please try again.");
+      }
+    },
+  });
 
+  // Generate password
+  const generatePassword = () => {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+    let password = "";
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setPassword(password);
+    formik.setFieldValue("password", password);
+  };
 
   return (
-    <div className="fixed inset-0  bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
       <Card className="w-full max-w-sm shadow-lg">
         <CardContent className="">
-          <h2 className="text-xl  font-bold mb-6">Add New Member</h2>
+          <h2 className="text-xl font-bold mb-6">Add New Member</h2>
           <form onSubmit={formik.handleSubmit} className="space-y-4">
-            {/* Division Select */}
-            <div>
-              <Select
-                name="division"
-                // onValueChange={(value) => formik.setFieldValue("division", value)}
-                // value={formik.values.division}
-              >
-                <SelectTrigger className="w-full py-7  bg-white">
-                  <SelectValue placeholder="Select Division" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="engineering">Development</SelectItem>
-                  <SelectItem value="marketing">CBD</SelectItem>
-                  <SelectItem value="sales">Cyber</SelectItem>
-                  <SelectItem value="hr">CPD</SelectItem>
-                </SelectContent>
-              </Select>
-
-            </div>
-
-            {/* Group Select */}
-            <div>
-              <Select
-                name="group"
-                // onValueChange={(value) => formik.setFieldValue("group", value)}
-                // value={formik.values.group}
-              >
-                <SelectTrigger className="w-full py-7 bg-white">
-                  <SelectValue placeholder="Select Group" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="team-a">Group 1</SelectItem>
-                  <SelectItem value="team-b">Group 2</SelectItem>
-                  <SelectItem value="team-c">Group 3</SelectItem>
-                </SelectContent>
-              </Select>
-
-            </div>
-
             {/* Email Input */}
             <div>
               <Input
@@ -182,10 +111,12 @@ useEffect(() => {
                 value={formik.values.email}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="bg-white"
+                className="bg-white py-7"
               />
               {formik.touched.email && formik.errors.email && (
-                <p className="text-sm text-red-500 mt-1">{formik.errors.email}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {formik.errors.email}
+                </p>
               )}
             </div>
 
@@ -197,9 +128,13 @@ useEffect(() => {
                 placeholder="Random Password"
                 value={password}
                 readOnly
-                className="bg-white flex-1"
+                className="bg-white flex-1 py-6"
               />
-              <Button type="button" onClick={generatePassword} className="bg-blue-800 hover:bg-blue-700 text-white">
+              <Button
+                type="button"
+                onClick={generatePassword}
+                className="bg-blue-800 hover:bg-blue-700 py-6 text-white"
+              >
                 Generate
               </Button>
             </div>
@@ -213,39 +148,37 @@ useEffect(() => {
                 value={formik.values.password}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                className="bg-white"
+                className="bg-white py-6"
               />
               {formik.touched.password && formik.errors.password && (
-                <p className="text-sm text-red-500 mt-1">{formik.errors.password}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {formik.errors.password}
+                </p>
               )}
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-between pt-4">
-              <Button type="button" variant="outline" className="px-6" onClick={onCancel} >
+            <div className="flex justify-between gap-4 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="px-6 py-6 flex-1"
+                onClick={onCancel}
+                disabled={registerMutation.isPending}
+              >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-blue-800 hover:bg-blue-700 text-white px-6">
-                Invite
+              <Button
+                type="submit"
+                className="bg-blue-800 hover:bg-blue-700 text-white flex-1 px-6 py-6"
+                disabled={registerMutation.isPending || !formik.isValid}
+              >
+                {registerMutation.isPending ? "Inviting..." : "Invite"}
               </Button>
             </div>
           </form>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

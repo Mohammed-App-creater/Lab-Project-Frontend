@@ -42,7 +42,6 @@ export default function LoginPage() {
     validationSchema: loginValidationSchema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        console.log("Submitting form with values:", values);
         setError("");
         setSubmitting(true);
         setIsPageLoading(true);
@@ -64,14 +63,9 @@ export default function LoginPage() {
 
         const data: { accessToken: string; user: object } =
           await response.json();
-        console.log("Login successful:", data);
-
         localStorage.setItem("token", data.accessToken);
         localStorage.setItem("user", JSON.stringify(data.user));
-        await new Promise((resolve) => setTimeout(resolve, 4000));
-
         router.push("/dashboard");
-
         resetForm();
       } catch (error: unknown) {
         if (error instanceof Error) {
@@ -106,7 +100,7 @@ export default function LoginPage() {
  
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
-      {isPageLoading && <PageLoader />}
+      {isPageLoading && <PageLoader fullPage={true} />}
       <div className="w-full max-w-md space-y-8">
         <div className="space-y-6">
           <div className="flex gap-7 items-center">

@@ -16,6 +16,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import PageLoader from "../global/login/pageLoader";
 import api from "@/lib/axios";
+import { toast } from "sonner";
+
 
 type Division = {
   id: string;
@@ -93,7 +95,6 @@ export default function AddNewMember({ onCancel }: { onCancel: () => void }) {
       const response = await api.post("api/division/groups", {
         divisionId: formik.values.divisionId,
       });
-      console.log("Groups response:", response.data); // Debugging line
       return response.data;
     },
     enabled: !!formik.values.divisionId, // Only enable when division is selected
@@ -104,17 +105,24 @@ export default function AddNewMember({ onCancel }: { onCancel: () => void }) {
     mutationFn: async (values: FormValues) => {
       const response = await api.post("api/user/register", values, {
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem('token')}`, 
         }
-    });
+      });
       return response.data;
     },
     onSuccess: () => {
       formik.resetForm();
+      toast.success("Member invited successfully!");
       onCancel();
     },
     onError: (error: import("axios").AxiosError) => {
-      console.error("Error:", error.message);
+      if (error.response) {
+        const errorMessage = (error.response?.data as { message?: string })?.message || "Failed to invite member";
+        toast.error(errorMessage);
+      } else {
+        toast.error("Network error. Please try again.");
+      }
     },
   });
 

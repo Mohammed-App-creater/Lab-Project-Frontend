@@ -2,12 +2,12 @@
 import { GroupMembersTableUI } from '@/components/divisions/GroupMembersTable'
 import { use } from 'react'
 
-function Page({ params }: { params: Promise<{ group: string }> }) {
-  const { group } = use(params);
+function Page({ params }: { params: Promise<{ group: string, division: string }> }) {
+  const { group, division } = use(params);
   
   return (
     <div>
-      <GroupMembersTableUI groupId={group} />
+      <GroupMembersTableUI divisionId={division} groupId={group} />
     </div>
   )
 }

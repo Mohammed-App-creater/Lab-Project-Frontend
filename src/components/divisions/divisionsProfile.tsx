@@ -147,7 +147,7 @@ export const GroupComponent = ({divisionId}: {divisionId: string}) => {
         </div>
       )}
 
-      {data.groupsAndMembers.length === 0 && (
+      {data?.groupsAndMembers.length === 0 && (
         <div className="flex items-center justify-center space-y-14">
           <div className="text-gray-500">No groups found</div>
           </div>
@@ -155,7 +155,7 @@ export const GroupComponent = ({divisionId}: {divisionId: string}) => {
           
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {data.groupsAndMembers.map((group) => (
+        {data?.groupsAndMembers.map((group) => (
           <div key={group.groupId} className="rounded-lg border shadow-sm">
             <div className="flex items-center justify-between p-4 pb-2">
               <div>
