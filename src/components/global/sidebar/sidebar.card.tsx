@@ -36,8 +36,8 @@ function SidebarCard() {
       </div>
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex min-h-screen w-full p-2 sm:p-4">
-        <Card className="w-full p-5 sm:p-4 flex flex-col justify-between bg-[#34495E0D]">
+      <div className="hidden lg:flex  min-h-screen w-full">
+        <Card className="w-full sm:p-4 flex flex-col justify-between bg-[#34495E0D]">
           <SidebarItem />
           <DarkLight />
         </Card>

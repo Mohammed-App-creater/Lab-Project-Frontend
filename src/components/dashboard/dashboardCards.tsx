@@ -18,6 +18,7 @@ interface MetricCardProps {
   lastUpdated: string;
 }
 
+
 type dataType = {
   totalMembers: number;
   totalDivisions: number;
@@ -99,9 +100,11 @@ export default function MetricCards() {
           }
         );
 
+
         if (!response.ok) {
           throw new Error("Failed to fetch summary data");
         }
+
 
         const data: {data: dataType, updateAt: data} = await response.json();
         console.log("Fetched data:", data); // Log the fetched data
@@ -111,32 +114,33 @@ export default function MetricCards() {
             value: data.data.totalMembers || 0,
             change: { value: 12, trend: "up" as const },
             icon: <Users className="h-5 w-5 text-indigo-600" />,
-            lastUpdated: new Date().toLocaleDateString(),
+            lastUpdated: responseData.updateAt,
           },
           {
             title: "Total Divisions",
             value: data.data.totalDivisions,
             change: { value: 9, trend: "up" as const },
             icon: <Layers className="h-5 w-5 text-purple-600" />,
-            lastUpdated: new Date().toLocaleDateString(),
+            lastUpdated: responseData.updateAt,
           },
           {
             title: "Attendance Rate",
-            value: `${data.data.attendanceRate}%`,
+            value: `${data.attendanceRate.toFixed(1)}%`,
             change: { value: 4, trend: "down" as const },
             icon: <BarChart2 className="h-5 w-5 text-blue-600" />,
-            lastUpdated: new Date().toLocaleDateString(),
+            lastUpdated: responseData.updateAt,
           },
           {
             title: "Upcoming Sessions",
             value: data.data.upcomingSessions,
             change: { value: 15, trend: "up" as const },
             icon: <Calendar className="h-5 w-5 text-blue-600" />,
-            lastUpdated: new Date().toLocaleDateString(),
+            lastUpdated: responseData.updateAt,
           },
         ];
         console.log("Processed metrics data:", metricsData); // Log the processed metrics data
         setMetrics(metricsData);
+        console.log(metricsData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load metrics");
         console.error("Error fetching metrics:", err);

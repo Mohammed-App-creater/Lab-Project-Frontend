@@ -26,7 +26,7 @@ export default function SessionCard({
 
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidde">
       <CardContent className="p-0">
         <div className="p-6">
           <div className="flex justify-between items-start mb-2">

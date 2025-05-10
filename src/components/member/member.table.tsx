@@ -260,6 +260,7 @@ export default function MemberTable({
     );
 
   return (
+
     <div className="w-full space-y-4 border rounded-lg p-4">
       <ConfirmPopup
         isOpen={popupState.isOpen}
