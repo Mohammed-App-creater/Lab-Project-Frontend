@@ -351,11 +351,11 @@ export default function MemberTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredMembers.length > 0 ? (
+            {filteredMembers?.length > 0 ? (
               filteredMembers.map((member) => (
                 <TableRow
                   onClick={() => {
-                    router.push(`/member/${member.id}`);
+                    router.push(`/member/${member?.id}`);
                   }}
                   className="border-b"
                   key={member.id}
@@ -364,17 +364,17 @@ export default function MemberTable({
                     <div className="flex items-center gap-2">
                       <Avatar>
                         <AvatarImage
-                          src={member.profileImageUrl || "/placeholder.svg"}
-                          alt={`${member.firstName || ""} ${
-                            member.lastName || ""
+                          src={member?.profileImageUrl || ""}
+                          alt={`${member?.firstName || "N/A"} ${
+                            member?.lastName || "N/A"
                           }`}
                         />
                         <AvatarFallback>
-                          {member.firstName ? member.firstName.charAt(0) : "?"}
+                          {member?.firstName && member?.firstName !== null ? member?.firstName.charAt(0) : "Un"}
                         </AvatarFallback>
                       </Avatar>9
-                      <span className="truncate">{`${member.firstName || ""} ${
-                        member.lastName || ""
+                      <span className="truncate">{`${member?.firstName || ""} ${
+                        member?.lastName || ""
                       }`}</span>
                     </div>
                   </TableCell>
@@ -385,17 +385,17 @@ export default function MemberTable({
                     userRole === "VicePresident" ||
                     userRole === "DivisionHead") && (
                     <TableCell className="truncate">
-                      {member.Divisions.name || "N/A"}
+                      {member?.Divisions?.name || "N/A"}
                     </TableCell>
                   )}
                   <TableCell>
                     <Badge
                       variant="outline"
                       className={getAttendanceBadgeColor(
-                        member.clubStatus || "Inactive"
+                        member?.clubStatus || "Inactive"
                       )}
                     >
-                      {member.clubStatus || "Inactive"}
+                      {member?.clubStatus || "Inactive"}
                     </Badge>
                   </TableCell>
                   <TableCell className="hidden sm:table-cell">
