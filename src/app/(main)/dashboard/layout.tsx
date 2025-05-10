@@ -5,7 +5,6 @@ export default function DashboardLayout({
   AttendanceOverview,
   SessionCalendar,
 }: {
-  children: React.ReactNode;
   EventCard: React.ReactNode;
   MetricCards: React.ReactNode;
   AttendanceOverview: React.ReactNode;

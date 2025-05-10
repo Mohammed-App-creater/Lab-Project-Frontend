@@ -1,20 +1,22 @@
 "use client";
 
 import { Edit2 } from "lucide-react";
-import { User } from "@/types/user";
+import { user } from "@/types/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProfileHeaderProps {
   onEdit: () => void;
-  user: User;
+  user: user;
 }
 
-export default function ProfileHeader({ onEdit, user }: ProfileHeaderProps) {
+export default function ProfileHeader({ onEdit, user}: ProfileHeaderProps) {
+  const Id = localStorage.getItem("userId") || "";
   const fullName = `${user.firstName} ${user.middleName ?? ""} ${user.lastName}`
     .replace(/\s+/g, " ")
     .trim();
   const specialty = user.specialty ?? "No specialty";
   const profileImage = user.profileImageUrl ?? "/default-avatar.svg";
+
   const lastSeen = user.lastSeen 
     ? (() => {
         const lastSeenDate = new Date(user.lastSeen);
@@ -31,6 +33,7 @@ export default function ProfileHeader({ onEdit, user }: ProfileHeaderProps) {
   return (
     <div className="relative w-full ">
       <div className="py-34 bg-blue-900 w-full relative rounded-t-3xl">
+      {(user.id === Id) && (
         <button
           onClick={onEdit}
           className="absolute top-4 right-4 text-white hover:text-gray-200"
@@ -38,6 +41,7 @@ export default function ProfileHeader({ onEdit, user }: ProfileHeaderProps) {
         >
           <Edit2 className="h-4 w-5" />
         </button>
+      )}
       </div>
 
       <div className="absolute -bottom-8 left-16 flex items-center gap-12">

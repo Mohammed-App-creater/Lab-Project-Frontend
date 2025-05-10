@@ -104,9 +104,9 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tool
 import { useState } from "react"
 
 const data = [
-  { month: "Jan", thisYear: 20, lastYear: 30 },
-  { month: "Feb", thisYear: 10, lastYear: 25 },
-  { month: "Mar", thisYear: 30, lastYear: 15 },
+  { month: "Jan", thisYear: 30, lastYear: 7 },
+  { month: "Feb", thisYear: 7, lastYear: 28 },
+  { month: "Mar", thisYear: 25, lastYear: 50 },
   { month: "Apr", thisYear: 40, lastYear: 10 },
   { month: "May", thisYear: 80, lastYear: 30 },
   { month: "Jun", thisYear: 70, lastYear: 40 },
@@ -128,11 +128,11 @@ export default function AttendanceOverview() {
           <Tabs defaultValue="thisYear" className="h-8">
             <TabsList className="h-8">
               <TabsTrigger value="thisYear" className="text-xs h-8 px-2 flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-black"></span>
+                <span className="h-2 w-2 rounded-full bg-[#000000]"></span>
                 This year
               </TabsTrigger>
               <TabsTrigger value="lastYear" className="text-xs h-8 px-2 flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-blue-500"></span>
+                <span className="h-2 w-2 rounded-full bg-[#003087]"></span>
                 Last year
               </TabsTrigger>
             </TabsList>
@@ -181,11 +181,11 @@ export default function AttendanceOverview() {
               <Line
                 type="monotone"
                 dataKey="lastYear"
-                stroke="#3b82f6"
+                stroke="#003087"
                 strokeWidth={2}
                 strokeDasharray="5 5"
                 dot={false}
-                activeDot={{ r: 6, fill: "#3b82f6" }}
+                activeDot={{ r: 6, fill: "#003087" }}
               />
             </LineChart>
           </ResponsiveContainer>

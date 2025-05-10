@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,13 +10,13 @@ import {
 } from "@/components/ui/dialog"
 
 interface AddResourceModalProps {
-  isOpen: boolean
-  onClose: () => void
-  resourceName: string
-  resourceUrl: string
-  onResourceNameChange: (value: string) => void
-  onResourceUrlChange: (value: string) => void
-  onSave: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  resourceName: string;
+  resourceUrl: string;
+  onResourceNameChange: (value: string) => void;
+  onResourceUrlChange: (value: string) => void;
+  onSave: () => void;
 }
 
 export default function AddResourceModal({

@@ -31,7 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import AddNewMember from "../member/add.member.card";
+import AddNewMember from "@/app/(main)/alldivision/[division]/[group]/_components/add.group.member.card";
 import { useQuery } from "@tanstack/react-query";
 import PageLoader from "../global/login/pageLoader";
 
@@ -89,11 +89,12 @@ const fetchMembers = async (
   return response.data as PaginatedResponse;
 };
 
-export function GroupMembersTableUI({ groupId }: { groupId: string }) {
+export function GroupMembersTableUI({ groupId, divisionId }: { groupId: string, divisionId: string }) {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [addNewMember, setAddNewMember] = useState(false);
+  
 
   const { data, isLoading, isError, isFetching } = useQuery({
     queryKey: ["group-members", groupId, page, limit],
@@ -149,7 +150,7 @@ export function GroupMembersTableUI({ groupId }: { groupId: string }) {
 
   return (
     <div className="p-3 rounded-lg border">
-      {addNewMember && <AddNewMember onCancel={() => setAddNewMember(false)} />}
+      {addNewMember && <AddNewMember onCancel={() => setAddNewMember(false)} divisionId={divisionId} groupId={groupId} page={page} limit={limit} />}
       {/* Top Bar */}
       <div className="mb-6 flex items-center justify-between">
         <div className="relative">
@@ -169,7 +170,9 @@ export function GroupMembersTableUI({ groupId }: { groupId: string }) {
             <Import className="h-4 w-4" />
             Import
           </Button>
-          <Button className="bg-blue-900 hover:bg-blue-700 gap-2">
+          <Button
+            onClick={() => setAddNewMember(true)} 
+           className="bg-blue-900 hover:bg-blue-700 gap-2">
             <Plus className="h-4 w-4" />
             Add Member
           </Button>
@@ -347,6 +350,7 @@ export function GroupMembersTableUI({ groupId }: { groupId: string }) {
           </Button>
         </div>
       </div>
+
     </div>
   );
 }

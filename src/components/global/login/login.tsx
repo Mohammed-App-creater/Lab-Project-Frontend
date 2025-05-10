@@ -1,18 +1,16 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-
 import { useRouter } from "next/navigation";
-import  PageLoader  from "./pageLoader"
+import PageLoader from "./pageLoader";
+import { data as user } from "@/lib/types";
 
 export default function LoginPage() {
   const [remember, setRemember] = useState(true);
@@ -29,7 +27,9 @@ export default function LoginPage() {
   };
 
   const loginValidationSchema = Yup.object({
-    email: Yup.string().email("Invalid email").required("Email is required"),
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
     password: Yup.string().required("Password is required"),
   });
 
@@ -42,7 +42,6 @@ export default function LoginPage() {
     validationSchema: loginValidationSchema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        console.log("Submitting form with values:", values);
         setError("");
         setSubmitting(true);
         setIsPageLoading(true);
@@ -62,16 +61,12 @@ export default function LoginPage() {
           throw new Error("Invalid credentials");
         }
 
-        const data: { accessToken: string; user: object } =
+        const data: { accessToken: string; user: user } =
           await response.json();
-        console.log("Login successful:", data);
-
         localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("userRole", data.user.Role.name);
         localStorage.setItem("user", JSON.stringify(data.user));
-        await new Promise((resolve) => setTimeout(resolve, 4000));
-
         router.push("/dashboard");
-
         resetForm();
       } catch (error: unknown) {
         if (error instanceof Error) {
@@ -83,7 +78,6 @@ export default function LoginPage() {
       } finally {
         setIsPageLoading(false);
         setSubmitting(false);
-        
       }
     },
   });
@@ -102,14 +96,12 @@ export default function LoginPage() {
     };
   }, [loginFormik]);
 
- 
- 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
-      {isPageLoading && <PageLoader />}
+      {isPageLoading && <PageLoader fullPage={true} />}
       <div className="w-full max-w-md space-y-8">
         <div className="space-y-6">
-          <div className="flex gap-7 items-center">
+          <div className="flex gap-7 items-center justify-center">
             <div className="relative flex">
               <Image
                 src="/Vector.svg"
@@ -128,7 +120,7 @@ export default function LoginPage() {
             </div>
             <h1 className="font-bold text-3xl text-[#110051]">CSEC ASTU</h1>
           </div>
-          <div>
+          <div className="text-center">
             <h1 className="text-2xl font-bold">Welcome 👋</h1>
             <p className="text-sm text-muted-foreground">Please login here</p>
           </div>
@@ -179,7 +171,7 @@ export default function LoginPage() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(true)}
+                onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -206,8 +198,9 @@ export default function LoginPage() {
           <Button
             type="submit"
             className="w-full h-12 bg-[#003087] hover:bg-[#0a2472]/90"
+            disabled={loginFormik.isSubmitting}
           >
-            Login
+            {loginFormik.isSubmitting ? "Logging in..." : "Login"}
           </Button>
         </form>
       </div>

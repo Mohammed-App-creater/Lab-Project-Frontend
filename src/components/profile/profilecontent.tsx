@@ -11,13 +11,12 @@ import ResourcesTab from "@/components/profile/resourcesTab";
 import RequiredInfoView from "@/components/profile/requiredinfoView";
 import OptionalInfoView from "@/components/profile/optionalInfoview";
 import ResourcesView from "@/components/profile/resourcesView";
-import { TabType } from "@/types/user";
-import { fetchUserProfile, mapUserToUserData } from "@/api/user";
+import { fetchUserProfile } from "@/api/user";
 import { Card } from "../ui/card";
 
 interface ProfileContentProps {
-  activeTab: TabType;
-  onTabChange: (tab: TabType) => void;
+  activeTab: string;
+  onTabChange: (tab: string) => void;
   isEditing: boolean;
   onToggleEdit: () => void;
   userId: string;
@@ -35,7 +34,7 @@ export default function ProfileContent({
     queryFn: () => fetchUserProfile(userId),
   });
 
-  const userData = user ? mapUserToUserData(user) : null;
+  const userData = user || null;
 
   if (isLoading) return <p>Loading...</p>;
   if (!userData) return <p>Failed to load user profile.</p>;
@@ -44,7 +43,7 @@ export default function ProfileContent({
     <Card className="p-6 relative">
       <Tabs
         value={activeTab}
-        onValueChange={(value) => onTabChange(value as TabType)}
+        onValueChange={(value) => onTabChange(value as string)}
         className="w-full"
       >
         <TabsList className="w-full justify-start  rounded-none bg-transparent h-auto p-0 mb-6">
