@@ -1,26 +1,36 @@
+"use client";
 
-
-"use client"
-
-import { Edit2 } from "lucide-react"
-import { User } from "@/types/user"
+import { Edit2 } from "lucide-react";
+import { User } from "@/types/user";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProfileHeaderProps {
-  onEdit: () => void
-  user: User
+  onEdit: () => void;
+  user: User;
 }
 
 export default function ProfileHeader({ onEdit, user }: ProfileHeaderProps) {
-  const fullName = `${user.firstName} ${user.middleName ?? ""} ${user.lastName}`.replace(/\s+/g, ' ').trim()
-  const specialty = user.specialty ?? "No specialty"
-  const profileImage = user.profileImageUrl ?? "/default-avatar.svg"
-  const lastSeen = user.lastSeen
-    ? new Date(user.lastSeen).toLocaleString()
-    : "Last seen unknown"
+  const fullName = `${user.firstName} ${user.middleName ?? ""} ${user.lastName}`
+    .replace(/\s+/g, " ")
+    .trim();
+  const specialty = user.specialty ?? "No specialty";
+  const profileImage = user.profileImageUrl ?? "/default-avatar.svg";
+  const lastSeen = user.lastSeen 
+    ? (() => {
+        const lastSeenDate = new Date(user.lastSeen);
+        const now = new Date();
+        const diffInHours = Math.abs(now.getTime() - lastSeenDate.getTime()) / (1000 * 60 * 60);
+        if (diffInHours > 23) {
+          const daysAgo = Math.floor(diffInHours / 24);
+          return `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`;
+        }
+        return lastSeenDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      })()
+    : "Last seen unknown";
 
   return (
-    <div className="relative w-full overflow-hidden rounded-lg">
-      <div className="h-40 bg-blue-900 w-full relative">
+    <div className="relative w-full ">
+      <div className="py-34 bg-blue-900 w-full relative rounded-t-3xl">
         <button
           onClick={onEdit}
           className="absolute top-4 right-4 text-white hover:text-gray-200"
@@ -30,25 +40,28 @@ export default function ProfileHeader({ onEdit, user }: ProfileHeaderProps) {
         </button>
       </div>
 
-      <div className="absolute bottom-2 left-6 flex items-end gap-4">
-        <div className="h-20 w-20 rounded-full overflow-hidden border-2 border-white">
-          <img
-            src={profileImage}
-            alt={fullName}
-            className="h-full w-full object-cover"
-          />
-        </div>
+      <div className="absolute -bottom-8 left-16 flex items-center gap-12">
+          <Avatar className="h-30 w-30 ">
+            <AvatarImage
+              className="w-full h-full"
+              src={profileImage}
+              alt={fullName}
+            />
+            <AvatarFallback className="w-full h-full  text-6xl">
+              {fullName? fullName.charAt(0) : "?"}
+            </AvatarFallback>
+          </Avatar>
 
-        <div className="mb-1 text-white">
-          <h1 className="text-xl font-bold">{fullName}</h1>
-          <div className="flex flex-row gap-3">
-            <p className="text-xs">{specialty}</p>
-            <div className="flex items-center text-xs text-[#AEAEAECC]">
-              <span>{lastSeen}</span>
+        <div className="mb-8">
+          <h1 className="text-2xl text-white font-bold">{fullName}</h1>
+          <div className="flex flex-row gap-8 ">
+            <p className="text-sm text-white">{specialty}</p>
+            <div className="flex items-center text-sm text-[#AEAEAECC]">
+              Last Seen<span>{lastSeen}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

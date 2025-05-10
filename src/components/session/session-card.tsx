@@ -36,10 +36,10 @@ export function SessionCard({
   const timeDisplay = status === "ended" ? timeAgo : timeLeft
 
   return (
-    <Card className="mb-4 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
+    <Card className="mb-4 overflow-hidden dark:bg-gray-800 dark:border-gray-700 w-full max-w-full">
       <CardHeader className="pb-2 pt-4">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Badge variant="outline" className={cn("font-medium capitalize", statusColors[status])}>
               {status}
             </Badge>
@@ -52,7 +52,7 @@ export function SessionCard({
         <p className="mb-1 text-base font-medium dark:text-gray-200">{description}</p>
         <p className="mb-3 text-sm text-muted-foreground dark:text-gray-400">{date}</p>
 
-        <div className="flex flex-wrap items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap gap-2">
             {groups.map((group) => (
               <Badge key={group.id} variant="outline" className="bg-gray-100 dark:bg-gray-700 dark:text-gray-200">

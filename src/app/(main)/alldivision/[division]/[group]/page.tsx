@@ -1,12 +1,15 @@
+'use client'
 import { GroupMembersTableUI } from '@/components/divisions/GroupMembersTable'
-import React from 'react'
+import { use } from 'react'
 
-function page() {
+function Page({ params }: { params: Promise<{ group: string, division: string }> }) {
+  const { group, division } = use(params);
+  
   return (
     <div>
-      <GroupMembersTableUI />
+      <GroupMembersTableUI divisionId={division} groupId={group} />
     </div>
   )
 }
 
-export default page
+export default Page

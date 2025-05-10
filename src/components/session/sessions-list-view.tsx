@@ -38,9 +38,9 @@ export function SessionsListView({ sessions }: SessionsListViewProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-full">
       {sessions.map((session) => (
-        <div key={session.id} className="rounded-lg border shadow-sm overflow-hidden">
+        <div key={session.id} className="rounded-lg border shadow-sm overflow-hidden w-full max-w-full">
           <div className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

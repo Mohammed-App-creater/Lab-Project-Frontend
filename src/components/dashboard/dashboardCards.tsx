@@ -1,17 +1,17 @@
-'use client'
-import type React from "react";
-import { useQuery } from "@tanstack/react-query";
+"use client";
+
+import { useEffect, useState } from "react";
 import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb";
 import { Users, Layers, Calendar, BarChart2 } from "lucide-react";
-import MetricCardsLoading from "./MetricCardsLoading";
-
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface MetricCardProps {
   title: string;
   value: string | number;
   change: {
     value: number;
-    trend: "up" | "down";
+    trend: "up" | "down"; 
   };
   icon: React.ReactNode;
   lastUpdated: string;
@@ -33,8 +33,7 @@ function MetricCard({
   lastUpdated,
 }: MetricCardProps) {
   return (
-
-    <div className="rounded-lg border px-4 py-9 m-3 shadow-sm">
+    <Card className="rounded-lg border w-full px-4 py-9 shadow-sm">
       <div className="flex items-center">
         {icon}
         <div className="text-sm font-medium text-gray-500 pl-4">{title}</div>
@@ -44,7 +43,7 @@ function MetricCard({
         <span
           className={`ml-2 flex items-center text-xs font-medium ${
             change.trend === "up" ? "text-green-500" : "text-red-500"
-          }`}
+          }`} 
         >
           {change.trend === "up" ? (
             <div className="flex items-center gap-1 w-[54px] rounded-[5px] p-[5px] mb-3 bg-[#30BE821A]">
@@ -59,72 +58,115 @@ function MetricCard({
           )}
         </span>
       </div>
-      <hr/>
-      <div className="mt-2 text-xs text-[#A2A1A8]">Update: {lastUpdated}</div>
-    </div>
+      <hr />
+      <div className="mt-2 text-xs text-gray-400">Updated: {lastUpdated}</div>
+    </Card>
   );
 }
 
+function MetricCardSkeleton() {
+  return (
+    <Card className="rounded-lg border w-[313px] px-4 py-9 shadow-sm">
+      <div className="flex items-center">
+        <Skeleton className="h-5 w-5" />
+        <Skeleton className="h-4 w-24 ml-4" />
+      </div>
+      <div className="mt-2 flex items-baseline justify-between">
+        <Skeleton className="h-8 w-16" />
+        <Skeleton className="h-6 w-14" />
+      </div>
+      <hr className="my-2" />
+      <Skeleton className="h-3 w-24" />
+    </Card>
+  );
+}
 
-// Do_Not_Tell_To_Anyone_Please
+export default function MetricCards() {
+  const [metrics, setMetrics] = useState<MetricCardProps[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-const fetchSummary = async (): Promise<DataType> => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/dashboard/summary`,{
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
-  if (!res.ok) throw new Error("Failed to fetch summary data");
-  const json = await res.json();
-  return json.data;
-};
+  useEffect(() => {
+    async function fetchMetrics() {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACK_END_URL}api/dashboard/summary`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
-export function MetricCards() {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["dashboard-summary"],
-    queryFn: fetchSummary,
-  });
+        if (!response.ok) {
+          throw new Error("Failed to fetch summary data");
+        }
 
-  if (isLoading) return <MetricCardsLoading />;
+        const data: dataType = await response.json();
+        
+        const metricsData = [
+          {
+            title: "Total Members",
+            value: data.totalMembers,
+            change: { value: 12, trend: "up" as const },
+            icon: <Users className="h-5 w-5 text-indigo-600" />,
+            lastUpdated: new Date().toLocaleDateString(),
+          },
+          {
+            title: "Total Divisions",
+            value: data.totalDivisions,
+            change: { value: 9, trend: "up" as const },
+            icon: <Layers className="h-5 w-5 text-purple-600" />,
+            lastUpdated: new Date().toLocaleDateString(),
+          },
+          {
+            title: "Attendance Rate",
+            value: `${data.attendanceRate}%`,
+            change: { value: 4, trend: "down" as const },
+            icon: <BarChart2 className="h-5 w-5 text-blue-600" />,
+            lastUpdated: new Date().toLocaleDateString(),
+          },
+          {
+            title: "Upcoming Sessions",
+            value: data.upcomingSessions,
+            change: { value: 15, trend: "up" as const },
+            icon: <Calendar className="h-5 w-5 text-blue-600" />,
+            lastUpdated: new Date().toLocaleDateString(),
+          },
+        ];
 
-  if (isError || !data) return <div>Error loading metrics</div>;
+        setMetrics(metricsData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load metrics");
+        console.error("Error fetching metrics:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  const { totalMembers, totalDivisions, attendanceRate, upcomingSessions } = data;
+    fetchMetrics();
+  }, []);
 
+  if (loading) {
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
+        {[1, 2, 3, 4].map((i) => (
+          <MetricCardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
 
-
-  const metricsArr = [
-    {
-      title: "Total Members",
-      value: totalMembers,
-      change: { value: 12, trend: "up" },
-      icon: <Users className="h-5 w-5 text-indigo-600" />,
-      lastUpdated: new Date().toLocaleDateString(),
-    },
-    {
-      title: "Total Divisions",
-      value: totalDivisions,
-      change: { value: 9, trend:  "up" },
-      icon: <Layers className="h-5 w-5 text-purple-600" />,
-      lastUpdated: new Date().toLocaleDateString(),
-    },
-    {
-      title: "Attendance Rate",
-      value: `${attendanceRate.toFixed(3)}%`,
-      change: { value: 4, trend: "down" as const },
-      icon: <BarChart2 className="h-5 w-5 text-blue-600" />,
-      lastUpdated: new Date().toLocaleDateString(),
-    },
-    {
-      title: "Upcoming Sessions",
-      value: upcomingSessions,
-      change: { value: 15, trend: "up" },
-      icon: <Calendar className="h-5 w-5 text-blue-600" />,
-      lastUpdated: new Date().toLocaleDateString(),
-    },
-  ];
+  if (error) {
+    return (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
+        <Card className="col-span-2 p-6 text-center">
+          <p className="text-red-500">Error: {error}</p>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">

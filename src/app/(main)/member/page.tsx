@@ -13,9 +13,9 @@ export default function MemberPage() {
   const [showForm, setShowForm] = useState(false)
 
   return (
-    <div className="relative h-full ">
+    <div className="w-full min-h-screen p-4 md:p-6">
       {/* Apply blur when modal is open */}
-      <div className={`${showForm ? "blur-sm pointer-events-none select-none   " : ""} `}>
+      <div className={`${showForm ? "blur-sm pointer-events-none select-none" : ""}`}>
         <MemberTable
           onAddMember={() => setShowForm(true)} userRole={"admin"}        />
       </div>

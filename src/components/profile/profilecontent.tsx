@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, ClipboardList, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import { CiUser } from "react-icons/ci";
 import { SlBriefcase } from "react-icons/sl";
 import RequiredInfoTab from "@/components/profile/requiredInfoTab";
@@ -12,8 +11,9 @@ import ResourcesTab from "@/components/profile/resourcesTab";
 import RequiredInfoView from "@/components/profile/requiredinfoView";
 import OptionalInfoView from "@/components/profile/optionalInfoview";
 import ResourcesView from "@/components/profile/resourcesView";
-import { TabType, UserData } from "@/types/user";
+import { TabType } from "@/types/user";
 import { fetchUserProfile, mapUserToUserData } from "@/api/user";
+import { Card } from "../ui/card";
 
 interface ProfileContentProps {
   activeTab: TabType;
@@ -41,7 +41,7 @@ export default function ProfileContent({
   if (!userData) return <p>Failed to load user profile.</p>;
 
   return (
-    <div className="bg-white p-6 relative">
+    <Card className="p-6 relative">
       <Tabs
         value={activeTab}
         onValueChange={(value) => onTabChange(value as TabType)}
@@ -50,21 +50,21 @@ export default function ProfileContent({
         <TabsList className="w-full justify-start  rounded-none bg-transparent h-auto p-0 mb-6">
           <TabsTrigger
             value="required"
-            className="border-t-0 border-x-0 data-[state=active]:border-b-4 data-[state=active]:border-blue-900 data-[state=active]:text-blue-900 rounded-none pb-2 px-4"
+            className="border-t-0 border-x-0 border-b-[0.5px] border-gray-400 data-[state=active]:border-b-4 data-[state=active]:shadow-none data-[state=active]:border-blue-900 data-[state=active]:text-blue-900 rounded-none pb-2 px-4"
           >
             <CiUser className="h-5 w-5 -ml-14" />
             Required Information
           </TabsTrigger>
           <TabsTrigger
             value="optional"
-            className="border-t-0 border-x-0 data-[state=active]:border-b-4 data-[state=active]:border-blue-900 data-[state=active]:text-blue-900 rounded-none pb-2 px-4"
+            className="border-t-0 border-x-0 border-b-[0.5px] border-gray-400 data-[state=active]:border-b-4 data-[state=active]:shadow-none data-[state=active]:border-blue-900 data-[state=active]:text-blue-900 rounded-none pb-2 px-4"
           >
             <SlBriefcase className="h-5 w-5 mr-2" />
             Optional Information
           </TabsTrigger>
           <TabsTrigger
             value="resources"
-            className="border-t-0 border-x-0 data-[state=active]:border-b-4 data-[state=active]:border-blue-900 data-[state=active]:text-blue-900 rounded-none pb-2 px-4"
+            className="border-t-0 border-x-0 border-b-[0.5px] border-gray-400 data-[state=active]:border-b-4 data-[state=active]:shadow-none data-[state=active]:border-blue-900 data-[state=active]:text-blue-900 rounded-none pb-2 px-4"
           >
             <FileText className="h-5 w-5 mr-2" />
             Resources
@@ -103,6 +103,6 @@ export default function ProfileContent({
           )}
         </TabsContent>
       </Tabs>
-    </div>
+    </Card>
   );
 }
