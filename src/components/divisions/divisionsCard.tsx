@@ -38,7 +38,7 @@ type GroupDto = {
 const fetchDivision = async () => {
   try {
     const divisions = await fetch(
-      "http://localhost:3000/api/division/all-divisions-and-groups"
+      `${process.env.NEXT_PUBLIC_BACK_END_URL}api/division/all-divisions-and-groups`
     );
     if (!divisions) {
       throw new Error("No Division found");
