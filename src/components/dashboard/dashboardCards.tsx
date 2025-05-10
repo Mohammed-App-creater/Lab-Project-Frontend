@@ -19,10 +19,13 @@ interface MetricCardProps {
 
 
 type DataType = {
-  totalMembers: number;
-  totalDivisions: number;
-  attendanceRate: number;
-  upcomingSessions: number;
+  data: {
+    totalMembers: number;
+    totalDivisions: number;
+    attendanceRate: number;
+    upcomingSessions: number;
+  };
+  updateAt: string;
 };
 
 function MetricCard({
@@ -99,11 +102,13 @@ export default function MetricCards() {
           }
         );
 
+
         if (!response.ok) {
           throw new Error("Failed to fetch summary data");
         }
 
-        const data: dataType = await response.json();
+        const responseData: DataType = await response.json();
+        const data = responseData.data;
         
         const metricsData = [
           {
@@ -111,32 +116,33 @@ export default function MetricCards() {
             value: data.totalMembers,
             change: { value: 12, trend: "up" as const },
             icon: <Users className="h-5 w-5 text-indigo-600" />,
-            lastUpdated: new Date().toLocaleDateString(),
+            lastUpdated: responseData.updateAt,
           },
           {
             title: "Total Divisions",
             value: data.totalDivisions,
             change: { value: 9, trend: "up" as const },
             icon: <Layers className="h-5 w-5 text-purple-600" />,
-            lastUpdated: new Date().toLocaleDateString(),
+            lastUpdated: responseData.updateAt,
           },
           {
             title: "Attendance Rate",
-            value: `${data.attendanceRate}%`,
+            value: `${data.attendanceRate.toFixed(1)}%`,
             change: { value: 4, trend: "down" as const },
             icon: <BarChart2 className="h-5 w-5 text-blue-600" />,
-            lastUpdated: new Date().toLocaleDateString(),
+            lastUpdated: responseData.updateAt,
           },
           {
             title: "Upcoming Sessions",
             value: data.upcomingSessions,
             change: { value: 15, trend: "up" as const },
             icon: <Calendar className="h-5 w-5 text-blue-600" />,
-            lastUpdated: new Date().toLocaleDateString(),
+            lastUpdated: responseData.updateAt,
           },
         ];
 
         setMetrics(metricsData);
+        console.log(metricsData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load metrics");
         console.error("Error fetching metrics:", err);
@@ -170,7 +176,7 @@ export default function MetricCards() {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
-      {metricsArr.map((metric) => (
+      {metrics.map((metric) => (
         <MetricCard key={metric.title} {...metric} />
       ))}
     </div>

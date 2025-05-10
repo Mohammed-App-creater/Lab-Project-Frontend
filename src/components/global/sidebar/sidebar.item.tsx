@@ -124,7 +124,6 @@ function SidebarItem({ onClose }: SidebarItemProps) {
           </TooltipProvider>
         </nav>
       </div>
-      <DarkLight />
     </div>
   );
 }

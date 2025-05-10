@@ -211,7 +211,7 @@ export default function MemberTable({
   if (error) return <p className="ml-50">Error: {error}</p>;
 
   return (
-    <div className="w-full space-y-4 border rounded-lg p-4">
+    <div className="w-full p-2 space-y-4 border rounded-lg">
       {/* Search and Actions */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:w-64">

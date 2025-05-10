@@ -44,7 +44,7 @@ function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <header className="w-full">
-      <div className="container mx-auto px-8 py-3">
+      <div className=" px-4 mx-auto  py-3">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           {/* Left - Menu button and Greeting */}
           <div className="flex items-center gap-3">
