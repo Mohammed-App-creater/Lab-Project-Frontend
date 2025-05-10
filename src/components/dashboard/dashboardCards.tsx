@@ -65,7 +65,7 @@ function MetricCard({
         </span>
       </div>
       <hr />
-      <div className="mt-2 text-xs text-gray-400">Updated: {lastUpdated}</div>
+      <div className="mt-2 text-xs text-gray-400">Updated: {new Date(lastUpdated).toLocaleDateString()}</div>
     </Card>
   );
 }
