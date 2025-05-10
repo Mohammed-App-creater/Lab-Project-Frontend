@@ -28,7 +28,9 @@ const actionTypes = {
 let count = 0
 
 function genId() {
+
   count = (count + 1) % Number.MAX_SAFE_INTEGER
+
   return count.toString()
 }
 
@@ -85,6 +87,7 @@ export const reducer = (state: State, action: Action): State => {
     case "UPDATE_TOAST":
       return {
         ...state,
+
         toasts: state.toasts.map((t) =>
           t.id === action.toast.id ? { ...t, ...action.toast } : t
         ),

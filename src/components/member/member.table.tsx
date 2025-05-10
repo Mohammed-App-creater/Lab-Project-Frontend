@@ -20,17 +20,15 @@ import {
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import {
-  Pencil,
-  Trash2,
-  Plus,
-  Filter,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Trash2, Plus, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import PageLoader from "../global/login/pageLoader";
+import ConfirmPopup from "./ConfirmPopup";
+import { toast } from "sonner";
+import api from "@/lib/axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
-type Member = {
+export type Member = {
   id: string;
   firstName: string | null;
   middleName: string | null;
@@ -46,12 +44,17 @@ type Member = {
   specialty: string | null;
   cvUrl: string | null;
   lastSeen: string;
+  Divisions: {
+    id: string;
+    name: string;
+  };
   Role: {
     id: string;
     name: string;
   };
   roleId: string;
   universityInfo?: {
+    universityId: string;
     currentYear: string;
     status: string;
   };
@@ -66,58 +69,87 @@ type PaginatedResponse = {
 };
 
 type MemberTableProps = {
-  userRole: "admin" | "manager" | "viewer";
+  userRole:
+    | "VicePresident"
+    | "President"
+    | "SuperAdmin"
+    | "DivisionHead"
+    | "Coordinator"
+    | "Member"
+    | "Admin";
   onAddMember: () => void;
 };
+
+// Delete member API call
+async function DeleteMember(id: string) {
+  return await api
+    .delete(`api/user/delete-user/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+    .then((res) => res.data);
+}
 
 export default function MemberTable({
   userRole,
   onAddMember,
 }: MemberTableProps) {
-  const [members, setMembers] = useState<Member[]>([]);
-  const [filteredMembers, setFilteredMembers] = useState<Member[]>([]);
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [paginationInfo, setPaginationInfo] = useState({
     total: 0,
     page: 1,
     limit: 10,
     totalPages: 0,
   });
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [filteredMembers, setFilteredMembers] = useState<Member[]>([]);
+  const [popupState, setPopupState] = useState<{
+    isOpen: boolean;
+    selectedMember: Member | null;
+  }>({
+    isOpen: false,
+    selectedMember: null,
+  });
 
+  // Fetch members with react-query
+  const { data, isLoading, error } = useQuery<PaginatedResponse>({
+    queryKey: ["members", paginationInfo.page, paginationInfo.limit],
+    queryFn: async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/all-users?limit=${paginationInfo.limit}&page=${paginationInfo.page}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (!res.ok) throw new Error("Failed to fetch members");
+      return res.json();
+    },
+  });
+
+  // Update members and pagination when data changes
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/all-users?limit=${paginationInfo.limit}&page=${paginationInfo.page}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch members");
-        const data: PaginatedResponse = await res.json();
-        setMembers(data.data);
-        setFilteredMembers(data.data); // Initialize filtered members with all members
-        setPaginationInfo({
-          total: data.total,
-          page: data.page,
-          limit: data.limit,
-          totalPages: data.totalPages,
-        });
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMembers();
-  }, [paginationInfo.limit, paginationInfo.page]);
+    if (data) {
+      setFilteredMembers(data.data);
+      setPaginationInfo({
+        total: data.total,
+        page: data.page,
+        limit: data.limit,
+        totalPages: data.totalPages,
+      });
+    }
+  }, [data]);
 
   // Filter members based on search term
   useEffect(() => {
-    if (searchTerm.trim() === "") {
-      setFilteredMembers(members);
+    if (searchTerm.trim() === "" || !data) {
+      setFilteredMembers(data?.data || []);
     } else {
-      const filtered = members.filter((member) => {
+      const filtered = data.data.filter((member) => {
         const searchLower = searchTerm.toLowerCase();
         return (
           (member.firstName?.toLowerCase().includes(searchLower) ?? false) ||
@@ -128,57 +160,69 @@ export default function MemberTable({
       });
       setFilteredMembers(filtered);
     }
-  }, [searchTerm, members]);
+  }, [searchTerm, data]);
 
+  // Handle search input
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
-  const handlePageChange = async (pageNumber: number) => {
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/all-users?limit=${paginationInfo.limit}&page=${pageNumber}`
-      );
-      if (!res.ok) throw new Error("Failed to fetch members");
-      const data: PaginatedResponse = await res.json();
-      setMembers(data.data);
-      setFilteredMembers(data.data);
-      setPaginationInfo({
-        total: data.total,
-        page: data.page,
-        limit: data.limit,
-        totalPages: data.totalPages,
-      });
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
+  // Handle page change
+  const handlePageChange = (pageNumber: number) => {
+    setPaginationInfo((prev) => ({ ...prev, page: pageNumber }));
   };
 
-  const handleItemsPerPageChange = async (value: string) => {
+  // Handle items per page change
+  const handleItemsPerPageChange = (value: string) => {
     const newLimit = Number(value);
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/all-users?limit=${newLimit}&page=1`
-      );
-      if (!res.ok) throw new Error("Failed to fetch members");
-      const data: PaginatedResponse = await res.json();
-      setMembers(data.data);
-      setFilteredMembers(data.data);
-      setPaginationInfo({
-        total: data.total,
-        page: 1,
-        limit: newLimit,
-        totalPages: data.totalPages,
+    setPaginationInfo((prev) => ({ ...prev, limit: newLimit, page: 1 }));
+  };
+
+  // Handle delete button click
+  const handleDeleteClick = (member: Member) => {
+    setPopupState({ isOpen: true, selectedMember: member });
+  };
+
+  // Handle delete mutation
+  const handleDelete = useMutation({
+    mutationFn: DeleteMember,
+    onSuccess: () => {
+      toast.success("Member deleted successfully ✅", {
+        position: "top-right",
+        duration: 3000,
       });
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+    },
+    onError: (error) => {
+      console.error("Error deleting member:", error);
+      toast.error("Failed to delete member ❌", {
+        position: "top-right",
+        duration: 3000,
+      });
+    },
+  });
+
+  // Handle confirmation
+  const handleConfirm = async (name: string, isDivisionHead: boolean) => {
+    if (isDivisionHead) {
+      console.log(`Reporting deletion of ${name}`);
+      toast.info(`Reported deletion of ${name}`, {
+        position: "top-right",
+        duration: 3000,
+      });
+      // TODOO: Add your API call for report-delete if needed
+    } else {
+      const memberId = popupState.selectedMember?.id;
+      if (memberId) {
+        await handleDelete.mutateAsync(memberId);
+      }
     }
+    setPopupState({ isOpen: false, selectedMember: null });
+  };
+
+  // Handle cancel
+  const handleCancel = () => {
+    setPopupState({ isOpen: false, selectedMember: null });
   };
 
   const getAttendanceBadgeColor = (attendance: string | null) => {
@@ -207,11 +251,23 @@ export default function MemberTable({
     }
   };
 
-  if (loading) return PageLoader({ fullPage: false });
-  if (error) return <p className="ml-50">Error: {error}</p>;
+  if (isLoading) return PageLoader({ fullPage: false });
+  if (error)
+    return (
+      <p className="ml-50">
+        Error: {error instanceof Error ? error.message : String(error)}
+      </p>
+    );
 
   return (
+
     <div className="w-full space-y-4 border rounded-lg p-4">
+      <ConfirmPopup
+        isOpen={popupState.isOpen}
+        member={popupState.selectedMember}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
       {/* Search and Actions */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:w-64">
@@ -240,7 +296,7 @@ export default function MemberTable({
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          {(userRole === "admin" || userRole === "manager") && (
+          {(userRole === "VicePresident" || userRole === "President") && (
             <Button
               className="bg-[#003087] hover:bg-[#002f87e7] w-full sm:w-auto"
               onClick={onAddMember}
@@ -257,46 +313,80 @@ export default function MemberTable({
       </div>
 
       <div className="border rounded-md overflow-x-auto">
-        <Table className="min-w-[1000px] w-full">
+        <Table className="min-w-[1000px] w-full ">
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-[200px]">Member Name</TableHead>
-              <TableHead>Member ID</TableHead>
+            <TableRow className=" text-black dark:text-white">
+              <TableHead className="w-[200px] text-black">
+                Member Name
+              </TableHead>
+              <TableHead className="text-black dark:text-white">
+                Member ID
+              </TableHead>
               {/* Hide Division on mobile */}
-              {userRole === "admin" && <TableHead className="hidden md:table-cell">Division</TableHead>}
-              <TableHead>Attendance</TableHead>
+              {(userRole === "President" ||
+                userRole === "VicePresident" ||
+                userRole === "DivisionHead") && (
+                <TableHead className="hidden md:table-cell text-black dark:text-white">
+                  Division
+                </TableHead>
+              )}
+              <TableHead className="text-black dark:text-white">
+                Attendance
+              </TableHead>
               {/* Hide Year on small screens */}
-              <TableHead className="hidden sm:table-cell">Year</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead className="hidden sm:table-cell text-black dark:text-white">
+                Year
+              </TableHead>
+              <TableHead className="text-black dark:text-white">
+                Status
+              </TableHead>
               {/* Hide Action on mobile */}
-              {(userRole === "admin" || userRole === "manager") && (
-                <TableHead className="text-right hidden sm:table-cell">Action</TableHead>
+              {(userRole === "President" ||
+                userRole === "VicePresident" ||
+                userRole === "DivisionHead") && (
+                <TableHead className="text-right hidden sm:table-cell text-black dark:text-white">
+                  Action
+                </TableHead>
               )}
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredMembers.length > 0 ? (
               filteredMembers.map((member) => (
-                <TableRow className="border-b" key={member.id}>
+                <TableRow
+                  onClick={() => {
+                    router.push(`/member/${member.id}`);
+                  }}
+                  className="border-b"
+                  key={member.id}
+                >
                   <TableCell className="font-medium py-4">
                     <div className="flex items-center gap-2">
                       <Avatar>
                         <AvatarImage
                           src={member.profileImageUrl || "/placeholder.svg"}
-                          alt={`${member.firstName || ""} ${member.lastName || ""}`}
+                          alt={`${member.firstName || ""} ${
+                            member.lastName || ""
+                          }`}
                         />
                         <AvatarFallback>
                           {member.firstName ? member.firstName.charAt(0) : "?"}
                         </AvatarFallback>
-                      </Avatar>
+                      </Avatar>9
                       <span className="truncate">{`${member.firstName || ""} ${
                         member.lastName || ""
                       }`}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="truncate">{member.id}</TableCell>
-                  {userRole === "admin" && (
-                    <TableCell className="truncate">{member.specialty || "N/A"}</TableCell>
+                  <TableCell className="truncate">
+                    {member.universityInfo?.universityId || "N/A"}
+                  </TableCell>
+                  {(userRole === "President" ||
+                    userRole === "VicePresident" ||
+                    userRole === "DivisionHead") && (
+                    <TableCell className="truncate">
+                      {member.Divisions.name || "N/A"}
+                    </TableCell>
                   )}
                   <TableCell>
                     <Badge
@@ -308,7 +398,9 @@ export default function MemberTable({
                       {member.clubStatus || "Inactive"}
                     </Badge>
                   </TableCell>
-                  <TableCell  className="hidden sm:table-cell">{member.universityInfo?.currentYear || "N/A"}</TableCell>
+                  <TableCell className="hidden sm:table-cell">
+                    {member.universityInfo?.currentYear || "N/A"}
+                  </TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
@@ -320,13 +412,17 @@ export default function MemberTable({
                     </Badge>
                   </TableCell>
                   {/* Hide Action on mobile */}
-                  {(userRole === "admin" || userRole === "manager") && (
+                  {(userRole === "VicePresident" ||
+                    userRole === "President" ||
+                    userRole === "DivisionHead" ||
+                    userRole === "SuperAdmin") && (
                     <TableCell className="text-right hidden sm:table-cell">
                       <div className="flex justify-end gap-2">
-                        <Button size="icon" variant="ghost">
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        <Button size="icon" variant="ghost">
+                        <Button
+                          onClick={() => handleDeleteClick(member)}
+                          size="icon"
+                          variant="ghost"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -338,11 +434,11 @@ export default function MemberTable({
               <TableRow>
                 <TableCell
                   colSpan={
-                    userRole === "admin"
+                    userRole === "President" || userRole === "DivisionHead"
                       ? 7
-                      : userRole === "manager" || userRole === "viewer"
-                        ? 6
-                        : 5
+                      : userRole === "VicePresident" || userRole === "Member"
+                      ? 6
+                      : 5
                   }
                   className="text-center py-8"
                 >
@@ -374,11 +470,12 @@ export default function MemberTable({
             </SelectContent>
           </Select>
           <span className="text-sm text-gray-500">
-            {`${(paginationInfo.page - 1) * paginationInfo.limit + 1
-              } to ${Math.min(
-                paginationInfo.page * paginationInfo.limit,
-                paginationInfo.total
-              )} out of ${paginationInfo.total} records`}
+            {`${
+              (paginationInfo.page - 1) * paginationInfo.limit + 1
+            } to ${Math.min(
+              paginationInfo.page * paginationInfo.limit,
+              paginationInfo.total
+            )} out of ${paginationInfo.total} records`}
           </span>
         </div>
 
@@ -387,46 +484,54 @@ export default function MemberTable({
             variant="outline"
             size="icon"
             className="h-8 w-8"
-            onClick={() => handlePageChange(Math.max(1, paginationInfo.page - 1))}
+            onClick={() =>
+              handlePageChange(Math.max(1, paginationInfo.page - 1))
+            }
             disabled={paginationInfo.page === 1}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
 
-          {Array.from({ length: Math.min(paginationInfo.totalPages, 5) }, (_, i) => {
-            let pageNum;
-            if (paginationInfo.totalPages <= 5) {
-              pageNum = i + 1;
-            } else if (paginationInfo.page <= 3) {
-              pageNum = i + 1;
-            } else if (paginationInfo.page >= paginationInfo.totalPages - 2) {
-              pageNum = paginationInfo.totalPages - 4 + i;
-            } else {
-              pageNum = paginationInfo.page - 2 + i;
-            }
+          {Array.from(
+            { length: Math.min(paginationInfo.totalPages, 5) },
+            (_, i) => {
+              let pageNum;
+              if (paginationInfo.totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (paginationInfo.page <= 3) {
+                pageNum = i + 1;
+              } else if (paginationInfo.page >= paginationInfo.totalPages - 2) {
+                pageNum = paginationInfo.totalPages - 4 + i;
+              } else {
+                pageNum = paginationInfo.page - 2 + i;
+              }
 
-            return (
-              <Button
-                key={pageNum}
-                variant="outline"
-                size="sm"
-                className={`h-8 w-8 ${paginationInfo.page === pageNum
-                    ? "bg-primary text-primary-foreground"
-                    : ""
+              return (
+                <Button
+                  key={pageNum}
+                  variant="outline"
+                  size="sm"
+                  className={`h-8 w-8 ${
+                    paginationInfo.page === pageNum
+                      ? "bg-primary text-primary-foreground"
+                      : ""
                   }`}
-                onClick={() => handlePageChange(pageNum)}
-              >
-                {pageNum}
-              </Button>
-            );
-          })}
+                  onClick={() => handlePageChange(pageNum)}
+                >
+                  {pageNum}
+                </Button>
+              );
+            }
+          )}
 
           <Button
             variant="outline"
             size="icon"
             className="h-8 w-8"
             onClick={() =>
-              handlePageChange(Math.min(paginationInfo.totalPages, paginationInfo.page + 1))
+              handlePageChange(
+                Math.min(paginationInfo.totalPages, paginationInfo.page + 1)
+              )
             }
             disabled={paginationInfo.page === paginationInfo.totalPages}
           >

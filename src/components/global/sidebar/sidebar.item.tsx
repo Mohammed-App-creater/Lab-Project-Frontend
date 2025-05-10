@@ -6,15 +6,12 @@ import { MdOutlineAdminPanelSettings, MdOutlineDashboard } from 'react-icons/md'
 import { LuCalendarCheck, LuClock10 } from "react-icons/lu";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { IoFolderOutline } from "react-icons/io5";
-import { GoMoon } from "react-icons/go";
-import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-import { HiAdjustments } from "react-icons/hi";
+import Image from 'next/image';
 
 interface SidebarItemProps {
   onClose?: () => void;
 }
-import DarkLight from './dark.light';
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -89,8 +86,7 @@ function SidebarItem({ onClose }: SidebarItemProps) {
         <div className="mb-6">
           <Link href="/" className="flex items-center">
             <div className="text-blue-700 font-bold text-xl flex items-center">
-              <img className="w-7 h-10" src="Vector.svg" alt="Logo Part 1" />
-              <img className="w-7 h-10 -ml-3" src="Vector1.svg" alt="Logo Part 2" />
+              <Image className="w-7 h-10 -ml-3" width={20} height={20} src="/images/logo.jpg" alt="Logo Part 2" />
               <h1 className="font-bold ml-4">CSEC ASTU</h1>
             </div>
           </Link>
@@ -124,7 +120,6 @@ function SidebarItem({ onClose }: SidebarItemProps) {
           </TooltipProvider>
         </nav>
       </div>
-      <DarkLight />
     </div>
   );
 }

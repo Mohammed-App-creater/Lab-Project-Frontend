@@ -11,11 +11,12 @@ interface MetricCardProps {
   value: string | number;
   change: {
     value: number;
-    trend: "up" | "down"; 
+    trend: "up" | "down";
   };
   icon: React.ReactNode;
   lastUpdated: string;
 }
+
 
 
 type dataType = {
@@ -48,7 +49,7 @@ function MetricCard({
         <span
           className={`ml-2 flex items-center text-xs font-medium ${
             change.trend === "up" ? "text-green-500" : "text-red-500"
-          }`} 
+          }`}
         >
           {change.trend === "up" ? (
             <div className="flex items-center gap-1 w-[54px] rounded-[5px] p-[5px] mb-3 bg-[#30BE821A]">
@@ -113,35 +114,36 @@ export default function MetricCards() {
         const metricsData = [
           {
             title: "Total Members",
-            value: data.data.totalMembers,
+            value: data.data.totalMembers || 0,
             change: { value: 12, trend: "up" as const },
             icon: <Users className="h-5 w-5 text-indigo-600" />,
-            lastUpdated: new Date().toLocaleDateString(),
+            lastUpdated: data.updateAt,
           },
           {
             title: "Total Divisions",
             value: data.data.totalDivisions,
             change: { value: 9, trend: "up" as const },
             icon: <Layers className="h-5 w-5 text-purple-600" />,
-            lastUpdated: new Date().toLocaleDateString(),
+            lastUpdated: data.updateAt,
           },
           {
             title: "Attendance Rate",
-            value: `${data.data.attendanceRate}%`,
+            value: `${data.data.attendanceRate.toFixed(1)}%`,
             change: { value: 4, trend: "down" as const },
             icon: <BarChart2 className="h-5 w-5 text-blue-600" />,
-            lastUpdated: new Date().toLocaleDateString(),
+            lastUpdated: data.updateAt,
           },
           {
             title: "Upcoming Sessions",
             value: data.data.upcomingSessions,
             change: { value: 15, trend: "up" as const },
             icon: <Calendar className="h-5 w-5 text-blue-600" />,
-            lastUpdated: new Date().toLocaleDateString(),
+            lastUpdated: data.updateAt,
           },
         ];
-
+        console.log("Processed metrics data:", metricsData); // Log the processed metrics data
         setMetrics(metricsData);
+        console.log(metricsData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load metrics");
         console.error("Error fetching metrics:", err);

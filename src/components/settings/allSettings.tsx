@@ -1,32 +1,75 @@
 "use client";
 
-import { useState } from "react";
-import { useTheme } from "next-themes";
-import { Switch } from "@/components/ui/switch";
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
+import { Switch } from '@/components/ui/switch'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select'
+import { useSettingStore } from '@/Store/settingstore'
+import { useMutation } from '@tanstack/react-query'
 
 export default function SettingsPage() {
-  const { theme, setTheme } = useTheme();
-  const [addEvents, setAddEvents] = useState(true);
-  const [phonePublic, setPhonePublic] = useState(true);
+  const { theme, setTheme } = useTheme()
+  const setting = useSettingStore((state) => state.setting)
+  const setSetting = useSettingStore((state) => state.setSetting)
+
+  const [addEvents, setAddEvents] = useState(false)
+  const [phonePublic, setPhonePublic] = useState(false)
+
+  
+  useEffect(() => {
+    if (setting) {
+      setAddEvents(setting.authUpdateCalendar ?? false)
+      setPhonePublic(setting.phonePublic ?? false)
+      if (setting.theme) {
+        setTheme(setting.theme.toLowerCase()) 
+      }
+    }
+  }, [setting, setTheme])
+
+  const mutation = useMutation({
+    mutationFn: async (updates: Partial<typeof setting>) => {
+      const res = await fetch(
+        'https://csec-lab-portal-backend.onrender.com/api/user/users/355569f7-0930-4146-bfbf-b5644dc77427/settings',
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updates),
+        }
+      )
+      if (!res.ok) throw new Error('Failed to update setting')
+      return res.json()
+    },
+    onSuccess: (data) => {
+      setSetting(data)
+      if (data.theme) setTheme(data.theme.toLowerCase())
+    },
+  })
+
+  const toTitleCase = (str: string) =>
+    str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 
   const handleThemeChange = (value: string) => {
-    setTheme(value);
-  };
+    const formatted = toTitleCase(value)
+    if (formatted === "Light" || formatted === "Dark") {
+      mutation.mutate({ theme: formatted })
+    }
+  }
 
   const handleAddEventsToggle = (checked: boolean) => {
-    setAddEvents(checked);
-  };
+    setAddEvents(checked)
+    mutation.mutate({ authUpdateCalendar: checked })
+  }
 
   const handlePhonePublicToggle = (checked: boolean) => {
-    setPhonePublic(checked);
-  };
+    setPhonePublic(checked)
+    mutation.mutate({ phonePublic: checked })
+  }
 
   return (
     <div className="w-full flex justify-center px-2 sm:px-4 py-4">
@@ -66,7 +109,7 @@ export default function SettingsPage() {
             />
           </div>
 
-          <hr className="border-gray-300 dark:border-gray-600" />
+        <hr className="border-gray-300 dark:border-gray-600" />
 
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>

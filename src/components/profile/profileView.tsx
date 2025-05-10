@@ -4,7 +4,7 @@
 import { useState } from "react"
 import { User, Calendar, Clock, FileText, BookOpen, Edit, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import type { TabType } from "@/app/profile/page"
+import type { TabType } from "@/app/profilesto/page"
 
 interface ProfileViewProps {
   userData: any

@@ -70,11 +70,37 @@ export default function UserProfile() {
             </TabsContent>
 
             <TabsContent value="optional" className="mt-0">
-              <div className="text-center py-12 text-gray-500">Optional information section</div>
+              <div className="grid grid-cols-2 gap-x-8 gap-y-6"> 
+                <FormField label="University ID" value="ugr/30123/15" />
+                <FormField label="Instagram handle" value="@hena_man" />
+                <FormField label="Linkedin Account" value="https://linkedin.com/henokassefa/profile" />
+                <FormField label="Birth-Date" value="Mar 28 , 2002" />
+                <FormField label="Codeforce handle" value="https://codeforces/hena_bakos" />
+                <FormField label="cv" value="https://github.com/Henabakos/Admin-edstelar" />
+                <FormField label="Leetcode handle" value="https://leetcode/Hena_bakos" />
+                <FormField label="Joining Date" value="July 10, 2023" />
+                <FormField label="Short Bio" value="I am a full-stack developer and UI/UX designer with a strong background in Next.js, React, Tailwind CSS, Redux Toolkit, and ShadCN on the frontend, as well as Node.js, Express, Prisma, and databases like MongoDB & PostgreSQL on the backend. I have experience developing high-performance web applications, focusing on clean architecture, scalability, and modern UI/UX principles."/>
+                </div>
             </TabsContent>
 
             <TabsContent value="resources" className="mt-0">
-              <div className="text-center py-12 text-gray-500">Resources section</div>
+              <div className="grid grid-cols-2 gap-x-8 gap-y-6 -mt-2">
+                  <div ><p className="text-[#A2A1A8] mb-2">Resource Name</p>
+                    <p>Data science & AI challenges.</p>
+                    <p>Math-based programming problems.</p>
+                    <p>Cybersecurity & hacking challenges.</p>
+                    <p>Smart contract security challenges.</p>
+                    <p>CP contests for beginners & intermediates.</p>
+                    </div> 
+                 <div ><p className="text-[#A2A1A8] mb-2">Link</p> 
+                  <p>https://googlecodejam.com/challenges</p>
+                  <p>https://googlecodejam.com/challenges</p>
+                  <p>https://googlecodejam.com/challenges</p>
+                  <p>https://googlecodejam.com/challenges</p>
+                  <p>https://googlecodejam.com/challenges</p>
+
+                 </div>
+              </div>
             </TabsContent>
           </Tabs>
         </Card>

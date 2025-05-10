@@ -6,8 +6,6 @@ import { ProfileSidebar } from "@/components/profile/profileSidebar"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 import ProfileHeader from "@/components/profile/profileheader"
-import SidebarCard from "@/components/global/sidebar/sidebar.card"
-import Header from "@/components/global/header/header"
 
 export default function HeadsUpPage() {
   const [isEditing, setIsEditing] = useState(false)
@@ -47,17 +45,49 @@ export default function HeadsUpPage() {
 
   return (
     <div className="flex min-h-screen">
-      <aside className="w-[250px] hidden md:block">
+      {/* <aside className="w-[250px] hidden md:block">
         <SidebarCard />
-      </aside>
+      </aside> */}
 
       <div className="flex flex-col flex-1">
-        <header>
+        {/* <header>
           <Header />
-        </header>
+        </header> */}
 
-        <main className="flex-1 overflow-y-auto p-4 w-[1030px]">
-          <ProfileHeader onEdit={handleToggleEdit} user={undefined} />
+        <main className="flex-1 overflow-y-auto p-4 w-full">
+          <ProfileHeader onEdit={handleToggleEdit} user={{
+            id: "",
+            firstName: "",
+            middleName: null,
+            lastName: "",
+            gender: "Male",
+            email: "",
+            phone_number: "",
+            telegramUserName: null,
+            bio: null,
+            berthDate: null,
+            profileImageUrl: null,
+            clubStatus: "",
+            specialty: null,
+            cvUrl: null,
+            lastSeen: "",
+            roleId: "",
+            createdAt: "",
+            updatedAt: "",
+            Role: {
+              id: "",
+              name: ""
+            },
+            universityInfo: {
+              currentYear: 0,
+              universityId: "",
+              status: "",
+              expectedGraduationYear: 0,
+              major: ""
+            },
+            socialLinks: [],
+            resourceLinks: []
+          }}  />
 
           <div className="flex gap-6 mt-5">
             <ProfileSidebar activePage="headsup" user={undefined} />

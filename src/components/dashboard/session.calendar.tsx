@@ -166,7 +166,7 @@ export default function SessionCalendar() {
           />
         </div>
       </div>
-
+   <hr/>
       <div className="px-4 pb-4">
         {sessions.length === 0 ? (
           <div className="text-center text-muted-foreground py-4">No sessions available.</div>

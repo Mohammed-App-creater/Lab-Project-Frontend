@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import ProfileHeader from "@/components/profile/profileheader";
 import { ProfileSidebar } from "@/components/profile/profileSidebar";
 import ProfileContent from "@/components/profile/profilecontent";
-import { User, TabType } from "@/types/user";
+import { user as User, TabType } from "@/types/user";
 import { fetchUserProfile } from "@/api/user";
 
 export default function ProfilePage() {
