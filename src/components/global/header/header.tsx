@@ -12,10 +12,13 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import type { PublicUserDTO } from "@/types/user";
 import { useIsMobile } from "@/components/ui/use-mobile";
+import { Card } from "@/components/ui/card";
+import { format } from "date-fns";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -80,10 +83,53 @@ function Header({ onMenuClick }: HeaderProps) {
 
             <div className="flex items-center gap-2">
               {/* Bell Icon */}
-              <Button variant="outline" size="icon" className="relative p-2">
-                <HiOutlineBell className="h-6 w-6" />
-                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="relative p-2">
+                    <HiOutlineBell className="h-6 w-6" />
+                    <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80">
+                  <div className="p-2">
+                    <h4 className="font-medium mb-2">Notifications</h4>
+                    <div className="space-y-2">
+                      <Card className="p-3 border-l-4 border-l-blue-900">
+                        <div className="flex items-start gap-2">
+                          <div className="w-2 h-2 rounded-full bg-blue-900 mt-2"></div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="text-sm font-medium">New Message</p>
+                              <span className="text-xs text-muted-foreground">
+                                {format(new Date(), "MMM dd, h:mm a")}
+                              </span>
+                            </div>
+                            <p className="text-sm text-muted-foreground">You have a new message from John Doe</p>
+                          </div>
+                        </div>
+                      </Card>
+                      <Card className="p-3 border-l-4 border-l-green-600">
+                        <div className="flex items-start gap-2">
+                          <div className="w-2 h-2 rounded-full bg-green-600 mt-2"></div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="text-sm font-medium">Task Completed</p>
+                              <span className="text-xs text-muted-foreground">
+                                {format(new Date(), "MMM dd, h:mm a")}
+                              </span>
+                            </div>
+                            <p className="text-sm text-muted-foreground">Your task "Update Documentation" has been completed</p>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="justify-center text-sm text-muted-foreground">
+                    View all notifications
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {/* User Dropdown */}
               <DropdownMenu>
