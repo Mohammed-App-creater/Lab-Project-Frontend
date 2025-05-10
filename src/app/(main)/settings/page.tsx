@@ -72,7 +72,7 @@ export default function SettingsPage() {
 
   return (
     <div className="w-full flex justify-center px-2 sm:px-4 py-4">
-      <Card className="w-full max-w-lg rounded-lg shadow border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+      <Card className="w-full rounded-lg shadow border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>

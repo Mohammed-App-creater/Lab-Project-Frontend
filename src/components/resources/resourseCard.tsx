@@ -1,4 +1,5 @@
 import { ExternalLink } from "lucide-react";
+import { Card } from "../ui/card";
 
 interface ResourceCardProps {
   name: string;
@@ -7,7 +8,7 @@ interface ResourceCardProps {
 
 export default function ResourceCard({ name, url }: ResourceCardProps) {
   return (
-    <div className="p-3 sm:p-4 hover:bg-gray-50  dark:border-gray-700 transition-colors">
+    <Card className="p-3 sm:p-4 hover:bg-gray-50  dark:border-gray-700 transition-colors">
       <div className="flex items-start gap-3 dark:text-gray-500">
         <a
           href={url}
@@ -30,6 +31,6 @@ export default function ResourceCard({ name, url }: ResourceCardProps) {
           </a>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
