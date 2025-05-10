@@ -23,7 +23,7 @@ export default function DivisionCard({
   const showAddButton = title === "CPD";
 
   return (
-    <div className="mb-6 sm:mb-8">
+    <div className="mb-6 sm:mb-8 p-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-3">
         <div className="space-y-1">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
