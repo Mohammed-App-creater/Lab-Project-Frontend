@@ -1,12 +1,10 @@
 'use client'
 
-import { useSettingStore } from "@/Store/settingstore";
-import { UserData } from "@/types/user"
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useSettingStore } from "@/store/settingstore";
+import { user } from "@/types/user"
 
 interface RequiredInfoViewProps {
-  userData: UserData
+  userData: user
 }
 
 function FormField({ label, value }: { label: string; value: string }) {
@@ -25,25 +23,32 @@ export default function RequiredInfoView({ userData }: RequiredInfoViewProps) {
  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-      <FormField label="First Name" value={userData.firstName} />
-      <FormField label="Last Name" value={userData.lastName} />
+      <FormField label="First Name" value={userData?.firstName} />
+      <FormField label="Last Name" value={userData?.lastName || "N/A"} />
       <FormField
-        label="Mobile Number"
-        value={
-          setting?.phonePublic === false
-            ? '••••••••'
-            : userData.mobileNumber
-        }
+      label="Mobile Number"
+      value={
+        setting?.phonePublic === false
+        ? '••••••••'
+        : userData?.phone_number ? userData?.phone_number : "N/A"
+      }
       />
-      <FormField label="Email Address" value={userData.email} />
-      <FormField label="Date of Birth" value={userData.dateOfBirth} />
-      <FormField label="Github" value={userData.github} />
-      <FormField label="Gender" value={userData.gender} />
-      <FormField label="Telegram Handle" value={userData.telegramHandle} />
-      <FormField label="Expected Graduation Year" value={userData.expectedGraduationYear} />
-      <FormField label="Specialization" value={userData.specialization} />
-      <FormField label="Department" value={userData.department} />
-      <FormField label="Mentor" value={userData.mentor} />
+      <FormField label="Email Address" value={userData?.email || "N/A"} />
+      <FormField label="Date of Birth" value={userData?.berthDate || "N/A"} />
+      <FormField
+      label="Github"
+      value={
+        userData?.socialLinks?.find(
+        (socialLink) => socialLink?.socialLinkName === "github"
+        )?.socialLinkUrl || "N/A"
+      }
+      />
+      <FormField label="Gender" value={userData?.gender || "N/A"} />
+      <FormField label="Telegram Handle" value={userData?.telegramUserName || "N/A"} />
+      <FormField label="Expected Graduation Year" value={`${userData?.universityInfo?.expectedGraduationYear}` || "N/A"} />
+      <FormField label="Specialization" value={userData?.specialty || "N/A"} />
+      <FormField label="Department" value={userData?.universityInfo?.major || "N/A"} />
+      <FormField label="Mentor" value={   "N/A"} />
     </div>
   )
 }

@@ -1,4 +1,5 @@
-import type React from "react"
+import { LoadingSpinner } from "@/components/global/login/loading";
+import { ReactNode, Suspense } from "react";
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -6,14 +7,6 @@ export const metadata: Metadata = {
   description: "Login to the CSEC ASTU Portal",
 }
 
-export default function AuthLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
-  return children
-import { LoadingSpinner } from "@/components/global/login/loading";
-import { ReactNode, Suspense } from "react";
 
 interface props {
   children: ReactNode;

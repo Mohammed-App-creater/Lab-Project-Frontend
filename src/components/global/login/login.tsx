@@ -1,18 +1,16 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-
 import { useRouter } from "next/navigation";
-import  PageLoader  from "./pageLoader"
+import PageLoader from "./pageLoader";
+import { data as user } from "@/lib/types";
 
 export default function LoginPage() {
   const [remember, setRemember] = useState(true);
@@ -29,10 +27,11 @@ export default function LoginPage() {
   };
 
   const loginValidationSchema = Yup.object({
-    email: Yup.string().email("Invalid email address").required("Email is required"),
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Email is required"),
     password: Yup.string().required("Password is required"),
   });
-
 
   const loginFormik = useFormik<LoginValues>({
     initialValues: {
@@ -41,7 +40,7 @@ export default function LoginPage() {
       remember: false,
     },
     validationSchema: loginValidationSchema,
-    onSubmit: async (values, { setSubmitting }) => {
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
         setError("");
         setSubmitting(true);
@@ -62,9 +61,10 @@ export default function LoginPage() {
           throw new Error("Invalid credentials");
         }
 
-        const data: { accessToken: string; user: object } =
+        const data: { accessToken: string; user: user } =
           await response.json();
         localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("userRole", data.user.Role.name);
         localStorage.setItem("user", JSON.stringify(data.user));
         router.push("/dashboard");
         resetForm();
@@ -78,7 +78,6 @@ export default function LoginPage() {
       } finally {
         setIsPageLoading(false);
         setSubmitting(false);
-        
       }
     },
   });
@@ -97,17 +96,20 @@ export default function LoginPage() {
     };
   }, [loginFormik]);
 
- 
- 
   return (
-
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       {isPageLoading && <PageLoader fullPage={true} />}
       <div className="w-full max-w-md space-y-8">
         <div className="space-y-6">
           <div className="flex gap-7 items-center justify-center">
             <div className="relative flex">
-              <Image src="/Vector.svg" alt="Logo" width={40} height={40} className="h-10 w-10" />
+              <Image
+                src="/Vector.svg"
+                alt="Logo"
+                width={40}
+                height={40}
+                className="h-10 w-10"
+              />
               <Image
                 src="/Vector1.svg"
                 alt="Logo overlay"
@@ -147,7 +149,9 @@ export default function LoginPage() {
               onBlur={loginFormik.handleBlur}
             />
             {loginFormik.touched.email && loginFormik.errors.email && (
-              <span className="text-sm text-red-500">{loginFormik.errors.email}</span>
+              <span className="text-sm text-red-500">
+                {loginFormik.errors.email}
+              </span>
             )}
           </div>
 
@@ -174,7 +178,9 @@ export default function LoginPage() {
               </button>
             </div>
             {loginFormik.touched.password && loginFormik.errors.password && (
-              <span className="text-sm text-red-500">{loginFormik.errors.password}</span>
+              <span className="text-sm text-red-500">
+                {loginFormik.errors.password}
+              </span>
             )}
           </div>
 
