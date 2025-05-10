@@ -72,7 +72,7 @@ export default function SessionsList({ sessions }: SessionsListProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto">
       {sessions.map((session) => (
         <SessionCard
           key={session.id}

@@ -27,7 +27,7 @@ export default function Page() {
   if (isError) return <div>Failed to load sessions.</div>
 
   return (
-    <div className="m-3 border-[1.5px] p-3 rounded-2xl">
+    <div className="m-1 border-[1.5px] rounded-2xl">
       <div className="container mx-auto py-6 space-y-6">
         <div className="flex items-center justify-between">
           <div className="relative w-full max-w-sm">

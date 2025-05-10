@@ -12,7 +12,7 @@ export default function MemberPage() {
     ? localStorage.getItem("userRole")
     : "Member") as "VicePresident" | "President" | "SuperAdmin" | "DivisionHead" | "Coordinator" | "Member" | "Admin";
   return (
-    <div className="w-full min-h-screen p-4 md:p-6">
+    <div className="w-full min-h-screen">
       {/* Apply blur when modal is open */}
       <div className={`${showForm ? "blur-sm pointer-events-none select-none" : ""}`}>
         <MemberTable
