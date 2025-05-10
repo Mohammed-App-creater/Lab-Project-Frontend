@@ -18,11 +18,16 @@ interface MetricCardProps {
 }
 
 
-type DataType = {
+type dataType = {
   totalMembers: number;
   totalDivisions: number;
   attendanceRate: number;
   upcomingSessions: number;
+};
+
+type MetricCardData = {
+  data: dataType;
+  updateAt: string;
 };
 
 function MetricCard({
@@ -103,33 +108,33 @@ export default function MetricCards() {
           throw new Error("Failed to fetch summary data");
         }
 
-        const data: dataType = await response.json();
-        
+        const data: MetricCardData = await response.json();
+        console.log("Fetched data: -->", data);
         const metricsData = [
           {
             title: "Total Members",
-            value: data.totalMembers,
+            value: data.data.totalMembers,
             change: { value: 12, trend: "up" as const },
             icon: <Users className="h-5 w-5 text-indigo-600" />,
             lastUpdated: new Date().toLocaleDateString(),
           },
           {
             title: "Total Divisions",
-            value: data.totalDivisions,
+            value: data.data.totalDivisions,
             change: { value: 9, trend: "up" as const },
             icon: <Layers className="h-5 w-5 text-purple-600" />,
             lastUpdated: new Date().toLocaleDateString(),
           },
           {
             title: "Attendance Rate",
-            value: `${data.attendanceRate}%`,
+            value: `${data.data.attendanceRate}%`,
             change: { value: 4, trend: "down" as const },
             icon: <BarChart2 className="h-5 w-5 text-blue-600" />,
             lastUpdated: new Date().toLocaleDateString(),
           },
           {
             title: "Upcoming Sessions",
-            value: data.upcomingSessions,
+            value: data.data.upcomingSessions,
             change: { value: 15, trend: "up" as const },
             icon: <Calendar className="h-5 w-5 text-blue-600" />,
             lastUpdated: new Date().toLocaleDateString(),
@@ -170,7 +175,7 @@ export default function MetricCards() {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
-      {metricsArr.map((metric) => (
+      {metrics.map((metric) => (
         <MetricCard key={metric.title} {...metric} />
       ))}
     </div>
