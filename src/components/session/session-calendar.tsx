@@ -110,11 +110,7 @@ export function SessionCalendar({
 
   return (
     <Card
-      className={cn(
-        "relative overflow-auto hide-scrollbar",
-        "w-full md:w-[18vw] max-w-[95vw] sm:max-w-[600px] md:max-w-[700px] lg:max-w-[800px]",
-        className
-      )}
+      className={"relative overflow-auto hide-scrollbar w-full m max-w-[95vw] sm:max-w-[600px] md:max-w-[700px] lg:max-w-full"}
     >
       <CardHeader className="flex flex-row items-center space-y-0 pb-2 sm:pb-4  sm:px-6">
         <CardTitle className="text-base sm:text-xl">Session</CardTitle>

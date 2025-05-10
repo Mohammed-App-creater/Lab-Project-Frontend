@@ -6,7 +6,7 @@ import { ThemeProvider } from "next-themes";
 import ProtectedRoute from "@/components/protectedRoute";
 import { Suspense, useState } from "react";
 import { LoadingSpinner } from "@/components/global/login/loading";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet,  SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 
@@ -41,7 +41,7 @@ export default function MainLayout({
             </div>
 
           {/* Desktop Sidebar */}
-          <div className="hidden md:block pt-3 pl-3">
+          <div className="hidden md:block pt-3 pl-4 w-1/6 ">
             <SidebarCard />
           </div>
 

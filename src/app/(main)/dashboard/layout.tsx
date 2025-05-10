@@ -1,5 +1,4 @@
 export default function DashboardLayout({
-  children,
   EventCard,
   MetricCards,
   AttendanceOverview,
@@ -12,22 +11,19 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="w-full h-screen max-w-full ">
-      <div className="grid grid-cols-1 lg:grid-cols-4  gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
         {/* Left section - Main content */}
-        <div className="space-y-4 sm:space-y-6 lg:col-span-3">
+        <div className="space-y-4 sm:space-y-6 lg:col-span-8">
           {EventCard}
           {MetricCards}
           {AttendanceOverview}
         </div>
 
         {/* Right section - Calendar */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-4 ">
           {SessionCalendar}
         </div>
       </div>
-
-      {/* Optional children render */}
-      <div className="mt-6 sm:mt-8">{children}</div>
     </div>
   );
 }

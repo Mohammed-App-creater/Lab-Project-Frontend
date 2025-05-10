@@ -5,7 +5,6 @@ import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb";
 import { Users, Layers, Calendar, BarChart2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { data } from "@/lib/types";
 
 interface MetricCardProps {
   title: string;
@@ -19,11 +18,17 @@ interface MetricCardProps {
 }
 
 
+
 type dataType = {
   totalMembers: number;
   totalDivisions: number;
   attendanceRate: number;
   upcomingSessions: number;
+};
+
+type MetricCardData = {
+  data: dataType;
+  updateAt: string;
 };
 
 function MetricCard({
@@ -100,42 +105,40 @@ export default function MetricCards() {
           }
         );
 
-
         if (!response.ok) {
           throw new Error("Failed to fetch summary data");
         }
 
-
-        const data: {data: dataType, updateAt: data} = await response.json();
-        console.log("Fetched data:", data); // Log the fetched data
+        const data: MetricCardData = await response.json();
+        console.log("Fetched data: -->", data);
         const metricsData = [
           {
             title: "Total Members",
             value: data.data.totalMembers || 0,
             change: { value: 12, trend: "up" as const },
             icon: <Users className="h-5 w-5 text-indigo-600" />,
-            lastUpdated: responseData.updateAt,
+            lastUpdated: data.updateAt,
           },
           {
             title: "Total Divisions",
             value: data.data.totalDivisions,
             change: { value: 9, trend: "up" as const },
             icon: <Layers className="h-5 w-5 text-purple-600" />,
-            lastUpdated: responseData.updateAt,
+            lastUpdated: data.updateAt,
           },
           {
             title: "Attendance Rate",
-            value: `${data.attendanceRate.toFixed(1)}%`,
+            value: `${data.data.attendanceRate.toFixed(1)}%`,
             change: { value: 4, trend: "down" as const },
             icon: <BarChart2 className="h-5 w-5 text-blue-600" />,
-            lastUpdated: responseData.updateAt,
+            lastUpdated: data.updateAt,
           },
           {
             title: "Upcoming Sessions",
             value: data.data.upcomingSessions,
             change: { value: 15, trend: "up" as const },
             icon: <Calendar className="h-5 w-5 text-blue-600" />,
-            lastUpdated: responseData.updateAt,
+            lastUpdated: data.updateAt,
           },
         ];
         console.log("Processed metrics data:", metricsData); // Log the processed metrics data
