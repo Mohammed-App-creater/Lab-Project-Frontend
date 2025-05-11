@@ -1,4 +1,3 @@
-// stores/useUserStore.ts
 import { create } from "zustand";
 import { user } from "@/types/user";
 

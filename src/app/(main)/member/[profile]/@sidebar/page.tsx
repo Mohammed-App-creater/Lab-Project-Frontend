@@ -5,6 +5,5 @@ import { useUserStore } from "@/store/membersStore";
 export default function Sidebar() {
   const user = useUserStore((state) => state.user);
   if (!user) return null;
-
-  return <ProfileSidebar user={user} activePage="profile" />;
+  return <ProfileSidebar user={user} />;
 }
