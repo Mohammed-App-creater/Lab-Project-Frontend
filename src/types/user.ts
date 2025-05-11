@@ -51,3 +51,23 @@ export type resourceLinks = {
     createdAt: string;
     updatedAt: string;
 }
+
+export type AttendanceRecord = {
+    statues: string;
+    data: {
+        attendanceRate: number;
+        lastWeekAttendanceRate: number;
+        lastMonthAttendanceRate: number;
+        headsUp: number;
+        present: number;
+        absent: number;
+        updateAt: string;
+    };
+};
+
+export interface HeadsUpMessage {
+    id: string
+    type: string
+    body: string
+    sentAt: string
+  }

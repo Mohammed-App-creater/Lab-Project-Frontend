@@ -6,42 +6,73 @@ import { Button } from "@/components/ui/button"
 import { Calendar, BarChart2, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
-import { useParams } from "next/navigation"
-import { SidebarTabType, User } from "@/types/user"
+import { useParams,  usePathname } from "next/navigation"
+import { user } from "@/types/user"
 
 interface SidebarProps {
-  activePage: SidebarTabType
-  user: User
+  activePage: string
+  user: user
 }
 
 export function ProfileSidebar({ activePage, user }: SidebarProps) {
   const params = useParams()
   const memberId = params?.id || user.id
+  const currentPath = usePathname();
+  const condition = currentPath?.includes("/member/");
+  const route = ! condition ? currentPath : "/member/";
+  console.log("route", route)
+
+  // const navItems = [
+  //   {
+  //     icon: <Calendar className="h-5 w-5 mr-2" />,
+  //     label: "Profile",
+  //     href: `/profile/${memberId}`,
+  //     id: "profile",
+  //   },
+  //   {
+  //     icon: <Calendar className="h-5 w-5 mr-2" />,
+  //     label: "Attendance",
+  //     href: `/profile/${memberId}/attendance`,
+  //     id: "attendance",
+  //   },
+  //   {
+  //     icon: <BarChart2 className="h-5 w-5 mr-2" />,
+  //     label: "Progress",
+  //     href: `/profile/${memberId}/progress`,
+  //     id: "progress",
+  //   },
+  //   {
+  //     icon: <AlertCircle className="h-5 w-5 mr-2" />,
+  //     label: "Heads up!",
+  //     href: `${route}${condition ? `/${memberId}` : ""}/headsup`,
+  //     id: "headsup",
+  //   },
+  // ]
 
   const navItems = [
     {
       icon: <Calendar className="h-5 w-5 mr-2" />,
       label: "Profile",
-      href: `/profile/${memberId}`,
-      id: "profile" as SidebarTabType,
+      href: `${route}${condition ? `/${memberId}` : ""}`,
+      id: "profile",
     },
     {
       icon: <Calendar className="h-5 w-5 mr-2" />,
       label: "Attendance",
-      href: `/profile/${memberId}/attendance`,
-      id: "attendance" as SidebarTabType,
+      href: `${route}${condition ? `/${memberId}` : ""}/attendance`,
+      id: "attendance",
     },
     {
       icon: <BarChart2 className="h-5 w-5 mr-2" />,
       label: "Progress",
-      href: `/profile/${memberId}/progress`,
-      id: "progress" as SidebarTabType,
+      href: `${route}${condition ? `/${memberId}` : ""}/progress`,
+      id: "progress",
     },
     {
       icon: <AlertCircle className="h-5 w-5 mr-2" />,
       label: "Heads up!",
-      href: `/profile/${memberId}/headsup`,
-      id: "headsup" as SidebarTabType,
+      href: `${route}${condition ? `/${memberId}` : ""}/headsup`,
+      id: "headsup",
     },
   ]
 
