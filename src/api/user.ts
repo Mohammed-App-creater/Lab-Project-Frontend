@@ -1,5 +1,5 @@
 import api from "@/lib/axios";
-import { user, AttendanceRecord, HeadsUpMessage } from "@/types/user";
+import { user, AttendanceRecord, HeadsUpMessage, AttendanceRecordDataResponse } from "@/types/user";
 
 const API_BASE_URL = "https://csec-lab-portal-backend.onrender.com/api/user";
 
@@ -55,6 +55,24 @@ export const fetchHeadsUpMessages = (userId: string) => {
   ).then((res) => res.data as {"headsUps": HeadsUpMessage[]})
 }
 
+export const fetchUserAttendance = async (userId: string): Promise<AttendanceRecordDataResponse> => {
+  return await api
+    .post(
+      `api/attendance/user-all-attendance`,
+      {
+        userId: userId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
+    )
+    .then((res) => {
+      return res.data as AttendanceRecordDataResponse;
+    });
+};
 
 
 export const updateUserProfile = async (userId: string, data: Partial<user>): Promise<user> => {

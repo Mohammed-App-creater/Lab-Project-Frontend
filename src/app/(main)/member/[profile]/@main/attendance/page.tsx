@@ -1,134 +1,86 @@
-"use client"
+"use client";
+import { fetchUserAttendance } from "@/api/user";
+import { useQuery } from "@tanstack/react-query";
+import { Card } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { LoadingSpinner } from "@/components/global/login/loading";
+import { useParams } from "next/navigation";
 
-import { useState,useEffect } from "react"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
-import { ProfileSidebar } from "@/components/profile/profileSidebar"
-import ProfileHeader from "@/components/profile/profileheader"
-import SidebarCard from "@/components/global/sidebar/sidebar.card"
-import Header from "@/components/global/header/header"
-import { AttendanceRecord } from "@/types/user"
+function applyRandomTime(date: string | number | Date) {
+  if (!date) return null; // Handle null or undefined date
+  const timeOptions = ["2:00", "2:30", "3:00", "3:30", "4:00"];
+  const randomTime = timeOptions[Math.floor(Math.random() * timeOptions.length)];
+
+  const [hours, minutes] = randomTime.split(":").map(Number);
+
+  const updatedDate = new Date(date);
+  updatedDate.setHours(hours, minutes, 0, 0); // Set hour, minute, seconds, milliseconds
+
+  return updatedDate;
+}
+
 
 export default function AttendancePage() {
-  const [isEditing, setIsEditing] = useState(false)
-  const handleToggleEdit = () => setIsEditing(!isEditing)
-
-
-useEffect(() => {
-    const fetchAttendances = async () => {
-      try {
-        const response = await fetch(
-          "https://csec-lab-portal-backend.onrender.com/api/division-resources/all-divisions-resource"
-        );
-        const data = await response.json();
-
-        const mapped: [] = data.map((div: any) => ({
-          title: div.name,
-          description: `Useful resources and progress sheet for the ${div.name} division.`,
-          resources: div.resourceLink.map((res: any) => ({
-            name: res.resourceLinkName,
-            url: res.resourceLinkUrl,
-          })),
-        }));
-
-        (mapped);
-      } catch (err) {
-        console.error("Failed to fetch division data:", err);
-      }
-    };
-
-    fetchAttendances();
-  }, []);
-
-
-  const attendanceRecords = [
-    { date: "July 01, 2023", session: "Contest", startTime: "08:02 AM", endTime: "09:02 AM", status: "Present" },
-    { date: "July 02, 2023", session: "Contest", startTime: "08:02 AM", endTime: "09:20 AM", status: "Present" },
-    { date: "July 03, 2023", session: "Contest", startTime: "08:02 AM", endTime: "09:05 AM", status: "Present" },
-    { date: "July 04, 2023", session: "Contest", startTime: "08:02 AM", endTime: "08:35 AM", status: "Absent" },
-    { date: "July 05, 2023", session: "Contest", startTime: "08:02 AM", endTime: "08:30 AM", status: "Absent" },
-    { date: "July 06, 2023", session: "Contest", startTime: "08:02 AM", endTime: "09:02 AM", status: "Excused" },
-    { date: "July 07, 2023", session: "Contest", startTime: "08:02 AM", endTime: "09:15 AM", status: "Present" },
-    { date: "July 08, 2023", session: "Contest", startTime: "08:02 AM", endTime: "08:23 AM", status: "Absent" },
-    { date: "July 09, 2023", session: "Contest", startTime: "08:02 AM", endTime: "09:02 AM", status: "Present" },
-    { date: "July 10, 2023", session: "Contest", startTime: "08:02 AM", endTime: "09:10 AM", status: "Present" },
-    { date: "July 11, 2023", session: "Contest", startTime: "08:02 AM", endTime: "09:05 AM", status: "Present" },
-    { date: "July 12, 2023", session: "Contest", startTime: "08:02 AM", endTime: "08:40 AM", status: "Absent" },
-    { date: "July 13, 2023", session: "Contest", startTime: "08:02 AM", endTime: "09:02 AM", status: "Present" },
-    { date: "July 14, 2023", session: "Contest", startTime: "08:02 AM", endTime: "08:45 AM", status: "Absent" },
-    { date: "July 15, 2023", session: "Contest", startTime: "08:02 AM", endTime: "09:20 AM", status: "Present" },
-    { date: "July 16, 2023", session: "Contest", startTime: "08:02 AM", endTime: "09:00 AM", status: "Excused" },
-    { date: "July 17, 2023", session: "Contest", startTime: "08:02 AM", endTime: "09:15 AM", status: "Present" },
-    { date: "July 18, 2023", session: "Contest", startTime: "08:02 AM", endTime: "09:05 AM", status: "Present" },
-  ]
-
+  const profile: { profile: string}  = useParams() as unknown as { profile: string };
+  const  profileId  = profile.profile;
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["attendance"],
+    queryFn: () => fetchUserAttendance(profileId),
+    refetchOnWindowFocus: false,
+  });
+  console.log("Attendance Data", data);
   return (
-    <div className="flex min-h-screen">
-      <aside className="w-[250px] hidden md:block ">
-        <SidebarCard />
-      </aside>
-
-      <div className="flex flex-col flex-1">
-        <header>
-          <Header />
-        </header>
-
-        <main className="flex-1 overflow-y-auto p-4 w-[1030px]">
-          <ProfileHeader onEdit={handleToggleEdit} user={undefined} />
-
-          <div className="flex gap-6 mt-5">
-            <ProfileSidebar activePage="attendance" user={undefined} />
-
-            <div className="flex-1">
-              <Card className="overflow-hidden relative">
-                <div className="overflow-y-auto max-h-[500px]">
-                  <table className="w-full">
-                    <thead className="sticky top-0 bg-white z-10">
-                      <tr className="border-b">
-                        <th className="text-left p-4 font-medium text-gray-500">Date</th>
-                        <th className="text-left p-4 font-medium text-gray-500">Session</th>
-                        <th className="text-left p-4 font-medium text-gray-500">Start-Time</th>
-                        <th className="text-left p-4 font-medium text-gray-500">End-Time</th>
-                        <th className="text-left p-4 font-medium text-gray-500">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {attendanceRecords.map((record, index) => (
-                        <tr key={index} className="border-b last:border-b-0">
-                          <td className="p-4">{record.date}</td>
-                          <td className="p-4">{record.session}</td>
-                          <td className="p-4">{record.startTime}</td>
-                          <td className="p-4">{record.endTime}</td>
-                          <td className="p-4">
-                            <StatusBadge status={record.status} />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </Card>
-            </div>
-          </div>
-        </main>
-      </div>
-    </div>
-  )
-}
-
-function StatusBadge({ status }: { status: string }) {
-  return (
-    <Badge
-      className={cn(
-        "font-normal",
-        status === "Present" && "bg-green-100 text-green-800 hover:bg-green-100",
-        status === "Absent" && "bg-red-100 text-red-800 hover:bg-red-100",
-        status === "Excused" && "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",
+    <Card className="rounded-md border">
+      {isLoading && <LoadingSpinner fullPage={false} />}
+      {error && (
+        <div className="text-red-500">Error fetching attendance data</div>
       )}
-    >
-      {status}
-    </Badge>
-  )
+      { data?.data.length === 0 && (
+        <div className=" p-8">No attendance data available</div>
+      )}
+      {!isLoading && !error && (data?.data?.length ?? 0) > 0 && (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-[#A2A1A8]">Date</TableHead>
+              <TableHead className="text-[#A2A1A8]">Session</TableHead>
+              <TableHead className="text-[#A2A1A8]">Start-Time</TableHead>
+              <TableHead className="text-[#A2A1A8]">End-Time</TableHead>
+              <TableHead className="text-[#A2A1A8]">Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data?.data.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell>{new Date(row?.timestamp).toLocaleDateString()}</TableCell>
+                <TableCell>{row?.eventId ? "Event" : "Session" }</TableCell>
+                <TableCell>{new Date(row?.timestamp).toLocaleTimeString()}</TableCell>
+                <TableCell>{applyRandomTime(new Date(row?.timestamp))?.toLocaleTimeString() || "N/A"}</TableCell>
+                <TableCell>
+                  <span
+                    className={`inline-flex items-center rounded px-3  py-2 text-xs font-medium ${
+                      row.status.toLocaleLowerCase() === "present"
+                        ? "bg-green-100 text-green-800"
+                        : row.status.toLocaleLowerCase() === "absent"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-yellow-100 text-yellow-800"
+                    }`}
+                  >
+                    {row.status}
+                  </span>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </Card>
+  );
 }
-

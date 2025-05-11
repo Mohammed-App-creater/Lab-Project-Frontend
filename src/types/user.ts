@@ -65,6 +65,20 @@ export type AttendanceRecord = {
     };
 };
 
+export type AttendanceRecordData = {
+    id: string;
+    userId: string;
+    sessionId: string | null;
+    eventId: string;
+    status: "PRESENT" | "ABSENT" | "EXCUSED" | string; // Add other possible statuses if known
+    timestamp: string;
+    headsUpId: string | null;
+    createdAt: string;
+    updatedAt: string;
+};
+export type AttendanceRecordDataResponse = {
+    data: AttendanceRecordData[];
+}
 export interface HeadsUpMessage {
     id: string
     type: string
