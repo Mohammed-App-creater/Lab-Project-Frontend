@@ -47,10 +47,10 @@ function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <header className="w-full">
-      <div className=" px-4 mx-auto  py-3">
+      <div className="px-4 mx-auto py-3 md:py-3">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           {/* Left - Menu button and Greeting */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 md:ml-0 ml-12">
             <div>
               <h1 className="text-xl font-semibold">
                 Hello {userData?.firstName} 👋🏻
