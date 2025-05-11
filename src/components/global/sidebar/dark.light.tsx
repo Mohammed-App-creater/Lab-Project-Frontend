@@ -34,7 +34,7 @@ export default function DarkLight() {
           onClick={() => setTheme("light")}
           variant="default"
           size="icon"
-          className="bg-blue-900 hover:bg-blue-800 h-10 w-10 md:w-auto md:px-3"
+          className="bg-blue-900 hover:bg-blue-800 dark:bg-white dark:hover:bg-blue-200 h-10 w-10 md:w-auto md:px-3"
         >
           <FiSun className="w-4 h-4" />
           <span className="hidden md:inline ml-2">Light</span>
