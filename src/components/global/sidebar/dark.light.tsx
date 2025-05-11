@@ -1,55 +1,39 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { GoMoon } from "react-icons/go";
 import { FiSun } from 'react-icons/fi';
 import { Button } from '@/components/ui/button';
+import { useTheme } from 'next-themes';
 
 export default function DarkLight() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-
-  useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    if (storedTheme) {
-      setTheme(storedTheme === "dark" ? "dark" : "light");
-    } else {
-      const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-      setTheme(prefersDark ? "dark" : "light");
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("theme", theme);
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [theme]);
+  const { theme, setTheme } = useTheme();
 
   return (
-      <div className="flex flex-col md:flex-row items-center justify-center gap-2">
-        {/* Light Button */}
-        <Button
-          onClick={() => setTheme("light")}
-          variant="default"
-          size="icon"
-          className="bg-blue-900 hover:bg-blue-800 dark:bg-white dark:hover:bg-blue-200 h-10 w-10 md:w-auto md:px-3"
-        >
-          <FiSun className="w-4 h-4" />
-          <span className="hidden md:inline ml-2">Light</span>
-        </Button>
+    <div className="flex items-center justify-center gap-3 w-full px-3 py-4">
+      {/* Light Button */}
+      <Button
+        onClick={() => setTheme("light")}
+        variant="default"
+        size="sm"
+        className={`rounded-md flex-1 bg-blue-900 hover:bg-blue-800 dark:bg-white dark:hover:bg-blue-200 h-10 
+          ${theme === 'light' ? 'ring-2 ring-blue-500' : ''}`}
+      >
+        <FiSun className="w-4 h-4 mr-0 min-[901px]:mr-2" />
+        <span className="hidden min-[901px]:!flex">Light</span>
+      </Button>
 
-        {/* Dark Button */}
-        <Button
-          onClick={() => setTheme("dark")}
-          variant="ghost"
-          size="icon"
-          className="bg-[#A2A1A80D] h-10 w-10 md:w-auto md:px-3"
-        >
-          <GoMoon className="w-4 h-4" />
-          <span className="hidden md:inline ml-2">Dark</span>
-        </Button>
-      </div>
+      {/* Dark Button */}
+      <Button
+        onClick={() => setTheme("dark")}
+        variant="ghost"
+        size="sm"
+        className={`rounded-md flex-1 bg-[#A2A1A80D] h-10 hover:bg-[#A2A1A81A]
+          ${theme === 'dark' ? 'ring-2 ring-blue-500' : ''}`}
+      >
+        <GoMoon className="w-4 h-4 mr-0 min-[901px]:mr-2" />
+        <span className="hidden min-[901px]:!flex">Dark</span>
+      </Button>
+    </div>
   );
 }

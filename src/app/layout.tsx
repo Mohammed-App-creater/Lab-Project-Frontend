@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { ReactQueryProvider } from "@/lib/react-query-provider";
 import { LoadingSpinner } from "@/components/global/login/loading";
 import { Toaster } from "sonner";
-
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +21,6 @@ const lexend = Lexend({
   variable: "--font-lexend",
 });
 
-
 export const metadata: Metadata = {
   title: "CSEC ASTU Portal",
   description: "Computer Science and Engineering Club at Adama Science and Technology University",
@@ -32,20 +31,24 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-
-
   return (
-    
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${lexend.variable} antialiased min-h-screen`}
       >
-        <ReactQueryProvider>
-          <Suspense fallback={<LoadingSpinner fullPage={true} />}>
-          {children}
-        </Suspense>
-        <Toaster richColors position="top-right" />
-        </ReactQueryProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ReactQueryProvider>
+            <Suspense fallback={<LoadingSpinner fullPage={true} />}>
+              {children}
+            </Suspense>
+            <Toaster richColors position="top-right" />
+          </ReactQueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
