@@ -11,7 +11,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
       if (token && (await validateToken(token))) {
-        console.log('Token:', await validateToken(token));
         setIsAuthenticated(true);
       } else {
         const newToken = await refreshToken();

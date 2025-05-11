@@ -110,7 +110,6 @@ export default function MetricCards() {
         }
 
         const data: MetricCardData = await response.json();
-        console.log("Fetched data: -->", data);
         const metricsData = [
           {
             title: "Total Members",
@@ -141,9 +140,7 @@ export default function MetricCards() {
             lastUpdated: data.updateAt,
           },
         ];
-        console.log("Processed metrics data:", metricsData); // Log the processed metrics data
         setMetrics(metricsData);
-        console.log(metricsData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load metrics");
         console.error("Error fetching metrics:", err);
