@@ -51,16 +51,6 @@ function Header({ onMenuClick }: HeaderProps) {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           {/* Left - Menu button and Greeting */}
           <div className="flex items-center gap-3">
-            {isMobile && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onMenuClick}
-                className="md:hidden">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            )}
             <div>
               <h1 className="text-xl font-semibold">
                 Hello {userData?.firstName} 👋🏻

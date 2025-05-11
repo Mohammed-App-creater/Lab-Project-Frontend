@@ -6,7 +6,7 @@ import { ThemeProvider } from "next-themes";
 import ProtectedRoute from "@/components/protectedRoute";
 import { Suspense, useState } from "react";
 import { LoadingSpinner } from "@/components/global/login/loading";
-import { Sheet,  SheetTrigger } from "@/components/ui/sheet";
+import { Sheet,  SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 
@@ -34,9 +34,9 @@ export default function MainLayout({
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <div>
-                <SidebarCard />
-                </div>
+                <SheetContent side="left" className="p-0 w-[280px]">
+                  <SidebarCard onClose={() => setIsSidebarOpen(false)} />
+                </SheetContent>
               </Sheet>
             </div>
 
@@ -48,7 +48,7 @@ export default function MainLayout({
           {/* Main Content */}
           <div className="flex-1 min-h-screen flex flex-col transition-all duration-300">
             {/* Header */}
-            <Header onMenuClick={toggleSidebar} />
+            <Header />
 
             {/* Main Content Area */}
             <main className="flex-1 p-2 md:p-3 lg:p-4">

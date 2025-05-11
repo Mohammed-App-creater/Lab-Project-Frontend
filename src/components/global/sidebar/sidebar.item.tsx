@@ -6,8 +6,9 @@ import { MdOutlineAdminPanelSettings, MdOutlineDashboard } from 'react-icons/md'
 import { LuCalendarCheck, LuClock10 } from "react-icons/lu";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { IoFolderOutline } from "react-icons/io5";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from 'next/image';
+import { useState } from 'react';
 
 interface SidebarItemProps {
   onClose?: () => void;
@@ -22,6 +23,8 @@ import {
 
 function SidebarItem({ onClose }: SidebarItemProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [loadingItem, setLoadingItem] = useState<string | null>(null);
 
   const isActive = (path: string) => pathname === path;
 
@@ -73,9 +76,15 @@ function SidebarItem({ onClose }: SidebarItemProps) {
     },
   ];
 
-  const handleClick = () => {
+  const handleClick = async (href: string) => {
+    setLoadingItem(href);
     if (onClose) {
       onClose();
+    }
+    try {
+      await router.push(href);
+    } finally {
+      setLoadingItem(null);
     }
   };
 
@@ -98,19 +107,23 @@ function SidebarItem({ onClose }: SidebarItemProps) {
             {menuItems.map((item) => (
               <Tooltip key={item.href}>
                 <TooltipTrigger asChild>
-                  <Link
-                    href={item.href}
+                  <button
+                    onClick={() => handleClick(item.href)}
                     className={cn(
-                      "flex items-center px-3 py-2 transition-colors duration-200",
+                      "w-full flex items-center px-3 py-2 transition-colors duration-200",
                       "hover:bg-[#0030870D] hover:text-blue-700 dark:hover:bg-blue-900/20",
                       isActive(item.href)
                         ? "text-blue-700 bg-[#0030870D] border-l-3 border-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
                         : "text-gray-700 dark:text-gray-300"
                     )}
                   >
-                    {item.icon}
+                    {loadingItem === item.href ? (
+                      <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      item.icon
+                    )}
                     <span className="ml-3 text-[15px] font-medium">{item.label}</span>
-                  </Link>
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="md:hidden">
                   {item.label}
