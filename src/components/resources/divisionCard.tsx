@@ -26,10 +26,10 @@ export default function DivisionCard({
     <div className="mb-6 sm:mb-8 p-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-3">
         <div className="space-y-1">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+          <h2 className="text-lg sm:text-xl font-semibold text-foreground">
             {title}
           </h2>
-          <p className="text-sm text-gray-500 max-w-2xl">{description}</p>
+          <p className="text-sm text-muted-foreground max-w-2xl">{description}</p>
         </div>
         {showAddButton && (
           <Button
@@ -42,22 +42,22 @@ export default function DivisionCard({
         )}
       </div>
 
-      <div className="border rounded-lg bg-white shadow-sm overflow-hidden">
+      <div className="border rounded-lg bg-card shadow-sm overflow-hidden">
         <div
-          className="p-3 sm:p-4 flex justify-between items-center cursor-pointer border-b hover:bg-gray-50 transition-colors"
+          className="p-3 sm:p-4 flex justify-between items-center cursor-pointer border-b hover:bg-accent/50 transition-colors"
           onClick={() => setIsOpen(!isOpen)}>
-          <h3 className="font-medium text-gray-900 dark:text-white">
+          <h3 className="font-medium text-foreground">
             Resources({resources.length})
           </h3>
           {isOpen ? (
-            <ChevronUp className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+            <ChevronUp className="h-5 w-5 text-muted-foreground" />
           ) : (
-            <ChevronDown className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+            <ChevronDown className="h-5 w-5 text-muted-foreground" />
           )}
         </div>
 
         {isOpen && (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-border">
             {resources.length > 0 ? (
               resources.map((resource, index) => (
                 <ResourceCard
@@ -67,7 +67,7 @@ export default function DivisionCard({
                 />
               ))
             ) : (
-              <div className="py-4 px-4 text-sm text-gray-500 text-center dark:text-gray-400">
+              <div className="py-4 px-4 text-sm text-muted-foreground text-center">
                 No resources added yet.
               </div>
             )}
