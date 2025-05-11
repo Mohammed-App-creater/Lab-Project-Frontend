@@ -10,27 +10,29 @@ export default function DarkLight() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center gap-2">
+    <div className="flex items-center justify-center gap-3 w-full px-3 py-4">
       {/* Light Button */}
       <Button
         onClick={() => setTheme("light")}
         variant="default"
-        size="icon"
-        className="bg-blue-900 hover:bg-blue-800 dark:bg-white dark:hover:bg-blue-200 h-10 w-10 md:w-auto md:px-3"
+        size="sm"
+        className={`rounded-md flex-1 bg-blue-900 hover:bg-blue-800 dark:bg-white dark:hover:bg-blue-200 h-10 
+          ${theme === 'light' ? 'ring-2 ring-blue-500' : ''}`}
       >
-        <FiSun className="w-4 h-4" />
-        <span className="hidden md:inline ml-2">Light</span>
+        <FiSun className="w-4 h-4 mr-0 min-[901px]:mr-2" />
+        <span className="hidden min-[901px]:!flex">Light</span>
       </Button>
 
       {/* Dark Button */}
       <Button
         onClick={() => setTheme("dark")}
         variant="ghost"
-        size="icon"
-        className="bg-[#A2A1A80D] h-10 w-10 md:w-auto md:px-3"
+        size="sm"
+        className={`rounded-md flex-1 bg-[#A2A1A80D] h-10 hover:bg-[#A2A1A81A]
+          ${theme === 'dark' ? 'ring-2 ring-blue-500' : ''}`}
       >
-        <GoMoon className="w-4 h-4" />
-        <span className="hidden md:inline ml-2">Dark</span>
+        <GoMoon className="w-4 h-4 mr-0 min-[901px]:mr-2" />
+        <span className="hidden min-[901px]:!flex">Dark</span>
       </Button>
     </div>
   );
