@@ -45,7 +45,7 @@ export default function MainLayout({
         </div>
 
         {/* Desktop Sidebar */}
-        <div className="hidden md:block pt-3 pl-4 w-1/6 ">
+        <div className="hidden md:block pt-3 pl-4 w-1/6 h-screen sticky top-0">
           <SidebarCard />
         </div>
 

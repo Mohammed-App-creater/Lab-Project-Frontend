@@ -110,7 +110,7 @@ function SidebarItem({ onClose }: SidebarItemProps) {
                   <button
                     onClick={() => handleClick(item.href)}
                     className={cn(
-                      "w-full transition-colors duration-200 rounded-sm relative",
+                      "w-full transition-colors duration-200 rounded-none",
                       "hover:bg-[#0030870D] hover:text-blue-700 dark:hover:bg-blue-900/20",
                       isActive(item.href)
                         ? "text-blue-700 bg-[#0030870D] border-l-2 border-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
