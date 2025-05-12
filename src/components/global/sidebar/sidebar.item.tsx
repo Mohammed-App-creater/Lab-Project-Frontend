@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { FiLayers, FiSettings, FiUsers } from 'react-icons/fi';
-import { MdOutlineAdminPanelSettings, MdOutlineDashboard } from 'react-icons/md';
+import { MdOutlineDashboard } from 'react-icons/md';
 import { LuCalendarCheck, LuClock10 } from "react-icons/lu";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { IoFolderOutline } from "react-icons/io5";
+import { LuSettings2 } from "react-icons/lu";
 import { usePathname, useRouter } from "next/navigation";
 import Image from 'next/image';
 import { useState } from 'react';
@@ -66,7 +67,7 @@ function SidebarItem({ onClose }: SidebarItemProps) {
     },
     {
       href: "/administration",
-      icon: <MdOutlineAdminPanelSettings className="w-5 h-5" />,
+      icon: <LuSettings2 className="w-5 h-5" />,
       label: "Administration",
     },
     {
@@ -95,7 +96,7 @@ function SidebarItem({ onClose }: SidebarItemProps) {
         <div className="mb-8 px-4">
           <Link href="/" className="flex items-center">
             <div className="text-blue-700 font-bold text-xl flex items-center">
-              <Image className="w-10 h-10 -ml-3 rounded-full" width={30} height={20} src="/images/logo.jpg" alt="Logo Part 2" />
+              <Image className="w-10 h-10 -ml-3 rounded-full" width={30} height={20} src="/images/logo2.jpg" alt="Logo Part 2" />
               <h1 className="font-bold ml-4 hidden min-[901px]:!flex">CSEC ASTU</h1>
             </div>
           </Link>
@@ -111,9 +112,9 @@ function SidebarItem({ onClose }: SidebarItemProps) {
                     onClick={() => handleClick(item.href)}
                     className={cn(
                       "w-full transition-colors duration-200 rounded-none",
-                      "hover:bg-[#0030870D] hover:text-blue-700 dark:hover:bg-blue-900/20",
+                      "hover:bg-[#0030870D] hover:text-blue-700 hover:border-blue-700 dark:hover:bg-blue-900/20 dark:hover:border-blue-400 hover:rounded-r-sm",
                       isActive(item.href)
-                        ? "text-blue-700 bg-[#0030870D] border-l-2 border-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                        ? "text-blue-700 bg-[#0030870D] border-l-2 border-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded-r-sm"
                         : "text-gray-700 dark:text-gray-300 border-l-2 border-transparent"
                     )}
                   >

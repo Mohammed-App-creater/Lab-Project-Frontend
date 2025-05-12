@@ -4,7 +4,15 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import type { SessionTimeSlot } from "@/lib/types";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PageLoader from "@/components/global/login/pageLoader";
 
 // Define the attendance record type
@@ -73,17 +81,23 @@ const Attendance = ({
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const recordsPerPage = 10;
 
-
-  const [selectedHeadsUpType, setSelectedHeadsUpType] = useState<string | null>(null);
+  const [selectedHeadsUpType, setSelectedHeadsUpType] = useState<string | null>(
+    null
+  );
 
   // Fetch attendance data using React Query
-  const { data: attendanceData, refetch, isLoading } = useQuery<AttendanceRecord[]>({
+  const {
+    data: attendanceData,
+    refetch,
+    isLoading,
+  } = useQuery<AttendanceRecord[]>({
     queryKey: ["attendance", sessionId, groupId],
     queryFn: () => fetchAttendance(sessionId, groupId),
   });
 
   useEffect(() => {
     if (attendanceData && attendanceData.length === 0) {
+      console.log("No attendance data found, creating session attendance...");
       createAttendanceMutation.mutate();
     } else if (attendanceData) {
       console.log("Attendance data fetched:", attendanceData);
@@ -127,7 +141,6 @@ const Attendance = ({
 
   // Dummy member names mapping to user IDs
 
-
   // Handle status change (Present/Absent)
   const handleStatusChange = (id: string, status: "PRESENT" | "ABSENT") => {
     const updatedAttendance = localAttendance.map((record) =>
@@ -162,9 +175,7 @@ const Attendance = ({
         record.user.firstName
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
-        record.user.lastName
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
+        record.user.lastName.toLowerCase().includes(searchTerm.toLowerCase())
       );
     });
 
@@ -269,65 +280,75 @@ const Attendance = ({
 
       {/* Attendance Table */}
       <div className="overflow-x-auto rounded-lg border bg-white">
-        <div className="min-w-[700px]">
-          <div className="grid grid-cols-2 sm:grid-cols-3 p-4 font-semibold border-b">
-            <div>Member Name</div>
-            <div>Attendance</div>
-            <div className="flex justify-end pr-6 hidden sm:block">Excused</div>
-          </div>
-          {paginatedData.map((record) => (
-            <div
-              key={record.id}
-              className="grid grid-cols-2 sm:grid-cols-3 p-4 border-b items-end"
-            >
-              <div className="flex items-center gap-2">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage
-                    src={record.user.profileImageUrl ?? ""}
-                    alt={`${record.user.firstName} ${record.user.lastName}`}
-                  />
-                  <AvatarFallback>
-                    {record.user.firstName?.charAt(0) || "UN"}
-                  </AvatarFallback>
-                </Avatar>
-                <span>
-                  {`${record.user.firstName} ${record.user.lastName}` || "Unknown Member"}
-                </span>
-                {record.headsUpId && (
-                  <span className="ml-2 text-blue-600">⚠️</span>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleStatusChange(record.id, "PRESENT")}
-                  className={`px-4 py-1 rounded-4xl ${record.status === "PRESENT"
-                      ? "bg-[#3FC28A] text-white"
-                      : "dark:bg-gray-800 border border-gray-300"
-                    }`}
-                >
-                  Present
-                </button>
-                <button
-                  onClick={() => handleStatusChange(record.id, "ABSENT")}
-                  className={`px-4 rounded-4xl ${record.status === "ABSENT"
-                      ? "bg-red-500 text-white"
-                      : "dark:bg-gray-800 border border-gray-300"
-                    }`}
-                >
-                  Absent
-                </button>
-              </div>
-              <div className="flex justify-end hidden sm:flex">
-                <button
-                  onClick={() => setShowHeadsUpPopup(record.id)}
-                  className="bg-[#003087] text-white px-4 py-2 rounded-lg"
-                >
-                  Heads Up
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+        <Table className="min-w-[700px]">
+          <TableHeader>
+            <TableRow>
+              <TableHead>Member Name</TableHead>
+              <TableHead>Attendance</TableHead>
+              <TableHead className="text-right hidden sm:table-cell">
+                Excused
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedData.map((record) => (
+              <TableRow key={record.id}>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage
+                        src={record.user.profileImageUrl ?? ""}
+                        alt={`${record.user.firstName} ${record.user.lastName}`}
+                      />
+                      <AvatarFallback>
+                        {record.user.firstName?.charAt(0) || "UN"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span>
+                      {`${record.user.firstName} ${record.user.lastName}` ||
+                        "Unknown Member"}
+                    </span>
+                    {record.headsUpId && (
+                      <span className="ml-2 text-blue-600">⚠️</span>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleStatusChange(record.id, "PRESENT")}
+                      className={`px-4 py-1 rounded-4xl ${
+                        record.status === "PRESENT"
+                          ? "bg-[#3FC28A] text-white"
+                          : "dark:bg-gray-800 border border-gray-300"
+                      }`}
+                    >
+                      Present
+                    </button>
+                    <button
+                      onClick={() => handleStatusChange(record.id, "ABSENT")}
+                      className={`px-4 rounded-4xl ${
+                        record.status === "ABSENT"
+                          ? "bg-red-500 text-white"
+                          : "dark:bg-gray-800 border border-gray-300"
+                      }`}
+                    >
+                      Absent
+                    </button>
+                  </div>
+                </TableCell>
+                <TableCell className="text-right hidden sm:table-cell">
+                  <button
+                    onClick={() => setShowHeadsUpPopup(record.id)}
+                    className="bg-[#003087] text-white px-4 py-2 rounded-lg"
+                  >
+                    Heads Up
+                  </button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
 
       {/* Pagination */}
@@ -353,8 +374,9 @@ const Attendance = ({
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`px-4 py-2 border rounded ${currentPage === page ? "bg-blue-600 text-white" : ""
-                }`}
+              className={`px-4 py-2 border rounded ${
+                currentPage === page ? "bg-blue-600 text-white" : ""
+              }`}
             >
               {page}
             </button>
@@ -371,14 +393,27 @@ const Attendance = ({
         </div>
       </div>
 
-      {isLoading ? (<PageLoader fullPage={false} />) : (
+      {isLoading ? (
+        <PageLoader fullPage={false} />
+      ) : (
         <>
           {showHeadsUpPopup && (
             <div className="fixed inset-0 bg-[#00000089] bg-opacity-50 flex items-center  justify-center">
               <div className=" flex flex-col gap-4  p-6 rounded-2xl bg-white dark:bg-gray-800 w-1/5">
-                <h2 className="text-lg dark:text-white font-bold mb-4">Heads Up</h2>
+                <h2 className="text-lg dark:text-white font-bold mb-4">
+                  Heads Up
+                </h2>
                 <div className="mb-4">
-                  <select onChange={(e) => { setSelectedHeadsUpType(e.target.value) }} className={`w-full border ${selectedHeadsUpType || selectedHeadsUpType === "" ? "" : "text-gray-500"} rounded-lg p-3`} >
+                  <select
+                    onChange={(e) => {
+                      setSelectedHeadsUpType(e.target.value);
+                    }}
+                    className={`w-full border ${
+                      selectedHeadsUpType || selectedHeadsUpType === ""
+                        ? ""
+                        : "text-gray-500"
+                    } rounded-lg p-3`}
+                  >
                     <option className="" value="" disabled selected>
                       Select Type
                     </option>
@@ -413,7 +448,9 @@ const Attendance = ({
                 </div>
               </div>
             </div>
-          )} </>)}
+          )}{" "}
+        </>
+      )}
 
       {/* Save Toast */}
       {showSaveToast && (

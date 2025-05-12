@@ -14,7 +14,7 @@ function SidebarCard({ onClose }: SidebarCardProps) {
       <div className="flex-1 overflow-y-auto py-2 px-3">
         <SidebarItem onClose={onClose} />
       </div>
-      <div className="mt-auto border-t border-gray-200 dark:border-gray-800">
+      <div className="mt-auto border-gray-200 dark:border-gray-800">
         <DarkLight />
       </div>
     </Card>
