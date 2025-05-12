@@ -4,11 +4,11 @@
 import { useEffect } from "react";
 import { fetchUserProfile } from "@/api/user";
 import { useUserStore } from "@/store/userprofileStore";
-import { user } from "@/types/user";
+import { user } from "../../types/user";
 
 export const UserInitializer = ({ userId }: { userId: string }) => {
   const setUser = useUserStore((state) => state.setUser);
-  
+
   useEffect(() => {
     const init = async () => {
       try {

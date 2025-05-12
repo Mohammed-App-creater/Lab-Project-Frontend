@@ -1,6 +1,5 @@
 
 import TeamManagementUI from '@/components/administration/team-management'
-import React from 'react'
 
 function page() {
   return (

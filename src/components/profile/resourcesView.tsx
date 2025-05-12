@@ -1,15 +1,15 @@
-'use client'
+"use client";
 
-import { ExternalLink } from 'lucide-react'
-import { resourceLinks } from '@/types/user'
+import { ExternalLink } from "lucide-react";
+import { resourceLinks } from "../../types/user";
 
 interface ResourcesViewProps {
-  resources?: resourceLinks[]
+  resources?: resourceLinks[];
 }
 
 export default function ResourcesView({ resources }: ResourcesViewProps) {
   if (!resources || resources.length === 0)
-    return <p className="text-sm text-gray-500">No resources available.</p>
+    return <p className="text-sm text-gray-500">No resources available.</p>;
 
   return (
     <div className="w-full max-w-3xl">
@@ -37,5 +37,5 @@ export default function ResourcesView({ resources }: ResourcesViewProps) {
         </div>
       ))}
     </div>
-  )
+  );
 }

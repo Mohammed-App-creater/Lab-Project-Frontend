@@ -62,7 +62,9 @@ export type UserDTO = {
 };
 
 // 👇 React Query Fetch Function
-const fetchGroupData = async (divisionId: string): Promise<DivisionGroupMemberDto> => {
+const fetchGroupData = async (
+  divisionId: string
+): Promise<DivisionGroupMemberDto> => {
   if (!divisionId) {
     throw new Error("Division ID is required");
   }
@@ -88,10 +90,34 @@ const fetchGroupData = async (divisionId: string): Promise<DivisionGroupMemberDt
   return data.data;
 };
 
-export const GroupComponent = ({divisionId}: {divisionId: string}) => {
+export const GroupComponent = ({ divisionId }: { divisionId: string }) => {
   const router = useRouter();
   const [showAddGroupDialog, setShowAddGroupDialog] = useState(false);
-
+  const userRole = (
+    [
+      "VicePresident",
+      "President",
+      "SuperAdmin",
+      "DivisionHead",
+      "Coordinator",
+      "Member",
+      "Admin",
+    ].includes(localStorage.getItem("userRole")!)
+      ? localStorage.getItem("userRole")
+      : "Member"
+  ) as
+    | "VicePresident"
+    | "President"
+    | "SuperAdmin"
+    | "DivisionHead"
+    | "Coordinator"
+    | "Member"
+    | "Admin";
+  const canAdd =
+    userRole === "President" ||
+    userRole === "VicePresident" ||
+    userRole === "DivisionHead" ||
+    userRole === "SuperAdmin";
 
   const { data, error, isLoading, isFetching } = useQuery({
     queryKey: ["divisionGroups"],
@@ -100,12 +126,12 @@ export const GroupComponent = ({divisionId}: {divisionId: string}) => {
 
   const handleCancel = () => {
     setShowAddGroupDialog(false);
-  }
+  };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#003087]"></div>
       </div>
     );
   }
@@ -118,28 +144,31 @@ export const GroupComponent = ({divisionId}: {divisionId: string}) => {
     );
   }
 
-
   const handleToGroup = (divisionId: string, groupId: string) => {
     router.push(`/alldivision/${divisionId}/${groupId}`);
   };
 
   return (
     <Card className="p-6">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-center gap-2 justify-between">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-          <Input placeholder="Search" className="w-64 pl-10" />
+          <Input placeholder="Search" className=" pl-10" />
         </div>
-        <Button onClick={() => setShowAddGroupDialog(true)} className="bg-blue-600 hover:bg-blue-700 rounded-md">
+        {canAdd ? (<Button
+          onClick={() => setShowAddGroupDialog(true)}
+          className="bg-[#003087] hover:bg-blue-700 rounded-md"
+        >
           <Plus className="mr-2 h-4 w-4" />
           Add Group
-        </Button>
+        </Button>) : null}
       </div>
 
-      {showAddGroupDialog && <AddGroupDialog onCancel={handleCancel} divisionId={divisionId} />}
+      {showAddGroupDialog && (
+        <AddGroupDialog onCancel={handleCancel} divisionId={divisionId} />
+      )}
 
-      {isLoading && ( <PageLoader fullPage={false} /> )}
-      
+      {isLoading && <PageLoader fullPage={false} />}
 
       {error && (
         <div className="flex items-center justify-center h-screen">
@@ -150,9 +179,8 @@ export const GroupComponent = ({divisionId}: {divisionId: string}) => {
       {data?.groupsAndMembers.length === 0 && (
         <div className="flex items-center justify-center space-y-14">
           <div className="text-gray-500">No groups found</div>
-          </div>
-          )}
-          
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {data?.groupsAndMembers.map((group) => (
@@ -204,10 +232,7 @@ export const GroupComponent = ({divisionId}: {divisionId: string}) => {
           </div>
         ))}
       </div>
-      {isFetching && ( <PageLoader fullPage={false} /> )} 
+      {isFetching && <PageLoader fullPage={false} />}
     </Card>
   );
 };
-
- 
-

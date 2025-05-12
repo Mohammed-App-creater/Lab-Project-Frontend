@@ -89,12 +89,42 @@ const fetchMembers = async (
   return response.data as PaginatedResponse;
 };
 
-export function GroupMembersTableUI({ groupId, divisionId }: { groupId: string, divisionId: string }) {
+export function GroupMembersTableUI({
+  groupId,
+  divisionId,
+}: {
+  groupId: string;
+  divisionId: string;
+}) {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [addNewMember, setAddNewMember] = useState(false);
-  
+  const userRole = (
+    [
+      "VicePresident",
+      "President",
+      "SuperAdmin",
+      "DivisionHead",
+      "Coordinator",
+      "Member",
+      "Admin",
+    ].includes(localStorage.getItem("userRole")!)
+      ? localStorage.getItem("userRole")
+      : "Member"
+  ) as
+    | "VicePresident"
+    | "President"
+    | "SuperAdmin"
+    | "DivisionHead"
+    | "Coordinator"
+    | "Member"
+    | "Admin";
+  const canAdd =
+    userRole === "President" ||
+    userRole === "VicePresident" ||
+    userRole === "DivisionHead" ||
+    userRole === "SuperAdmin";
 
   const { data, isLoading, isError, isFetching } = useQuery({
     queryKey: ["group-members", groupId, page, limit],
@@ -150,32 +180,46 @@ export function GroupMembersTableUI({ groupId, divisionId }: { groupId: string, 
 
   return (
     <div className="p-3 rounded-lg border">
-      {addNewMember && <AddNewMember onCancel={() => setAddNewMember(false)} divisionId={divisionId} groupId={groupId} page={page} limit={limit} />}
+      {addNewMember && (
+        <AddNewMember
+          onCancel={() => setAddNewMember(false)}
+          divisionId={divisionId}
+          groupId={groupId}
+          page={page}
+          limit={limit}
+        />
+      )}
       {/* Top Bar */}
       <div className="mb-6 flex items-center justify-between">
-        <div className="relative">
+        <div className="relative mr-2">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <Input
-            placeholder="Search by name, email, or ID"
-            className="pl-8"
+            placeholder="Search"
+            aria-placeholder=""
+            className="pl-8 placeholder:hidden md:placeholder:block  "
             value={searchTerm}
             onChange={handleSearch}
           />
         </div>
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            className="gap-2 bg-blue-900 hover:bg-blue-700 text-white"
-          >
-            <Import className="h-4 w-4" />
-            Import
-          </Button>
-          <Button
-            onClick={() => setAddNewMember(true)} 
-           className="bg-blue-900 hover:bg-blue-700 gap-2">
-            <Plus className="h-4 w-4" />
-            Add Member
-          </Button>
+          {canAdd ? (
+            <>
+              <Button
+                variant="outline"
+                className="gap-2 bg-[#003087]  text-w hite "
+              >
+                <Import className="h-4 w-4" />
+                <span className="hidden md:block">Import</span>
+              </Button>
+              <Button
+                onClick={() => setAddNewMember(true)}
+                className="bg-[#003087] hover:bg-blue-900 gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                <span className="hidden md:block">Add Member</span>
+              </Button>
+            </>
+          ) : null}
           <Button variant="outline" className="gap-2">
             <Filter className="h-4 w-4" />
             Filter
@@ -350,7 +394,6 @@ export function GroupMembersTableUI({ groupId, divisionId }: { groupId: string, 
           </Button>
         </div>
       </div>
-
     </div>
   );
 }
