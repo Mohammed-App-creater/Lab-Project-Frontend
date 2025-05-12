@@ -101,7 +101,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts"
-import { useState } from "react"
 
 const data = [
   { month: "Jan", thisYear: 30, lastYear: 7 },
@@ -114,7 +113,6 @@ const data = [
 ]
 
 export default function AttendanceOverview() {
-  const [selectedTab, setSelectedTab] = useState("all")
 
   return (
     <Card className="w-full my-5">

@@ -9,14 +9,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UserData } from "@/types/user";
+import { user } from "@/types/user";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 interface RequiredInfoTabProps {
-  userData: UserData;
+  userData: user;
   onCancel: () => void;
-  onSave: (updatedData: UserData) => void;
+  onSave: (updatedData: user) => void;
 }
 
 const validationSchema = Yup.object({
@@ -35,7 +35,6 @@ const validationSchema = Yup.object({
 });
 
 export default function RequiredInfoTab({
-  userData,
   onCancel,
   onSave,
 }: RequiredInfoTabProps) {
@@ -59,7 +58,7 @@ export default function RequiredInfoTab({
       onSubmit={async (values, { setSubmitting }) => {
         try {
           const res = await fetch(
-            "https://csec-lab-portal-backend.onrender.com/api/user/update",
+            `${process.env.NEXT_PUBLIC_BACK_END_URL}api/user/update`,
             {
               method: "PUT",
               headers: {
@@ -81,7 +80,7 @@ export default function RequiredInfoTab({
           setSubmitting(false);
         }
       }}>
-      {({ handleChange, setFieldValue, isSubmitting }) => (
+      {({ handleChange,  isSubmitting }) => (
         <Form>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-400">
             {/* First Name */}
@@ -178,7 +177,7 @@ export default function RequiredInfoTab({
             {/* Gender */}
             <div>
               <Field name="gender">
-                {({ field, form }: { field: any; form: any }) => (
+                {({ field, form }: { field: { name: string; value: string }; form: { setFieldValue: (field: string, value: string) => void } }) => (
                   <Select
                     value={field.value}
                     onValueChange={(val) => form.setFieldValue("gender", val)}>

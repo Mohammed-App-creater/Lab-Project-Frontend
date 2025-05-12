@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 interface AddNewSessionWithCalendarProps {
   onClose?: () => void
-  onSubmit?: (sessionData: any) => void
+  onSubmit?: (sessionData: { title: string; division: string; group: string; startMonth: string; endMonth: string; day: string; startTime: string }) => void
 }
 
 export function AddNewSessionWithCalendar({ onClose, onSubmit }: AddNewSessionWithCalendarProps) {
@@ -138,7 +138,15 @@ export function AddNewSessionWithCalendar({ onClose, onSubmit }: AddNewSessionWi
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => onSubmit && onSubmit({})}>
+          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => onSubmit && onSubmit({
+            title: "",
+            division: "",
+            group: "",
+            startMonth: "",
+            endMonth: "",
+            day: "",
+            startTime: ""
+          })}>
             Create
           </Button>
         </div>

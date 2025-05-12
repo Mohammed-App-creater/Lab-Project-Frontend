@@ -18,7 +18,6 @@ export interface SessionCardProps {
 
 export function SessionCard({
   title,
-  division,
   description,
   date,
   groups = [],

@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useSettingStore } from '@/Store/settingstore'
+import { useSettingStore } from '@/store/settingstore'
 import { useMutation } from '@tanstack/react-query'
 import { Card } from '@/components/ui/card'
 

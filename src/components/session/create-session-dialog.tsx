@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -11,9 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Toaster, toast } from "sonner";
-import { Calendar } from "@/components/ui/calendar";
-import { addMonths, format } from "date-fns";
+import { toast } from "sonner";
 import {
   Popover,
   PopoverTrigger,
@@ -274,24 +273,6 @@ export function CreateSessionDialog({
     await fetchGroups(id);
   };
 
-  const handleGroupChange = (id: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      timeSlotAndGroup: { ...prev.timeSlotAndGroup, groupIds: [id] },
-    }));
-  };
-
-  // Calendar pickers
-  const handleStartDateSelect = (date: Date | undefined) => {
-    if (!date) return;
-    setFormData((prev) => ({ ...prev, startMonth: date.toISOString() }));
-    setShowStartCalendar(false);
-  };
-  const handleEndDateSelect = (date: Date | undefined) => {
-    if (!date) return;
-    setFormData((prev) => ({ ...prev, endTMonth: date.toISOString() }));
-    setShowEndCalendar(false);
-  };
 
   // Time slot logic
   const handleTimeSlotChange = (field: keyof TimeSlot, value: string) => {
@@ -415,7 +396,7 @@ export function CreateSessionDialog({
       );
 
       const response = await fetch(
-        "https://csec-lab-portal-backend.onrender.com/api/session/create",
+        `${process.env.NEXT_PUBLIC_BACK_END_URL}api/session/create`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -429,7 +410,7 @@ export function CreateSessionDialog({
           const errorData = await response.json();
           errorMsg = errorData.message || JSON.stringify(errorData);
           console.error("Error response:", errorData);
-        } catch (e) {
+        } catch  {
           errorMsg = await response.text();
           console.error("Error response (text):", errorMsg);
         }
@@ -454,12 +435,6 @@ export function CreateSessionDialog({
       );
       setLoading(false);
     }
-  };
-
-  const handleCancel = () => {
-    onOpenChange(false);
-    setFormData(initialFormData); // Reset form after submit
-    setLoading(false);
   };
 
   return (

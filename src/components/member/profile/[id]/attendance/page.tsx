@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import { ProfileSidebar } from "../../profile.sidebar"
 import ProfileHeader from "../../profile.header"
 
-export default function AttendancePage({ params }: { params: { id: string } }) {
+export default function AttendancePage() {
   // Sample attendance data
   const attendanceRecords = [
     { date: "July 01, 2023", session: "Contest", startTime: "08:02 AM", endTime: "09:02 AM", status: "Present" },

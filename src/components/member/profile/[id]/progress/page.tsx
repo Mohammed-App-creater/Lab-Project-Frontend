@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card"
 import { ProfileSidebar } from "../../profile.sidebar"
 import ProfileHeader from "../../profile.header"
 
-export default function ProgressPage({ params }: { params: { id: string } }) {
+export default function ProgressPage() {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <ProfileHeader />

@@ -4,25 +4,31 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Resource } from "@/types/user";
+import { resourceLinks } from "@/types/user";
 
 interface ResourcesTabProps {
-  resources: Resource[];
+  resources: resourceLinks[];
   onCancel: () => void;
-  onSave: (resources: Resource[]) => void;
+  onSave: (resources: resourceLinks[]) => void;
 }
 
 export default function ResourcesTab({ resources, onCancel, onSave }: ResourcesTabProps) {
-  const [localResources, setLocalResources] = useState<Resource[]>(resources);
+  const [localResources, setLocalResources] = useState<resourceLinks[]>(resources);
 
-  const handleChange = (index: number, field: keyof Resource, value: string) => {
+  const handleChange = (index: number, field: keyof resourceLinks, value: string) => {
     const updated = [...localResources];
     updated[index] = { ...updated[index], [field]: value };
     setLocalResources(updated);
   };
 
   const handleAdd = () => {
-    setLocalResources([...localResources, { name: "", link: "" }]);
+    setLocalResources([...localResources, {
+      resourceLinkName: "", resourceLinkUrl: "",
+      id: "",
+      userId: "",
+      createdAt: "",
+      updatedAt: ""
+    }]);
   };
 
   const handleRemove = (index: number) => {
@@ -36,13 +42,13 @@ export default function ResourcesTab({ resources, onCancel, onSave }: ResourcesT
         {localResources.map((resource, index) => (
           <div key={index} className="flex gap-4 items-center">
             <Input
-              value={resource.name}
-              onChange={(e) => handleChange(index, "name", e.target.value)}
+              value={resource.resourceLinkName}
+              onChange={(e) => handleChange(index, "resourceLinkName", e.target.value)}
               placeholder="Resource name"
             />
             <Input
-              value={resource.link}
-              onChange={(e) => handleChange(index, "link", e.target.value)}
+              value={resource.resourceLinkUrl}
+              onChange={(e) => handleChange(index, "resourceLinkUrl", e.target.value)}
               placeholder="Resource URL"
             />
             <Button variant="destructive" onClick={() => handleRemove(index)}>

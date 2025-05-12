@@ -11,7 +11,7 @@ export default async function ProfileLayout({
   header: React.ReactNode;
   sidebar: React.ReactNode;
   main: React.ReactNode;
-  params: { profile: string };
+  params: Promise<{ profile: string }>;
 }) {
     const { profile } = await params;
   return (

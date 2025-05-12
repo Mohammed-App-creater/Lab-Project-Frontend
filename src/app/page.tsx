@@ -1,17 +1,17 @@
-import { Suspense } from "react"
-import { Search } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { fetchSessions } from "@/lib/data"
-import SessionsList from "@/components/attendance/session.list"
+// import { Suspense } from "react"
+// import { Search } from "lucide-react"
+// import { Button } from "@/components/ui/button"
+// import { Input } from "@/components/ui/input"
+// import { fetchSessions } from "@/lib/data"
+// import SessionsList from "@/components/attendance/session.list"
 
 export default async function DashboardPage() {
-  const sessions = await fetchSessions()
+  // const sessions = await fetchSessions()
 
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+      {/* <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:max-w-sm">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input type="search" placeholder="Search" className="w-full pl-8 bg-white" />
@@ -36,7 +36,7 @@ export default async function DashboardPage() {
       </div>
       <Suspense fallback={<div>Loading sessions...</div>}>
         <SessionsList sessions={sessions} />
-      </Suspense>
+      </Suspense> */}
     </div>
   )
 }

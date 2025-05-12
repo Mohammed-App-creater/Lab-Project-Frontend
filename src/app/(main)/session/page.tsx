@@ -22,26 +22,6 @@ interface Event {
   status: "Started" | "Ended" | "Planned"
 }
 
-interface EventItem {
-  id: string
-  status: "Planned" | "Started" | "Ended"
-  title: string
-  description: string
-  date: string
-  visibility: "Public" | "Members"
-  venue: string
-  timeRemaining?: string
-  timeAgo?: string
-}
-
-interface Session {
-  id: string
-  date: string
-  title: string
-  division: string
-  totalGroups: number
-  status: "Planned" | "Started" | "Ended"
-}
 
 interface SessionItem {
   id: string
@@ -55,13 +35,64 @@ interface SessionItem {
   timeAgo?: string
 }
 
-interface SessionFormData {
-  // Add your session form data properties here
+// Remove the local definition and import the shared interface
+import { SessionFormData } from "@/components/session/create-session-dialog";
+
+import { EventFormData } from "@/components/session/create-event-dialog";
+
+interface RawGroup {
+  id: string;
+  name: string;
 }
 
-interface EventFormData {
-  // Add your event form data properties here
+interface RawSession {
+  id: string;
+  title: string;
+  startMonth: string;
+  tags?: string[];
+  visibility?: string;
+  location: string;
+  timeSlots?: {
+    status: "Planned" | "Started" | "Ended";
+  }[];
+  groups: RawGroup[];
 }
+
+interface TransformedSession {
+  id: string;
+  status: "Planned" | "Started" | "Ended";
+  division: string;
+  title: string;
+  date: string;
+  venue: string;
+  groups: {
+    id: string;
+    name: string;
+  }[];
+  timeRemaining?: string;
+  timeAgo?: string;
+}
+
+interface RawEvent {
+  id: string;
+  startDate: string;
+  title: string;
+  tags?: string[];
+  visibility: "Public" | "Members";
+  status: "Planned" | "Started" | "Ended";
+}
+
+interface TransformedEvent {
+  id: string;
+  date: string;
+  title: string;
+  type: string;
+  visibility: "Public" | "Members";
+  status: "Planned" | "Started" | "Ended";
+}
+
+
+
 
 
 
@@ -82,84 +113,89 @@ export default function SessionsEventsPage() {
 
   const fetchEvents = async () => {
     try {
-      setLoading(true)
-      const response = await fetch(`https://csec-lab-portal-backend.onrender.com/api/event/events?limit=${itemsPerPage}&page=${currentPage}`)
+      setLoading(true);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/event/events?limit=${itemsPerPage}&page=${currentPage}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch events')
+        throw new Error("Failed to fetch events");
       }
-      const data = await response.json()
-
-      const transformedEvents = data.map((event: any) => ({
+  
+      const data: RawEvent[] = await response.json();
+  
+      const transformedEvents: TransformedEvent[] = data.map((event) => ({
         id: event.id,
-        date: new Date(event.startDate).toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
+        date: new Date(event.startDate).toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric"
         }),
         title: event.title,
-        type: event.tags?.[0] || 'General',
+        type: event.tags?.[0] || "General",
         visibility: event.visibility,
         status: event.status
-      }))
-
-      setEvents(transformedEvents)
-
+      }));
+  
+      setEvents(transformedEvents);
+  
       if (data.length === itemsPerPage) {
-        setTotalPages(currentPage + 1)
+        setTotalPages(currentPage + 1);
       } else {
-        setTotalPages(currentPage)
+        setTotalPages(currentPage);
       }
-      setTotalEvents((currentPage - 1) * itemsPerPage + data.length)
+  
+      setTotalEvents((currentPage - 1) * itemsPerPage + data.length);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+  
 
   const fetchSessions = async () => {
     try {
-      setLoading(true)
-      const response = await fetch(`https://csec-lab-portal-backend.onrender.com/api/session/sessions?limit=${itemsPerPage}&page=${currentPage}`)
+      setLoading(true);
+  
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_END_URL}api/session/sessions?limit=${itemsPerPage}&page=${currentPage}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch sessions')
+        throw new Error("Failed to fetch sessions");
       }
-      const data = await response.json()
-
-      const transformedSessions = data.map((session: any) => ({
+  
+      const data: RawSession[] = await response.json();
+  
+      const transformedSessions: TransformedSession[] = data.map((session) => ({
         id: session.id,
         status: session.timeSlots?.[0]?.status || "Planned",
         division: session.tags?.[0] || "General",
         title: session.title,
-        date: new Date(session.startMonth).toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
+        date: new Date(session.startMonth).toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric"
         }),
-        groups: session.groups.map((group: any) => ({
+        groups: session.groups.map((group) => ({
           id: group.id,
           name: group.name
         })),
         venue: session.location,
         timeRemaining: session.timeSlots?.[0]?.status === "Planned" ? "Upcoming" : undefined,
         timeAgo: session.timeSlots?.[0]?.status === "Ended" ? "Completed" : undefined
-      }))
-
-      setSessions(transformedSessions)
-
-      const totalCount = data.length
-      const calculatedTotalPages = Math.ceil(totalCount / itemsPerPage)
-      setTotalPages(calculatedTotalPages)
-      setTotalSessions(totalCount)
+      }));
+  
+      setSessions(transformedSessions);
+  
+      const totalCount = data.length;
+      const calculatedTotalPages = Math.ceil(totalCount / itemsPerPage);
+      setTotalPages(calculatedTotalPages);
+      setTotalSessions(totalCount);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-
+  };
+  
   const handleSessionCreated = () => {
     fetchSessions()
   }

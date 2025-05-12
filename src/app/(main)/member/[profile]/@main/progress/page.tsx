@@ -66,7 +66,7 @@ export default function ProgressPage({ params }: { params: Promise<{ profile: st
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
                 <span className="text-3xl font-bold">
-                {attendanceRatio?.data?.attendanceRate.toFixed(2) || 0}%
+                {attendanceRatio?.data?.attendanceRate.toFixed(1) || 0}%
                 </span>
               </div>
               </div>
@@ -90,19 +90,19 @@ export default function ProgressPage({ params }: { params: Promise<{ profile: st
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <StatCard
-              value="0"
+              value={(attendanceRatio?.data?.headsUp?.toString() || "0")}
               label="Heads up"
               percentage={attendanceRatio?.data?.headsUp || 0}
               color="blue-900"
             />
             <StatCard
-              value="3"
+              value={(attendanceRatio?.data?.absent?.toString() || "0")}
               label="Absent"
               percentage={attendanceRatio?.data?.absent || 0}
               color="blue-900"
             />
             <StatCard
-              value="7"
+              value={(attendanceRatio?.data?.present?.toString() || "0")}
               label="Present"
               percentage={attendanceRatio?.data?.present || 0}
               color="blue-900"
