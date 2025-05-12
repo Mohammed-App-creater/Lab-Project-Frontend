@@ -1,7 +1,7 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
-import { resourceLinks } from "../../../types/user";
+import { resourceLinks } from "../../types/user";
 
 interface ResourcesViewProps {
   resources?: resourceLinks[];

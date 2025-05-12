@@ -1,5 +1,5 @@
 import api from "@/lib/axios";
-import { user, AttendanceRecord, HeadsUpMessage, AttendanceRecordDataResponse } from "../../types/user";
+import { user, AttendanceRecord, HeadsUpMessage, AttendanceRecordDataResponse } from "../types/user";
 
 const API_BASE_URL = "https://csec-lab-portal-backend.onrender.com/api/user";
 

@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { user } from "../../../types/user";
+import { user } from "../../types/user";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 

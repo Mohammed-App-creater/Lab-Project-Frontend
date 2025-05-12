@@ -1,7 +1,7 @@
 "use client";
 
 import { Edit2 } from "lucide-react";
-import { user } from "../../../types/user";
+import { user } from "../../types/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProfileHeaderProps {

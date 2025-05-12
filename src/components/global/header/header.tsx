@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import type { user } from "../../../../types/user";
+import type { user } from "../../../types/user";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
 

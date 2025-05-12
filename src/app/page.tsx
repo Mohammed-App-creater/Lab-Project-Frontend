@@ -262,8 +262,8 @@ export default function Home() {
               {
                 quote:
                   "As a junior student, the learning paths helped me structure my studies and fill knowledge gaps I didn't even know I had.",
-                name: "Temkin Mengstu",
-                role: "Computer Engineering, 2nd Year",
+                name: "Temkin Abdumelik",
+                role: "ECE, 3rd Year",
               },
             ].map((testimonial, index) => (
               <div key={index} className="rounded-xl bg-white p-6 shadow-sm">
@@ -306,7 +306,7 @@ export default function Home() {
                 href="/login"
                 className="inline-flex items-center justify-center rounded-md bg-white px-6 py-3 text-base font-medium text-blue-600 shadow hover:bg-gray-100"
               >
-                Get Started for Free
+                Get Started 
               </Link>
             </div>
           </div>

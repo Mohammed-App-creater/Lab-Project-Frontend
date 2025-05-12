@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { user } from "../../../types/user";
+import { user } from "../../types/user";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 

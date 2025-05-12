@@ -1,7 +1,7 @@
 "use client";
 
 import { useSettingStore } from "@/store/settingstore";
-import { user } from "../../../types/user";
+import { user } from "../../types/user";
 
 interface RequiredInfoViewProps {
   userData: user;
@@ -26,7 +26,7 @@ export default function RequiredInfoView({ userData }: RequiredInfoViewProps) {
       <FormField
         label="Mobile Number"
         value={
-          !setting?.phonePublic 
+          !setting?.phonePublic
             ? "••••••••"
             : userData?.phone_number
             ? userData?.phone_number

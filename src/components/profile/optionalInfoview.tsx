@@ -1,6 +1,6 @@
 "use client";
 
-import { user } from "../../../types/user";
+import { user } from "../../types/user";
 
 function FormField({ label, value }: { label: string; value: string }) {
   return (
