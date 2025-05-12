@@ -1,7 +1,6 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge"
-import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 
 export interface EventItem {
@@ -20,26 +19,36 @@ interface EventsListViewProps {
   events: EventItem[]
 }
 
-// Countdown hook
-function useCountdown(targetDate: string) {
-  const { theme } = useTheme()
-  const countDownDate = new Date(targetDate).getTime();
-  const [countDown, setCountDown] = useState(countDownDate - new Date().getTime());
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCountDown(countDownDate - new Date().getTime());
-    }, 1000); // update every second
-    return () => clearInterval(interval);
-  }, [countDownDate]);
-
-  const days = Math.floor(countDown / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((countDown % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((countDown % (1000 * 60 * 60)) / (1000 * 60));
-  return { days, hours, minutes, isPast: countDown <= 0 };
+function calculateCountdown(targetDate: string) {
+  const countDown = new Date(targetDate).getTime() - new Date().getTime()
+  const days = Math.floor(countDown / (1000 * 60 * 60 * 24))
+  const hours = Math.floor((countDown % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  const minutes = Math.floor((countDown % (1000 * 60 * 60)) / (1000 * 60))
+  return {
+    display: countDown <= 0 ? "Started" : `${days}d ${hours}h ${minutes}m left`,
+    isPast: countDown <= 0
+  }
 }
 
 export function EventsListView({ events }: EventsListViewProps) {
+  const [countdowns, setCountdowns] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    const updateCountdowns = () => {
+      const newCountdowns: Record<string, string> = {}
+      events.forEach(event => {
+        if (event.status === "Planned") {
+          newCountdowns[event.id] = calculateCountdown(event.date).display
+        }
+      })
+      setCountdowns(newCountdowns)
+    }
+
+    updateCountdowns() // Initial call
+    const interval = setInterval(updateCountdowns, 1000)
+    return () => clearInterval(interval)
+  }, [events])
+
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case "Started":
@@ -56,14 +65,11 @@ export function EventsListView({ events }: EventsListViewProps) {
   return (
     <div className="space-y-4 w-full max-w-full">
       {events.map((event) => {
-        // Use countdown only for planned events
-        let countdownDisplay = event.timeRemaining || event.timeAgo;
-        if (event.status === "Planned") {
-          const { days, hours, minutes, isPast } = useCountdown(event.date);
-          countdownDisplay = isPast
-            ? "Started"
-            : `${days}d ${hours}h ${minutes}m left`;
-        }
+        const countdownDisplay =
+          event.status === "Planned"
+            ? countdowns[event.id] ?? "Calculating..."
+            : event.timeRemaining || event.timeAgo || ""
+
         return (
           <div key={event.id} className="rounded-lg border shadow-sm overflow-hidden w-full max-w-full">
             <div className="p-4">

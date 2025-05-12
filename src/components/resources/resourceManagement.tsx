@@ -26,14 +26,19 @@ export default function ResourceManagement() {
     const fetchDivisions = async () => {
       try {
         const response = await fetch(
-          "https://csec-lab-portal-backend.onrender.com/api/division-resources/all-divisions-resource",
-        )
-        const data = await response.json()
+          `${process.env.NEXT_PUBLIC_BACK_END_URL}api/division-resources/all-divisions-resource`
+        );
+        const data = await response.json();
 
-        const mapped: Division[] = data.map((div: any) => ({
+        interface BackendDivision {
+          name: string;
+          resourceLink: { resourceLinkName: string; resourceLinkUrl: string }[];
+        }
+
+        const mapped: Division[] = data.map((div: BackendDivision) => ({
           title: div.name,
           description: `Useful resources and progress sheet for the ${div.name} division.`,
-          resources: div.resourceLink.map((res: any) => ({
+          resources: div.resourceLink.map((res) => ({
             name: res.resourceLinkName,
             url: res.resourceLinkUrl,
           })),
@@ -58,10 +63,12 @@ export default function ResourceManagement() {
 
     try {
       const response = await fetch(
-        "https://csec-lab-portal-backend.onrender.com/api/division-resources/all-divisions-resource",
-      )
-      const backendData = await response.json()
-      const matchedDivision = backendData.find((div: any) => div.name === currentDivision)
+        `${process.env.NEXT_PUBLIC_BACK_END_URL}api/division-resources/all-divisions-resource`
+      );
+      const backendData: { name: string; id: string }[] = await response.json();
+      const matchedDivision = backendData.find(
+        (div) => div.name === currentDivision
+      );
 
       if (!matchedDivision) {
         console.error("Division ID not found")
@@ -70,17 +77,20 @@ export default function ResourceManagement() {
 
       const divisionId = matchedDivision.id
 
-      const postRes = await fetch("https://csec-lab-portal-backend.onrender.com/api/division-resources", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          resourceLinkName: newResourceName,
-          resourceLinkUrl: newResourceUrl,
-          divisionId,
-        }),
-      })
+      const postRes = await fetch(
+        "https://csec-lab-portal-backend.onrender.com/api/division-resources",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            resourceLinkName: newResourceName,
+            resourceLinkUrl: newResourceUrl,
+            divisionId,
+          }),
+        }
+      );
 
       if (!postRes.ok) {
         throw new Error("Failed to save resource to backend")

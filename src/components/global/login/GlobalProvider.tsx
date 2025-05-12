@@ -7,7 +7,7 @@ import { LoadingSpinner } from './loading';
 
 export function RouterProgress() {
   const [isLoading, setIsLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [, setProgress] = useState(0);
   const pathname = usePathname();
   const [previousPathname, setPreviousPathname] = useState<string | null>(null);
 

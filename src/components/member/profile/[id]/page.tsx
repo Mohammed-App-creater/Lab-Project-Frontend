@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { User, ClipboardList, FileText } from "lucide-react"
 
 // This is a dynamic route that will handle all member profiles
-export default function MemberProfilePage({ params }: { params: { id: string } }) {
+export default function MemberProfilePage() {
   // In a real app, you would fetch the member data based on the ID
   // For now, we'll just display the same profile for all members
 

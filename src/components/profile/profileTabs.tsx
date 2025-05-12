@@ -4,11 +4,10 @@
 "use client"
 
 import { User, FileText, BookOpen } from "lucide-react"
-import { TabType } from "@/types/user"
 
 interface ProfileTabsProps {
-  activeTab: TabType
-  onTabChange: (tab: TabType) => void
+  activeTab: string
+  onTabChange: (tab: string) => void
 }
 
 export default function ProfileTabs({ activeTab, onTabChange }: ProfileTabsProps) {

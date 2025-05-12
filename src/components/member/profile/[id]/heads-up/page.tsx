@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 import ProfileHeader from "../../profile.header"
 
-export default function HeadsUpPage({ params }: { params: { id: string } }) {
+export default function HeadsUpPage() {
   // Sample heads-up data
   const headsUpMessages = [
     {

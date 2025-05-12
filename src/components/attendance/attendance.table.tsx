@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import type { SessionTimeSlot } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -34,7 +34,7 @@ const fetchAttendance = async (
   groupId: string
 ): Promise<AttendanceRecord[]> => {
   const response = await axios.get(
-    `http://localhost:3000/api/attendance/sessions/${sessionId}/groupId/${groupId}`
+    `${process.env.NEXT_PUBLIC_BACK_END_URL}api/attendance/sessions/${sessionId}/groupId/${groupId}`
   );
   return response.data;
 };
@@ -42,7 +42,7 @@ const fetchAttendance = async (
 // Create session attendance if empty
 const createSessionAttendance = async (sessionId: string): Promise<void> => {
   const response = await axios.post(
-    `http://localhost:3000/api/attendance/create-session-attendance/${sessionId}`
+    `${process.env.NEXT_PUBLIC_BACK_END_URL}api/attendance/create-session-attendance/${sessionId}`
   );
   return response.data;
 };
@@ -62,7 +62,6 @@ const Attendance = ({
   sessionId: string;
   groupId: string;
 }) => {
-  const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
   const [showHeadsUpPopup, setShowHeadsUpPopup] = useState<string | null>(null);
   const [headsUpReason, setHeadsUpReason] = useState("");
@@ -73,7 +72,6 @@ const Attendance = ({
   >("All");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const recordsPerPage = 10;
-  const totalRecords = 60;
 
 
   const [selectedHeadsUpType, setSelectedHeadsUpType] = useState<string | null>(null);
@@ -82,15 +80,16 @@ const Attendance = ({
   const { data: attendanceData, refetch, isLoading } = useQuery<AttendanceRecord[]>({
     queryKey: ["attendance", sessionId, groupId],
     queryFn: () => fetchAttendance(sessionId, groupId),
-    onSuccess: (data) => {
-      if (data.length === 0) {
-        createAttendanceMutation.mutate();
-      } else {
-        console.log("Attendance data fetched:", data);
-        setLocalAttendance(data);
-      }
-    },
   });
+
+  useEffect(() => {
+    if (attendanceData && attendanceData.length === 0) {
+      createAttendanceMutation.mutate();
+    } else if (attendanceData) {
+      console.log("Attendance data fetched:", attendanceData);
+      setLocalAttendance(attendanceData);
+    }
+  }, [attendanceData]);
 
   // Local state to manage attendance updates
   const [localAttendance, setLocalAttendance] = useState<AttendanceRecord[]>(

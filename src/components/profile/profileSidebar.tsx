@@ -10,46 +10,19 @@ import { useParams,  usePathname } from "next/navigation"
 import { user } from "@/types/user"
 
 interface SidebarProps {
-  activePage: string
+
   user: user
 }
 
-export function ProfileSidebar({ activePage, user }: SidebarProps) {
+export function ProfileSidebar({ user }: SidebarProps) {
   const params = useParams()
   const memberId = params?.id || user.id
   const currentPath = usePathname();
   const condition = currentPath?.includes("/member/");
   const route = ! condition ? currentPath : "/member/";
-  console.log("route", route)
-
-  // const navItems = [
-  //   {
-  //     icon: <Calendar className="h-5 w-5 mr-2" />,
-  //     label: "Profile",
-  //     href: `/profile/${memberId}`,
-  //     id: "profile",
-  //   },
-  //   {
-  //     icon: <Calendar className="h-5 w-5 mr-2" />,
-  //     label: "Attendance",
-  //     href: `/profile/${memberId}/attendance`,
-  //     id: "attendance",
-  //   },
-  //   {
-  //     icon: <BarChart2 className="h-5 w-5 mr-2" />,
-  //     label: "Progress",
-  //     href: `/profile/${memberId}/progress`,
-  //     id: "progress",
-  //   },
-  //   {
-  //     icon: <AlertCircle className="h-5 w-5 mr-2" />,
-  //     label: "Heads up!",
-  //     href: `${route}${condition ? `/${memberId}` : ""}/headsup`,
-  //     id: "headsup",
-  //   },
-  // ]
-
-  const navItems = [
+  const activePage = currentPath?.split("/").pop() === memberId? "profile" : currentPath?.split("/").pop() || "profile"
+  
+  const navItems = condition?  [
     {
       icon: <Calendar className="h-5 w-5 mr-2" />,
       label: "Profile",
@@ -74,7 +47,32 @@ export function ProfileSidebar({ activePage, user }: SidebarProps) {
       href: `${route}${condition ? `/${memberId}` : ""}/headsup`,
       id: "headsup",
     },
-  ]
+  ] :  [
+      {
+        icon: <Calendar className="h-5 w-5 mr-2" />,
+        label: "Profile",
+        href: `/profile`,
+        id: "profile",
+      },
+      {
+        icon: <Calendar className="h-5 w-5 mr-2" />,
+        label: "Attendance",
+        href: `/profile/attendance`,
+        id: "attendance",
+      },
+      {
+        icon: <BarChart2 className="h-5 w-5 mr-2" />,
+        label: "Progress",
+        href: `/profile/progress`,
+        id: "progress",
+      },
+      {
+        icon: <AlertCircle className="h-5 w-5 mr-2" />,
+        label: "Heads up!",
+        href: `/profile/headsup`,
+        id: "headsup",
+      },
+    ];
 
   return (
     <div className="w-56 h-fit rounded-2xl border-1 border-[#A2A1A833] mt-6">

@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 interface AddNewSessionWithTimeSlotsProps {
   onClose?: () => void
-  onSubmit?: (sessionData: any) => void
+  onSubmit?: (sessionData: { title: string; division: string; timeSlots: { day: string; startTime: string; endTime: string }[] }) => void
 }
 
 export function AddNewSessionWithTimeSlots({ onClose, onSubmit }: AddNewSessionWithTimeSlotsProps) {
@@ -96,7 +96,7 @@ export function AddNewSessionWithTimeSlots({ onClose, onSubmit }: AddNewSessionW
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => onSubmit && onSubmit({})}>
+          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => onSubmit && onSubmit({ title: "Contest", division: "CPD", timeSlots: [{ day: "Monday", startTime: "5:00 AM", endTime: "7:00 AM" }] })}>
             Create
           </Button>
         </div>

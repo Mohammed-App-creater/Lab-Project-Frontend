@@ -2,14 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { UserData } from "@/types/user";
+import { user } from "@/types/user";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 interface OptionalInfoTabProps {
-  userData: UserData;
+  userData: user;
   onCancel: () => void;
-  onSave: (updatedData: UserData) => void;
+  onSave: (updatedData: user) => void;
 }
 
 const validationSchema = Yup.object({

@@ -11,7 +11,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { LoadingSpinner } from "@/components/global/login/loading";
-import { useParams } from "next/navigation";
 
 function applyRandomTime(date: string | number | Date) {
   if (!date) return null; // Handle null or undefined date
@@ -28,13 +27,11 @@ function applyRandomTime(date: string | number | Date) {
 }
 
 export default function AttendancePage() {
-  const profile: { profile: string } = useParams() as unknown as {
-    profile: string;
-  };
-  const profileId = profile.profile;
+  const user = localStorage.getItem("user");
+  const id = JSON.parse(user || '{"id": ""}').id || " ";
   const { data, isLoading, error } = useQuery({
     queryKey: ["attendance"],
-    queryFn: () => fetchUserAttendance(profileId),
+    queryFn: () => fetchUserAttendance(id),
     refetchOnWindowFocus: false,
   });
   return (

@@ -13,6 +13,7 @@ import OptionalInfoView from "@/components/profile/optionalInfoview";
 import ResourcesView from "@/components/profile/resourcesView";
 import { fetchUserProfile } from "@/api/user";
 import { Card } from "../ui/card";
+import { LoadingSpinner } from "../global/login/loading";
 
 interface ProfileContentProps {
   activeTab: string;
@@ -36,11 +37,16 @@ export default function ProfileContent({
 
   const userData = user || null;
 
-  if (isLoading) return <p>Loading...</p>;
-  if (!userData) return <p>Failed to load user profile.</p>;
+
 
   return (
     <Card className="p-6 relative">
+      {isLoading && <div className=" w-full py-20  flex items-center justify-center"><LoadingSpinner fullPage={false} /></div>}
+      {!userData && !isLoading && <div className="text-red-500">Error fetching user data</div>}
+      {userData && userData?.resourceLinks?.length === 0 && !isLoading && (
+        <div className=" p-8">No resources available</div>
+      )}
+      {userData && userData?.resourceLinks?.length > 0 && !isLoading && (
       <Tabs
         value={activeTab}
         onValueChange={(value) => onTabChange(value as string)}
@@ -102,6 +108,7 @@ export default function ProfileContent({
           )}
         </TabsContent>
       </Tabs>
+      )}
     </Card>
   );
 }

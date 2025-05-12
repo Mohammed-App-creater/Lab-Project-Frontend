@@ -96,7 +96,7 @@ function SidebarItem({ onClose }: SidebarItemProps) {
         <div className="mb-8 px-4">
           <Link href="/" className="flex items-center">
             <div className="text-blue-700 font-bold text-xl flex items-center">
-              <Image className="w-7 h-10 -ml-3" width={20} height={20} src="/images/logo.jpg" alt="Logo Part 2" />
+              <Image className="w-10 h-10 -ml-3 rounded-full" width={30} height={20} src="/images/logo.jpg" alt="Logo Part 2" />
               <h1 className="font-bold ml-4 hidden min-[901px]:!flex">CSEC ASTU</h1>
             </div>
           </Link>

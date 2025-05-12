@@ -52,6 +52,7 @@ interface Event {
 interface MappedSession {
   date: string
   events: Event[]
+}
 export interface SessionData {
   date: string;
   events: Event[];
@@ -86,12 +87,12 @@ export default function SessionCalendar() {
       }
     }
 
-    if (!initialData) {
+    if (!sessions.length) {
       fetchSessions();
     } else {
       setLoading(false);
     }
-  }, [initialData]);
+  }, [sessions.length]);
 
   function mapSessions(data: APIResponse["data"]): MappedSession[] {
     const groupedByDate: { [date: string]: Event[] } = {}
@@ -102,7 +103,7 @@ export default function SessionCalendar() {
       { label: "Upcoming", sessions: data.upcoming },
     ]
 
-    allSessions.forEach(({ label, sessions }) => {
+    allSessions.forEach(({ sessions }) => {
       sessions.forEach((session) => {
         session.timeSlots.forEach((slot) => {
           const dateStr = new Date(slot.date).toLocaleDateString("en-US", {
@@ -131,8 +132,7 @@ export default function SessionCalendar() {
     }))
   }
 
-  if (initialLoading || loading) return <div className="p-4">Loading sessions...</div>;
-  if (initialError) return <div className="p-4">Error loading sessions: {initialError}</div>;
+
   if (loading) return <div className="p-4">Loading sessions...</div>
 
   return (

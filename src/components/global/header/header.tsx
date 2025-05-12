@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { CiSearch, CiLogout, CiUser } from "react-icons/ci";
 import { HiOutlineBell } from "react-icons/hi2";
 import { IoChevronDownOutline } from "react-icons/io5";
-import { Menu } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,18 +14,14 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import type { PublicUserDTO } from "@/types/user";
-import { useIsMobile } from "@/components/ui/use-mobile";
+import type { user } from "@/types/user";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
 
-interface HeaderProps {
-  onMenuClick?: () => void;
-}
 
-function Header({ onMenuClick }: HeaderProps) {
-  const isMobile = useIsMobile();
-  const userData: PublicUserDTO | null =
+
+function Header() {
+  const userData: user | null =
     typeof window !== "undefined" && localStorage.getItem("user")
       ? JSON.parse(localStorage.getItem("user") as string)
       : null;
@@ -108,7 +103,7 @@ function Header({ onMenuClick }: HeaderProps) {
                                 {format(new Date(), "MMM dd, h:mm a")}
                               </span>
                             </div>
-                            <p className="text-sm text-muted-foreground">Your task "Update Documentation" has been completed</p>
+                            <p className="text-sm text-muted-foreground">Your task Update Documentation has been completed</p>
                           </div>
                         </div>
                       </Card>
@@ -141,7 +136,7 @@ function Header({ onMenuClick }: HeaderProps) {
                         {userData?.firstName}
                       </span>
                       <span className="text-muted-foreground">
-                        {userData?.role?.name ?? "Trainee"}
+                        {userData?.Role?.name ?? "Trainee"}
                       </span>
                     </div>
                     <IoChevronDownOutline className="w-4 h-4 text-muted-foreground hidden sm:block" />

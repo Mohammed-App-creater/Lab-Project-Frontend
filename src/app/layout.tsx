@@ -16,10 +16,11 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 })
-
 const lexend = Lexend({
   variable: "--font-lexend",
+  subsets: ["latin"], 
 });
+
 
 export const metadata: Metadata = {
   title: "CSEC ASTU Portal",

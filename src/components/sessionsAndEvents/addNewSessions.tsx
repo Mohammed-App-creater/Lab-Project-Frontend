@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 interface AddNewSessionModalProps {
   onClose?: () => void
-  onSubmit?: (sessionData: any) => void
+  onSubmit?: (sessionData: { title: string; division: string; group: string; startMonth: string; endMonth: string; day: string; startTime: string; endTime: string }) => void
 }
 
 export function AddNewSessionModal({ onClose, onSubmit }: AddNewSessionModalProps) {
@@ -97,7 +97,7 @@ export function AddNewSessionModal({ onClose, onSubmit }: AddNewSessionModalProp
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => onSubmit && onSubmit({})}>
+          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => onSubmit && onSubmit({ title: "", division: "", group: "", startMonth: "", endMonth: "", day: "", startTime: "", endTime: "" })}>
             Create
           </Button>
         </div>

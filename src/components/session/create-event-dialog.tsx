@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -49,7 +49,7 @@ export function CreateEventDialog({ open, onOpenChange, onSubmit, onEventCreated
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
-  const handleChange = (field: keyof EventFormData, value: any) => {
+  const handleChange = (field: keyof EventFormData, value: string | string[] | "PUBLIC" | "MEMBERS" | null) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -83,10 +83,6 @@ export function CreateEventDialog({ open, onOpenChange, onSubmit, onEventCreated
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  const toggleCalendar = () => {
-    setCalendarOpen((prev) => !prev)
   }
 
   const prevMonth = () => {

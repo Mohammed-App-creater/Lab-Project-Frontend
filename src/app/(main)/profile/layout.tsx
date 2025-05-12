@@ -1,24 +1,25 @@
+'use client'
 import { LoadingSpinner } from "@/components/global/login/loading";
-import { UserInitializer } from "@/components/member/user-initializer";
+import { UserInitializer } from "@/components/profile/user-initializer";
 import { Suspense } from "react";
 
-export default async function ProfileLayout({
+export default function ProfileLayout({
   header,
   sidebar,
   main,
-  params,
 }: {
   header: React.ReactNode;
   sidebar: React.ReactNode;
   main: React.ReactNode;
-  params: Promise<{ profile: string }>;
 }) {
-    const { profile } = await params;
+    const user = (localStorage.getItem("user")) 
+    const id = JSON.parse(user || '{"id": ""}').id || " ";
+    
   return (
-    <Suspense fallback={<div className="flex justify-center items-center h-screen"><LoadingSpinner fullPage={false} /></div>}>
+    <Suspense fallback={<LoadingSpinner fullPage={false} />}>
       {/* Initialize Zustand store in client */}
 
-      <UserInitializer userId={profile} />
+      <UserInitializer userId={id} />
 
       <div className="flex flex-col min-h-screen">
         <div>{header}</div>
