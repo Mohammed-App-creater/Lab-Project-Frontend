@@ -14,11 +14,9 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import type { user } from "@/types/user";
+import type { user } from "../../../../types/user";
 import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
-
-
 
 function Header() {
   const userData: user | null =
@@ -70,7 +68,11 @@ function Header() {
               {/* Bell Icon */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon" className="relative p-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="relative p-2"
+                  >
                     <HiOutlineBell className="h-6 w-6" />
                     <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
                   </Button>
@@ -89,7 +91,9 @@ function Header() {
                                 {format(new Date(), "MMM dd, h:mm a")}
                               </span>
                             </div>
-                            <p className="text-sm text-muted-foreground">You have a new message from John Doe</p>
+                            <p className="text-sm text-muted-foreground">
+                              You have a new message from John Doe
+                            </p>
                           </div>
                         </div>
                       </Card>
@@ -98,12 +102,16 @@ function Header() {
                           <div className="w-2 h-2 rounded-full bg-green-600 mt-2"></div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <p className="text-sm font-medium">Task Completed</p>
+                              <p className="text-sm font-medium">
+                                Task Completed
+                              </p>
                               <span className="text-xs text-muted-foreground">
                                 {format(new Date(), "MMM dd, h:mm a")}
                               </span>
                             </div>
-                            <p className="text-sm text-muted-foreground">Your task Update Documentation has been completed</p>
+                            <p className="text-sm text-muted-foreground">
+                              Your task Update Documentation has been completed
+                            </p>
                           </div>
                         </div>
                       </Card>
@@ -121,7 +129,8 @@ function Header() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="flex items-center gap-2 h-[50px] px-3">
+                    className="flex items-center gap-2 h-[50px] px-3"
+                  >
                     <Avatar className="w-8 h-8 rounded-sm">
                       <AvatarImage
                         src="profile.svg"

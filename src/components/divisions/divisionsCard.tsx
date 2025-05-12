@@ -54,7 +54,10 @@ export default function Divisions() {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [divisions, setDivisions] = useState<DivisionGroupsDto[]>([]);
-
+  const userRole = (["VicePresident", "President", "SuperAdmin", "DivisionHead", "Coordinator", "Member", "Admin"].includes(localStorage.getItem("userRole")!)
+    ? localStorage.getItem("userRole")
+    : "Member") as "VicePresident" | "President" | "SuperAdmin" | "DivisionHead" | "Coordinator" | "Member" | "Admin";
+  const canAdd = (userRole === "President" || userRole === "VicePresident" || userRole === "SuperAdmin" )
   const { error, isLoading } = useQuery({
     queryKey: ["division"],
     queryFn: async () => {
@@ -83,17 +86,17 @@ export default function Divisions() {
   return (
     <div className=" p-3 mb-10 rounded-lg border-[1.5px] border-[#A2A1A833]">
       <div className="container mx-auto p-2">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center gap-2 mb-6">
           <div className="relative w-64">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
             <Input type="text" placeholder="Search" className="pl-8" />
           </div>
-          <Button
+          {canAdd ? (<Button
             onClick={() => setShowModal(true)}
-            className="bg-blue-700 hover:bg-blue-800 text-white"
+            className="bg-[#003087] hover:bg-blue-800 text-white"
           >
             <Plus className="mr-2 h-4 w-4" /> Add Division
-          </Button>
+          </Button>): null}
         </div>
 
         {isLoading && <PageLoader fullPage={false} />}
