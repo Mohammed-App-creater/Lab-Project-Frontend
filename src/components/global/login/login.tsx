@@ -118,7 +118,7 @@ export default function LoginPage() {
                 className="h-10 w-10 absolute left-4.5"
               />
             </div>
-            <h1 className="font-bold text-3xl text-[#110051]">CSEC ASTU</h1>
+            <h1 className="font-bold text-3xl text-[#110051] dark:text-[hsl(253,100%,50%)]">CSEC ASTU</h1>
           </div>
           <div className="text-center">
             <h1 className="text-2xl font-bold">Welcome 👋</h1>
@@ -135,7 +135,7 @@ export default function LoginPage() {
 
         <form onSubmit={loginFormik.handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-[#003087]">
+            <Label htmlFor="email" className="text-[#003087] dark:text-[hsl(253,100%,50%)]">
               Email Address
             </Label>
             <Input
@@ -156,7 +156,7 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-[#003087]">
+            <Label htmlFor="password" className="text-[#003087] dark:text-[hsl(253,100%,50%)]">
               Password
             </Label>
             <div className="relative">
@@ -197,7 +197,7 @@ export default function LoginPage() {
 
           <Button
             type="submit"
-            className="w-full h-12 bg-[#003087] hover:bg-[#0a2472]/90"
+            className="w-full h-12 bg-[#003087] hover:bg-[#0a2472]/90 dark:text-white"
             disabled={loginFormik.isSubmitting}
           >
             {loginFormik.isSubmitting ? "Logging in..." : "Login"}

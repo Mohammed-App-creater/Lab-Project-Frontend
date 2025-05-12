@@ -1,6 +1,6 @@
 // stores/useUserStore.ts
 import { create } from "zustand";
-import { user } from "@/types/user";
+import { user } from "../types/user";
 
 type User = user; // Replace with your actual User type
 

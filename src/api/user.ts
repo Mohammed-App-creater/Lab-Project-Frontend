@@ -1,25 +1,25 @@
 import api from "@/lib/axios";
-import { user, AttendanceRecord, HeadsUpMessage, AttendanceRecordDataResponse } from "@/types/user";
+import { user, AttendanceRecord, HeadsUpMessage, AttendanceRecordDataResponse } from "../types/user";
 
 const API_BASE_URL = "https://csec-lab-portal-backend.onrender.com/api/user";
 
 export const fetchUserProfile = async (userId: string): Promise<user> => {
-    return await api
-      .post(
-        `api/user/userProfile`,
-        {
-          userId: userId,
+  return await api
+    .post(
+      `api/user/userProfile`,
+      {
+        userId: userId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        }
-      )
-      .then((res) => {
-        return res.data as user;
-      });
+      }
+    )
+    .then((res) => {
+      return res.data as user;
+    });
 };
 
 
@@ -52,7 +52,7 @@ export const fetchHeadsUpMessages = (userId: string) => {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     }
-  ).then((res) => res.data as {"headsUps": HeadsUpMessage[]})
+  ).then((res) => res.data as { "headsUps": HeadsUpMessage[] })
 }
 
 export const fetchUserAttendance = async (userId: string): Promise<AttendanceRecordDataResponse> => {

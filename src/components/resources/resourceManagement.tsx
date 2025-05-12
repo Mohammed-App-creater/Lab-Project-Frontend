@@ -1,28 +1,27 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import DivisionCard from "@/components/resources/divisionCard";
-import AddResourceModal from "@/components/resources/addResourceModal";
+import { useEffect, useState } from "react"
+import DivisionCard from "@/components/resources/divisionCard"
+import AddResourceModal from "@/components/resources/addResourceModal"
 
 export interface Resource {
-  name: string;
-  url: string;
+  name: string
+  url: string
 }
 
 export interface Division {
-  title: string;
-  description: string;
-  resources: Resource[];
+  title: string
+  description: string
+  resources: Resource[]
 }
 
 export default function ResourceManagement() {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [currentDivision, setCurrentDivision] = useState("");
-  const [newResourceName, setNewResourceName] = useState("");
-  const [newResourceUrl, setNewResourceUrl] = useState("");
-  const [divisions, setDivisions] = useState<Division[]>([]);
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [currentDivision, setCurrentDivision] = useState("")
+  const [newResourceName, setNewResourceName] = useState("")
+  const [newResourceUrl, setNewResourceUrl] = useState("")
+  const [divisions, setDivisions] = useState<Division[]>([])
 
-  
   useEffect(() => {
     const fetchDivisions = async () => {
       try {
@@ -43,27 +42,26 @@ export default function ResourceManagement() {
             name: res.resourceLinkName,
             url: res.resourceLinkUrl,
           })),
-        }));
+        }))
 
-        setDivisions(mapped);
+        setDivisions(mapped)
       } catch (err) {
-        console.error("Failed to fetch division data:", err);
+        console.error("Failed to fetch division data:", err)
       }
-    };
+    }
 
-    fetchDivisions();
-  }, []);
+    fetchDivisions()
+  }, [])
 
   const handleAddResource = (division: string) => {
-    setCurrentDivision(division);
-    setShowAddModal(true);
-  };
+    setCurrentDivision(division)
+    setShowAddModal(true)
+  }
 
   const handleSaveResource = async () => {
-    if (!newResourceName || !newResourceUrl) return;
+    if (!newResourceName || !newResourceUrl) return
 
     try {
-      
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACK_END_URL}api/division-resources/all-divisions-resource`
       );
@@ -73,14 +71,14 @@ export default function ResourceManagement() {
       );
 
       if (!matchedDivision) {
-        console.error("Division ID not found");
-        return;
+        console.error("Division ID not found")
+        return
       }
 
-      const divisionId = matchedDivision.id;
+      const divisionId = matchedDivision.id
 
       const postRes = await fetch(
-        `${process.env.NEXT_PUBLIC_BACK_END_URL}api/division-resources`,
+        "https://csec-lab-portal-backend.onrender.com/api/division-resources",
         {
           method: "POST",
           headers: {
@@ -95,7 +93,7 @@ export default function ResourceManagement() {
       );
 
       if (!postRes.ok) {
-        throw new Error("Failed to save resource to backend");
+        throw new Error("Failed to save resource to backend")
       }
 
       setDivisions((prev) =>
@@ -103,25 +101,24 @@ export default function ResourceManagement() {
           div.title === currentDivision
             ? {
                 ...div,
-                resources: [
-                  ...div.resources,
-                  { name: newResourceName, url: newResourceUrl },
-                ],
+                resources: [...div.resources, { name: newResourceName, url: newResourceUrl }],
               }
-            : div
-        )
-      );
+            : div,
+        ),
+      )
 
-      setNewResourceName("");
-      setNewResourceUrl("");
-      setShowAddModal(false);
+      setNewResourceName("")
+      setNewResourceUrl("")
+      setShowAddModal(false)
     } catch (err) {
-      console.error("Error saving resource:", err);
+      console.error("Error saving resource:", err)
     }
-  };
+  }
 
   return (
-    <>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">Resources</h1>
+
       {divisions.map((division, index) => (
         <DivisionCard
           key={index}
@@ -140,8 +137,7 @@ export default function ResourceManagement() {
         onResourceNameChange={setNewResourceName}
         onResourceUrlChange={setNewResourceUrl}
         onSave={handleSaveResource}
-
       />
-    </>
-  );
+    </div>
+  )
 }

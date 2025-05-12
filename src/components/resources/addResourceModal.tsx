@@ -1,23 +1,17 @@
-"use client";
+"use client"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 interface AddResourceModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  resourceName: string;
-  resourceUrl: string;
-  onResourceNameChange: (value: string) => void;
-  onResourceUrlChange: (value: string) => void;
-  onSave: () => void;
+  isOpen: boolean
+  onClose: () => void
+  resourceName: string
+  resourceUrl: string
+  onResourceNameChange: (value: string) => void
+  onResourceUrlChange: (value: string) => void
+  onSave: () => void
 }
 
 export default function AddResourceModal({
@@ -34,29 +28,20 @@ export default function AddResourceModal({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add New Resource</DialogTitle>
-          <DialogDescription>
-            Add a new resource link to the CPD division. Make sure to provide both the name and URL.
-          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <label htmlFor="resource-name" className="text-sm font-medium">
-              Resource Name
-            </label>
             <Input
               id="resource-name"
-              placeholder="Enter resource name"
+              placeholder="Resource Name"
               value={resourceName}
               onChange={(e) => onResourceNameChange(e.target.value)}
             />
           </div>
           <div className="grid gap-2">
-            <label htmlFor="resource-url" className="text-sm font-medium">
-              Resource URL
-            </label>
             <Input
               id="resource-url"
-              placeholder="Enter resource URL"
+              placeholder="Resource Link"
               value={resourceUrl}
               onChange={(e) => onResourceUrlChange(e.target.value)}
             />
@@ -66,11 +51,7 @@ export default function AddResourceModal({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button 
-            variant="default" 
-            onClick={onSave} 
-            className="bg-blue-800 hover:bg-blue-700 text-white"
-          >
+          <Button variant="default" onClick={onSave} className="bg-[#0040a0] hover:bg-[#003080] text-white">
             Add Resource
           </Button>
         </div>
@@ -78,3 +59,4 @@ export default function AddResourceModal({
     </Dialog>
   )
 }
+

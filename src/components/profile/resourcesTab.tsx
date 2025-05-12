@@ -1,10 +1,9 @@
-
 "use client";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { resourceLinks } from "@/types/user";
+import { resourceLinks } from "../../types/user";
 
 interface ResourcesTabProps {
   resources: resourceLinks[];
@@ -12,23 +11,36 @@ interface ResourcesTabProps {
   onSave: (resources: resourceLinks[]) => void;
 }
 
-export default function ResourcesTab({ resources, onCancel, onSave }: ResourcesTabProps) {
-  const [localResources, setLocalResources] = useState<resourceLinks[]>(resources);
+export default function ResourcesTab({
+  resources,
+  onCancel,
+  onSave,
+}: ResourcesTabProps) {
+  const [localResources, setLocalResources] =
+    useState<resourceLinks[]>(resources);
 
-  const handleChange = (index: number, field: keyof resourceLinks, value: string) => {
+  const handleChange = (
+    index: number,
+    field: keyof resourceLinks,
+    value: string
+  ) => {
     const updated = [...localResources];
     updated[index] = { ...updated[index], [field]: value };
     setLocalResources(updated);
   };
 
   const handleAdd = () => {
-    setLocalResources([...localResources, {
-      resourceLinkName: "", resourceLinkUrl: "",
-      id: "",
-      userId: "",
-      createdAt: "",
-      updatedAt: ""
-    }]);
+    setLocalResources([
+      ...localResources,
+      {
+        resourceLinkName: "",
+        resourceLinkUrl: "",
+        id: "",
+        userId: "",
+        createdAt: "",
+        updatedAt: "",
+      },
+    ]);
   };
 
   const handleRemove = (index: number) => {
@@ -43,12 +55,16 @@ export default function ResourcesTab({ resources, onCancel, onSave }: ResourcesT
           <div key={index} className="flex gap-4 items-center">
             <Input
               value={resource.resourceLinkName}
-              onChange={(e) => handleChange(index, "resourceLinkName", e.target.value)}
+              onChange={(e) =>
+                handleChange(index, "resourceLinkName", e.target.value)
+              }
               placeholder="Resource name"
             />
             <Input
               value={resource.resourceLinkUrl}
-              onChange={(e) => handleChange(index, "resourceLinkUrl", e.target.value)}
+              onChange={(e) =>
+                handleChange(index, "resourceLinkUrl", e.target.value)
+              }
               placeholder="Resource URL"
             />
             <Button variant="destructive" onClick={() => handleRemove(index)}>
@@ -66,9 +82,7 @@ export default function ResourcesTab({ resources, onCancel, onSave }: ResourcesT
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button onClick={() => onSave(localResources)}>
-            Save Changes
-          </Button>
+          <Button onClick={() => onSave(localResources)}>Save Changes</Button>
         </div>
       </div>
     </div>
