@@ -51,7 +51,6 @@ export default function Home() {
           </Link>
         </div>
       </header>
-
       {/* Hero Section */}
       <section className="w-full py-12 md:py-24 bg-gradient-to-b from-white to-gray-50">
         <div className="container px-4 sm:px-6">
@@ -361,5 +360,6 @@ export default function Home() {
         </div>
       </footer>
     </div>
+
   );
 }
